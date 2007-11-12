@@ -262,6 +262,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\opc\frl_opc_group.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_group_item.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\opc\frl_opc_server.cpp"
 					>
 				</File>
@@ -544,6 +552,10 @@
 				Name="opc"
 				>
 				<File
+					RelativePath="..\..\..\include\opc\frl_opc_async_io2.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\include\opc\frl_opc_browse_server_address_space.h"
 					>
 				</File>
@@ -560,11 +572,31 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\include\opc\frl_opc_enum_item_attributes.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\include\opc\frl_opc_enum_string.h"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_flat_data_cache.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_group.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_group_item.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_group_state_mgt.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_item_mgt.h"
 					>
 				</File>
 				<File
@@ -585,6 +617,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_server_types.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_sync_io.h"
 					>
 				</File>
 				<File

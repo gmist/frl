@@ -8,6 +8,7 @@
 #include "opc/frl_opc_common.h"
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
+#include "opc/frl_opc_item_mgt.h"
 
 namespace frl
 {
@@ -21,7 +22,7 @@ namespace frl
 				public IConnectionPointImpl< OPCServer, &__uuidof(IOPCShutdown) >,
 				public IOPCServer,
 				public ItemProperties< OPCServer >,
-				public BrowseServerAddressSpace< OPCServer >
+				public BrowseServerAddressSpace< OPCServer >				
 		{		
 		public:
 
@@ -34,7 +35,7 @@ namespace frl
 				COM_INTERFACE_ENTRY(IOPCServer)
 				COM_INTERFACE_ENTRY(IOPCItemProperties)
 				COM_INTERFACE_ENTRY(IOPCBrowseServerAddressSpace)
-				COM_INTERFACE_ENTRY(IConnectionPointContainer)
+				COM_INTERFACE_ENTRY(IConnectionPointContainer)				
 			END_COM_MAP()
 
 			BEGIN_CONNECTION_POINT_MAP(OPCServer)
