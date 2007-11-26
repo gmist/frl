@@ -11,10 +11,10 @@ namespace frl
 	{
 		class GroupItem
 		{
-		private:						
+		private:
 			OPCHANDLE clientHandle;
-			OPCHANDLE serverHandle;			
-			Bool actived;			
+			OPCHANDLE serverHandle;
+			Bool actived;
 			String accessPath;
 			String itemID;
 			VARTYPE requestDataType;
@@ -31,7 +31,7 @@ namespace frl
 			OPCHANDLE getClientHandle();
 			const String& getItemID();
 			const String& getAccessPath();
-		};
+		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library
 

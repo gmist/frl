@@ -5,6 +5,14 @@ namespace frl
 {
 	namespace opc
 	{
+		CacheItem::CacheItem()
+		{
+			requestedDataType = canonicalDataType = VT_EMPTY;
+			clientHandle = serverHandle = 0;
+			accessRights = OPC_READABLE;
+			active = 0;
+		}
+
 		void CacheItem::setID( const String &newID )
 		{
 			id = newID;

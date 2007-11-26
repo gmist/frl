@@ -19,6 +19,7 @@ namespace frl
 			DWORD accessRights;
 			Bool active;
 		public:
+			CacheItem();
 			void setID( const String &newID );
 			const String& getID();
 			void setAccessPath( const String& newAccessPath );

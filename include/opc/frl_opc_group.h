@@ -4,7 +4,6 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include "../dependency/vendors/opc_foundation/opcda.h"
-#include "opc/frl_opc_server.h"
 #include "opc/frl_opc_item_mgt.h"
 #include "opc/frl_opc_group_state_mgt.h"
 #include "opc/frl_opc_sync_io.h"
@@ -16,7 +15,9 @@ namespace frl
 {
 	namespace opc
 	{
-		class Group : 
+		class OPCServer;
+
+		class Group :
 			public GroupStateMgt< Group >,
 			public ItemMgt< Group >,
 			public SyncIO< Group >,
@@ -31,9 +32,9 @@ namespace frl
 			const CLSID* clsid;
 
 			String name;
-			OPCServer &server;
 			OPCHANDLE serverHandle;
 			OPCHANDLE clientHandle;
+			OPCServer *server;
 
 			Bool actived;
 			Bool enabled;
@@ -48,25 +49,29 @@ namespace frl
 		
 			lock::Mutex groupGuard;
 			std::map<OPCHANDLE, GroupItem > itemList;
-		protected:				   
-				   REFCLSID GetCLSID();
+		protected:
+			REFCLSID GetCLSID();
 		public:
-			
 			// IUnknown implementation
-			HRESULT STDMETHODCALLTYPE QueryInterface( 
-				/* [in] */ REFIID iid,
-				/* [iid_is][out] */ void** ppInterface);
+			HRESULT STDMETHODCALLTYPE 
+			QueryInterface( /* [in] */ REFIID iid, /* [iid_is][out] */ void** ppInterface );
 			ULONG STDMETHODCALLTYPE AddRef( void);
 			ULONG STDMETHODCALLTYPE Release( void);
 			HRESULT STDMETHODCALLTYPE CreateInstance(IUnknown** ippUnknown, const CLSID* pClsid);
+			LONG getRefCount();
 
 			// Constructors
 			Group();
-			Group( opc::OPCServer &server, const String &groupName );
+			Group( const String &groupName );
 			~Group(); // Destructor
-
 			void Init();
-		};
+			void setServerHandle( OPCHANDLE handle );
+			OPCHANDLE getServerHandle();
+			void setServerPtr( OPCServer *serverPtr );
+			const String getName();
+			Bool isDeleted();
+			void isDeleted( Bool deleteFlag );
+		}; // class Group
 	} // namespace opc
 } // namespace FatRat Library
 

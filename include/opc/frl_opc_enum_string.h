@@ -16,7 +16,7 @@ namespace frl
 			EnumString(); // Constructor
 			~EnumString(); // Destructor
 
-			void init( const std::vector< String > items );
+			void init( const std::vector< String > &items );
 
 			// the IUnknown functions implementation
 			STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface );
@@ -30,10 +30,10 @@ namespace frl
 			STDMETHODIMP Clone( IEnumString **ppEnum );
 
 		protected:
-			volatile LONG RefCount;			// reference counter
+			volatile LONG refCount;			// reference counter
+			size_t curIndex;						// current element
 			std::vector<String> strings;	// enum strings
-			size_t curIndex;						//Current element
-		};
+		}; // class EnumString
 	} // namespace opc
 } // namespace FatRat Library
 

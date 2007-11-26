@@ -1,6 +1,5 @@
 #ifndef frl_sys_util_h_
 #define frl_sys_util_h_
-
 #include "frl_types.h"
 
 namespace frl
@@ -11,7 +10,7 @@ namespace frl
 		{
 			String getLastErrorDescription();
 			String getLastErrorDescription( WORD langID );
-			String getCodeErrorDescription( DWORD error );			
+			String getCodeErrorDescription( DWORD error );
 			String getCodeErrorDescription( WORD langID, DWORD error );
 		}
 	}

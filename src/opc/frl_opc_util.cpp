@@ -1,5 +1,6 @@
 #include "opc/frl_opc_util.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include "frl_lexical_cast.h"
 
 namespace frl
 {
@@ -52,7 +53,16 @@ namespace frl
 						return True;
 					}
 				}
-				return False;	
+				return False;
+			}
+
+			frl::String getUniqueName()
+			{
+				static unsigned long counter = 0;
+				counter++;
+				String result = lexicalCast< unsigned long, String >::get( counter );
+				result += FRL_STR("_Name");
+				return result;
 			}
 		}	// namespace util
 	} // namespace opc

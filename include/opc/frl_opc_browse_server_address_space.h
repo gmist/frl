@@ -5,6 +5,7 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_enum_string.h"
 #include "opc/frl_opc_flat_data_cache.h"
+#include "frl_lock.h"
 
 namespace frl
 {
@@ -14,6 +15,8 @@ namespace frl
 		class BrowseServerAddressSpace
 			:	public IOPCBrowseServerAddressSpace
 		{
+		private:
+			frl::lock::Mutex scopeGuard;
 		public:
 			HRESULT STDMETHODCALLTYPE QueryOrganization( 
 				/* [out] */ OPCNAMESPACETYPE *pNameSpaceType )
@@ -48,20 +51,33 @@ namespace frl
 					return E_INVALIDARG;
 				}
 				
+				if( ppIEnumString == NULL )
+					return E_POINTER;
+				*ppIEnumString = NULL;
+
+				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
 				EnumString *pEnum = new EnumString();
 				if( pEnum == NULL )
 					return E_OUTOFMEMORY;
 				std::vector<String> items;
 				flatDataCache.Browse( items );
 				pEnum->init( items );
-				*ppIEnumString = pEnum;
-				return S_OK;
+				HRESULT hResult = pEnum->QueryInterface( IID_IEnumString, (void**) ppIEnumString );
+				if( FAILED( hResult ) )
+					delete pEnum;
+				return hResult;
 			}
 
 			HRESULT STDMETHODCALLTYPE GetItemID( 
 				/* [in] */ LPWSTR szItemDataID,
 				/* [string][out] */ LPWSTR *szItemID )
 			{
+				if( szItemDataID == NULL || szItemID == NULL )
+					return E_INVALIDARG;
+				*szItemID = NULL;
+				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
+				if( ! opc::flatDataCache.isExistItem( szItemDataID ) )
+					return E_INVALIDARG;
 				*szItemID = szItemDataID;
 				return S_OK;
 			}

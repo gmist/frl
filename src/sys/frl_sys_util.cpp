@@ -1,5 +1,5 @@
 #include "sys/frl_sys_util.h"
-		
+
 namespace frl
 {
 	namespace sys
@@ -22,34 +22,36 @@ namespace frl
 			}
 			String getCodeErrorDescription( WORD langID, DWORD error )
 			{
-				static const int maxMsgSize = 1024+1;
-				TCHAR tsMsg[maxMsgSize];
-				memset(tsMsg, 0, sizeof(tsMsg));
-
+				void *tsMsg = NULL;
 				DWORD dwResult = ::FormatMessage(
-					FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS,
-					::GetModuleHandle(NULL), 
+					FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_HMODULE | FORMAT_MESSAGE_IGNORE_INSERTS,
+					::GetModuleHandle(NULL),
 					error,
 					langID, 
-					tsMsg,
-					maxMsgSize-1,
+					(LPWSTR)&tsMsg,
+					0,
 					NULL
 					);
 
-				// attempt to load string from system message table.
 				if (dwResult == 0)
 				{
 					dwResult = ::FormatMessage(
-						FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
-						NULL, 
+						FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+						NULL,
 						error,
 						langID, 
-						tsMsg,
-						maxMsgSize-1,
-						NULL 
+						(LPWSTR)&tsMsg,
+						0,
+						NULL
 						);
 				}
-				return (String)tsMsg;
+				String out(FRL_STR(""));
+				if( tsMsg != NULL )
+				{
+					out = (Char*)(tsMsg);
+					LocalFree(tsMsg);
+				}
+				return out;
 			}
 			#endif /* FRL_PLATFORM_WIN32 */
 		}

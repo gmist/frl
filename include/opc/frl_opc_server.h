@@ -4,27 +4,36 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <atlbase.h>
 #include <atlcom.h>
+#include <Guiddef.h>
+#include <map>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_common.h"
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
 #include "opc/frl_opc_item_mgt.h"
+#include "opc/frl_opc_group.h"
+#include "frl_lock.h"
 
 namespace frl
 {
 	namespace opc
-	{
+	{		
 		class OPCServer
 			:	public CComObjectRootEx<CComMultiThreadModel>,
 				public CComCoClass<OPCServer>,
 				public OPCCommon,
-				public IConnectionPointContainerImpl<OPCServer>,
-				public IConnectionPointImpl< OPCServer, &__uuidof(IOPCShutdown) >,
 				public IOPCServer,
+				public IConnectionPointContainerImpl<OPCServer>,
+				public IConnectionPointImpl< OPCServer, &__uuidof(IOPCShutdown)>,
 				public ItemProperties< OPCServer >,
-				public BrowseServerAddressSpace< OPCServer >				
-		{		
+				public BrowseServerAddressSpace< OPCServer >
+		{
+		private:
+			std::map< OPCHANDLE, frl::opc::Group* > groupItem;
+			std::map< String, OPCHANDLE > groupItemIndex;
+			lock::Mutex scopeGuard;
 		public:
+			OPCSERVERSTATUS m_ServerStatus;
 
 			BEGIN_CATEGORY_MAP(OPCServer)
 				IMPLEMENTED_CATEGORY(CATID_OPCDAServer20)
@@ -35,12 +44,14 @@ namespace frl
 				COM_INTERFACE_ENTRY(IOPCServer)
 				COM_INTERFACE_ENTRY(IOPCItemProperties)
 				COM_INTERFACE_ENTRY(IOPCBrowseServerAddressSpace)
-				COM_INTERFACE_ENTRY(IConnectionPointContainer)				
+				COM_INTERFACE_ENTRY(IConnectionPointContainer)
 			END_COM_MAP()
 
 			BEGIN_CONNECTION_POINT_MAP(OPCServer)
 				CONNECTION_POINT_ENTRY(__uuidof(IOPCShutdown))
 			END_CONNECTION_POINT_MAP()
+
+			OPCServer();
 
 			//////////////////////////////////////////////////////////////////////////
 			// IOPCServer implementation
@@ -80,7 +91,7 @@ namespace frl
 				/* [in] */ REFIID riid,
 				/* [iid_is][out] */ LPUNKNOWN *ppUnk);
 
-		};
+		}; // OPCServer
 	} // namespace opc
 } // namespace FatRat Library
 

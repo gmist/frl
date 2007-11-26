@@ -15,13 +15,20 @@ namespace frl
 		{
 			OPCHANDLE getUniqueServerHandle();	
 			FILETIME getFileTime();
+			String getUniqueName();
 
 			template< typename Type >
 			Type* allocMemory( size_t size )
 			{
 				if( size == 0 )
 					FRL_THROW( FRL_STR("Invalid argument") );
-				return reinterpret_cast< Type* >(CoTaskMemAlloc( size * sizeof(Type) ));
+				return reinterpret_cast< Type* >(CoTaskMemAlloc( size * sizeof(Type) ) );
+			}
+
+			template< typename Type >
+			Type* allocMemory()
+			{
+				return reinterpret_cast< Type* >(CoTaskMemAlloc( sizeof(Type) ) );
 			}
 
 			template< typename Type >
@@ -30,6 +37,12 @@ namespace frl
 				if( size == 0 )
 					FRL_THROW( FRL_STR("Invalid argument") );
 				::ZeroMemory( ptr, sizeof(Type) * size );
+			}
+
+			template< typename Type >
+			void zeroMemory( Type* ptr )
+			{
+				::ZeroMemory( ptr, sizeof(Type) );
 			}
 
 			Bool isValidType( VARTYPE vtType );

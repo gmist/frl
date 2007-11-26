@@ -1,6 +1,7 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_group.h"
+#include "opc/frl_opc_util.h"
 
 namespace frl
 {
@@ -72,8 +73,14 @@ namespace frl
 			return *clsid;
 		}
 
-		Group::Group( opc::OPCServer &serverRef, const String &groupName )
-			: server( serverRef ), name( groupName )
+		Group::Group()
+		{
+			Init();
+			name = util::getUniqueName();
+		}
+
+		Group::Group( const String &groupName )
+			: name( groupName )
 		{
 			Init();
 		}
@@ -100,6 +107,42 @@ namespace frl
 			lastUpdate = util::getFileTime();
 			tickOffset  = -1;
 		}
+
+		void Group::setServerHandle( OPCHANDLE handle )
+		{
+			serverHandle = handle;
+		}
+
+		void Group::setServerPtr( OPCServer *serverPtr )
+		{
+			server = serverPtr;
+		}
+
+		OPCHANDLE Group::getServerHandle()
+		{
+			return serverHandle;
+		}
+
+		const String Group::getName()
+		{
+			return name;
+		}
+
+		LONG Group::getRefCount()
+		{
+			return refCount;
+		}
+
+		frl::Bool Group::isDeleted()
+		{
+			return deleted;
+		}
+
+		void Group::isDeleted( Bool deleteFlag )
+		{
+			deleted = deleteFlag;
+		}
+		
 	} //namespace opc
 }  //namespace FatRat Library
 

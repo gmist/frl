@@ -141,7 +141,6 @@ namespace frl
 						continue;
 					}
 				}
-
 				return res;
 			}
 
@@ -183,11 +182,9 @@ namespace frl
 					wcsncpy_s( *ppszNewItemIDs[i], (size+1)*sizeof(WCHAR), szItemID, size );
 					ppErrors[i] = S_OK;
 				}
-
 				return E_NOTIMPL;
 			}
-
-		};
+		}; // class ItemProperties
 	} // namespace opc
 } // namespace FatRat Library
 

@@ -157,7 +157,9 @@ namespace frl
 						return;
 					}
 					else
-						result = RegDeleteKeyEx( hKey, name.c_str(), KEY_WOW64_32KEY, 0 );
+						result = RegDeleteKey( hKey, name.c_str() );
+						// TODO iplementation for 64-bits Windows or Windows 2003 sp1
+						//result = RegDeleteKeyEx( hKey, name.c_str(), KEY_WOW64_32KEY, 0 );
 					close();
 					if ( result != ERROR_SUCCESS )
 						FRL_THROW_SYSAPI_EX( FRL_STR("Can`t delete registry key \"") + name + FRL_STR("\" - "), result );

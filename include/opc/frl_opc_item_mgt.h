@@ -4,6 +4,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_lock.h"
 #include "../dependency/vendors/opc_foundation/opcda.h"
+#include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_enum_item_attributes.h"
 
 namespace frl
@@ -33,7 +34,7 @@ namespace frl
 				*ppAddResults = util::allocMemory<OPCITEMRESULT>( dwCount );
 				if( *ppAddResults == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory<OPCITEMRESULT>( *ppAddResults, dwCount );				
+				util::zeroMemory<OPCITEMRESULT>( *ppAddResults, dwCount );
 
 				*ppErrors = util::allocMemory<HRESULT>( dwCount );
 				if( *ppErrors == NULL ) 
@@ -125,13 +126,13 @@ namespace frl
 				HRESULT res = S_OK;
 				/// check exist of the specified tags
 				for( DWORD i=0;i<dwCount; ++i) 
-				{					
+				{
 					if( ! flatDataCache.isExistItem( pItemArray[i].szItemID ) ) 
 					{
 						(*ppErrors)[i] = OPC_E_UNKNOWNITEMID;
 						res = S_FALSE;
 						continue;
-					}					
+					}
 
 					// validate data type.
 					if (! util::isValidType(pItemArray[i].vtRequestedDataType) )
@@ -142,14 +143,14 @@ namespace frl
 					}
 
 					CacheItem caheItem;
-					flatDataCache.getItem( pItemArray[i].szItemID, caheItem );					
+					flatDataCache.getItem( pItemArray[i].szItemID, caheItem );
 					ppValidationResults[0][i].vtCanonicalDataType = caheItem.getCanonicalDataType();
 					ppValidationResults[0][i].dwAccessRights = caheItem.getAccessRights();
 					ppValidationResults[0][i].dwBlobSize = 0;
 					ppValidationResults[0][i].pBlob = NULL;
 					ppValidationResults[0][i].hServer = 	util::getUniqueServerHandle();
-				}				
-				return res;				
+				}
+				return res;
 			}
 
 			HRESULT STDMETHODCALLTYPE RemoveItems( 
@@ -175,7 +176,7 @@ namespace frl
 				
 				std::map< OPCHANDLE, GroupItem >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
-				for( DWORD i=0; i<dwCount; i++)  
+				for( DWORD i=0; i<dwCount; i++)
 				{
 					it = pT->itemList.find( phServer[i] );
 					if( it == pT->itemList.end() ) 
@@ -200,14 +201,14 @@ namespace frl
 				T* pT = static_cast<T*> (this);
 				if( pT->deleted )
 					return E_FAIL;
-				if (phServer == NULL || ppErrors == NULL )				
+				if (phServer == NULL || ppErrors == NULL )
 					return E_INVALIDARG;
 
 				*ppErrors = NULL;
 				if( dwCount == 0 )
 					return E_INVALIDARG;
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );				
+				*ppErrors = util::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL ) 
 					return E_OUTOFMEMORY;
 				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
@@ -245,7 +246,7 @@ namespace frl
 
 				if( dwCount == 0 )
 					return E_INVALIDARG;
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );				
+				*ppErrors = util::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
@@ -262,7 +263,7 @@ namespace frl
 						res = S_FALSE;
 					}
 					else
-						(*it).second.setClientHandle( phClient[i] );					
+						(*it).second.setClientHandle( phClient[i] );
 				}
 				return res;
 			}
@@ -287,7 +288,7 @@ namespace frl
 					return E_OUTOFMEMORY;
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
-				HRESULT res = S_OK;				
+				HRESULT res = S_OK;
 				std::map< OPCHANDLE, GroupItem >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++ )
@@ -301,7 +302,7 @@ namespace frl
 					else
 						(*it).second.setRequestDataType( pRequestedDatatypes[i] );
 				}
-				return res;				
+				return res;
 			}
 
 			HRESULT STDMETHODCALLTYPE CreateEnumerator( 
@@ -321,19 +322,18 @@ namespace frl
 					if (temp == NULL)
 						return (E_OUTOFMEMORY);
 					std::map< OPCHANDLE, GroupItem >::iterator it;
-					lock::Mutex::ScopeGuard guard( pT->groupGuard );					
+					lock::Mutex::ScopeGuard guard( pT->groupGuard );
 					for( it = pT->itemList.begin(); it != pT->itemList.end(); ++it )
 					{
 						OPCHANDLE h = it->first;
-						GroupItem* i = &(*it).second;						
+						GroupItem* i = &(*it).second;
 						temp->AddItem ( h, i );
 					}
 					return temp->QueryInterface(riid,(void**)ppUnk);
-				}				
+				}
 				return S_FALSE;
-
 			}
-		};
+		}; // class ItemMgt
 	} // namespace opc
 } // namespace FatRat Library
 

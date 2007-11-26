@@ -6,25 +6,22 @@ namespace frl
 	namespace opc
 	{
 		EnumString::EnumString()
-		{
-			RefCount = 0;
-			curIndex = 0;
-		}
+			: refCount( 0 ), curIndex( 0 )
+		{}
 
 		EnumString::~EnumString()
 		{
-			strings.erase( strings.begin(), strings.end() );
+			if ( ! strings.empty() )
+				strings.erase( strings.begin(), strings.end() );
 		}
 
 		STDMETHODIMP EnumString::QueryInterface( REFIID iid, LPVOID* ppInterface )
 		{
 			if ( ppInterface == NULL)
-			{
-				return (E_INVALIDARG);
-			}
+				return E_INVALIDARG;
 
 			if ( iid == IID_IUnknown )
-			{			
+			{
 				*ppInterface = (IUnknown*) this;
 			}
 			else if (iid == IID_IEnumString)
@@ -43,12 +40,12 @@ namespace frl
 
 		ULONG EnumString::AddRef( void )
 		{
-			return ::InterlockedIncrement( &RefCount );
+			return ::InterlockedIncrement( &refCount );
 		}
 
 		ULONG EnumString::Release( void )
 		{
-			LONG ret = ::InterlockedDecrement( &RefCount );
+			LONG ret = ::InterlockedDecrement( &refCount );
 			if( ret <= 0 )
 				delete this;
 			return ret;
@@ -57,9 +54,7 @@ namespace frl
 		STDMETHODIMP EnumString::Next( ULONG celt, LPOLESTR* rgelt, ULONG* pceltFetched )
 		{
 			if (rgelt == NULL || pceltFetched == NULL)
-			{
 				return E_INVALIDARG;
-			}
 
 			if( curIndex >= strings.size() )
 				return S_FALSE;
@@ -67,8 +62,10 @@ namespace frl
 			size_t ii = curIndex;
 			for ( ; ii < strings.size() && *pceltFetched < celt; ii++)
 			{
-				size_t size = (strings[ii].length()+1)*sizeof(WCHAR);
+				size_t size = ( ( strings[ii].length() +1 ) * sizeof(WCHAR) );
 				rgelt[*pceltFetched] = (LPWSTR)CoTaskMemAlloc( size );
+				if( rgelt[*pceltFetched] == NULL )
+					return E_OUTOFMEMORY;
 
 				if ( strings[ii].empty() )
 				{
@@ -76,7 +73,7 @@ namespace frl
 				}
 				else
 				{
-					wcsncpy_s(rgelt[*pceltFetched], size, strings[ii].c_str(), strings[ii].length() );
+					wcscpy_s( rgelt[*pceltFetched], size/sizeof(WCHAR), strings[ii].c_str() );
 				}
 				(*pceltFetched)++;
 			}
@@ -115,6 +112,14 @@ namespace frl
 				return E_INVALIDARG;
 
 			EnumString* pEnum = new EnumString();
+			if ( pEnum == NULL )
+			{
+				*ppEnum = NULL;
+				return E_OUTOFMEMORY;
+			}
+
+			pEnum->AddRef();
+
 			for (UINT ii = 0; ii < strings.size(); ii++)
 			{
 				pEnum->strings.push_back( strings[ii] );
@@ -128,7 +133,7 @@ namespace frl
 			return hResult;
 		}
 
-		void EnumString::init( const std::vector< String > items )
+		void EnumString::init( const std::vector< String > &items )
 		{
 			strings = items;
 			Reset();

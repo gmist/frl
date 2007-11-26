@@ -6,6 +6,8 @@
 #include <atlstr.h>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_group_item.h"
+#include "opc/frl_opc_cache_item.h"
+#include "opc/frl_opc_flat_data_cache.h"
 
 namespace frl
 {
@@ -14,9 +16,9 @@ namespace frl
 		class EnumOPCItemAttributes : public IEnumOPCItemAttributes
 		{
 		private:
-			std::vector<OPCITEMATTRIBUTES*> itemList;
-			size_t curIndex; //Current element			
-			LONG volatile refCount; // Enum Object reference count		
+			std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array
+			size_t curIndex;				// Current element
+			LONG volatile refCount;	// Enum Object reference count
 		public:
 			EnumOPCItemAttributes()
 				:	curIndex( 0 ), refCount( 0 )
@@ -25,9 +27,9 @@ namespace frl
 			}
 			~EnumOPCItemAttributes()
 			{
-				for( size_t i=0; i< itemList.size(); ++i  )
+				for( size_t i=0; i< itemList.size(); i++ )
 				{
-					if( itemList[i] != NULL ) 
+					if( itemList[i] != NULL )
 					{
 						if( itemList[i]->szItemID != NULL )
 						{
@@ -42,22 +44,22 @@ namespace frl
 
 			// the IUnknown Functions
 			STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface )
-			{				
+			{
 				if ( ppInterface == NULL)
-				{				
+				{
 					return (E_INVALIDARG);
 				}
 
 				if ( iid == IID_IUnknown )
-				{				
+				{
 					*ppInterface = (IUnknown*) this;
 				}
 				else if (iid == IID_IEnumOPCItemAttributes)
-				{				
+				{
 					*ppInterface = this;
 				}
 				else
-				{					
+				{
 					*ppInterface = NULL;
 					return (E_NOINTERFACE);
 				}
@@ -103,42 +105,42 @@ namespace frl
 
 			void AddItem( OPCHANDLE first,  GroupItem* i )
 			{
-				OPCITEMATTRIBUTES *oi = (OPCITEMATTRIBUTES *)CoTaskMemAlloc( sizeof(OPCITEMATTRIBUTES) );
-				ZeroMemory( oi, sizeof(OPCITEMATTRIBUTES) );
-				oi->bActive = i->isActived();
-				oi->hClient = i->getClientHandle();
-				oi->hServer = first;
+				OPCITEMATTRIBUTES *attributes = (OPCITEMATTRIBUTES *)CoTaskMemAlloc( sizeof(OPCITEMATTRIBUTES) );
+				ZeroMemory( attributes, sizeof(OPCITEMATTRIBUTES) );
+				attributes->bActive = i->isActived();
+				attributes->hClient = i->getClientHandle();
+				attributes->hServer = first;
 				
 				if( i->getItemID().empty() )
 				{
-					oi->szItemID = SysAllocString(L""); // NULL
+					attributes->szItemID = SysAllocString(L""); // NULL
 				}
 				else
 				{
 					LPWSTR itemID = new WCHAR[ i->getItemID().size() ];
-					wcscpy_s( itemID, i->getItemID().size(), i->getItemID().c_str() );				
-					oi->szItemID = itemID;
+					wcscpy_s( itemID, i->getItemID().size(), i->getItemID().c_str() );
+					attributes->szItemID = itemID;
 				}
 
 				if( i->getAccessPath().empty() )
 				{
-					oi->szAccessPath = SysAllocString(L""); //NULL;
+					attributes->szAccessPath = SysAllocString(L""); //NULL;
 				}
 				else
 				{
 					LPWSTR accessPath = new WCHAR[ i->getAccessPath().size() ];
-					wcscpy_s( accessPath, i->getAccessPath().size(), i->getAccessPath().c_str() );				
-					oi->szItemID = accessPath;
-				}				
-				
+					wcscpy_s( accessPath, i->getAccessPath().size(), i->getAccessPath().c_str() );
+					attributes->szItemID = accessPath;
+				}
+
 				CacheItem caheItem;
-				flatDataCache.getItem( i->getItemID(), caheItem );				
-				oi->dwAccessRights = caheItem.getAccessRights();
-				oi->dwBlobSize = 0;
-				oi->pBlob = NULL;
-				oi->vtCanonicalDataType = caheItem.getCanonicalDataType();
-				oi->vtRequestedDataType = i->getReguestDataType();				
-				itemList.push_back( oi );
+				flatDataCache.getItem( i->getItemID(), caheItem );
+				attributes->dwAccessRights = caheItem.getAccessRights();
+				attributes->dwBlobSize = 0;
+				attributes->pBlob = NULL;
+				attributes->vtCanonicalDataType = caheItem.getCanonicalDataType();
+				attributes->vtRequestedDataType = i->getReguestDataType();
+				itemList.push_back( attributes );
 			}
 
 			// the IEnum Functions
@@ -148,7 +150,7 @@ namespace frl
 					return E_INVALIDARG;
 
 				if( pceltFetched != NULL ) 
-					*pceltFetched = 0;				
+					*pceltFetched = 0;
 
 				if( ppItemArray == NULL || ( celt != 1 && pceltFetched == NULL) )
 					return E_POINTER;
@@ -210,7 +212,7 @@ namespace frl
 				*ppEnum = pEnum;
 				return S_OK;
 			}
-		};
+		}; // class EnumOPCItemAttributes
 	} // namespace opc
 } // namespace FatRat Library
 
