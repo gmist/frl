@@ -4,6 +4,7 @@
 #include "sys/frl_sys_util.h"
 #include "opc/frl_opc_server.h"
 #include "opc/frl_opc_enum_group.h"
+#include "frl_exception.h"
 
 namespace frl
 {
@@ -21,7 +22,6 @@ namespace frl
 
 		HRESULT STDMETHODCALLTYPE OPCServer::AddGroup( /* [string][in] */ LPCWSTR szName, /* [in] */ BOOL bActive, /* [in] */ DWORD dwRequestedUpdateRate, /* [in] */ OPCHANDLE hClientGroup, /* [in][unique] */ LONG *pTimeBias, /* [in][unique] */ FLOAT *pPercentDeadband, /* [in] */ DWORD dwLCID, /* [out] */ OPCHANDLE *phServerGroup, /* [out] */ DWORD *pRevisedUpdateRate, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 		{
-
 			if (phServerGroup == NULL || pRevisedUpdateRate == NULL || ppUnk == NULL)
 				return E_INVALIDARG;
 
@@ -45,12 +45,14 @@ namespace frl
 			}
 			else
 				groupName = szName;
-			Group *newGroup = new Group( groupName );
+			Group *newGroup = new Group( groupName );	
+			
 			if( newGroup == NULL )
 				return E_OUTOFMEMORY;
+			
+			((IOPCItemMgt*)(newGroup))->AddRef();
 
 			LONG lTimeBias = 0;
-
 			if (pTimeBias == NULL)
 			{
 				TIME_ZONE_INFORMATION cZoneInfo;
@@ -70,19 +72,20 @@ namespace frl
 				delete newGroup;
 				return res;
 			}
-			res = newGroup->QueryInterface( riid, (void**)ppUnk );
-			if( FAILED( res ) || *ppUnk == NULL) 
+			HRESULT queryResult = newGroup->QueryInterface( riid, (void**)ppUnk );
+			if( FAILED( queryResult ) || *ppUnk == NULL) 
 			{
 				delete newGroup;
 				return E_NOINTERFACE;
 			}
+
 			newGroup->setServerPtr( this );
 			newGroup->setServerHandle( util::getUniqueServerHandle() );
 			groupItemIndex.insert( std::pair< String, OPCHANDLE >( groupName, newGroup->getServerHandle() ) );
 			groupItem.insert( std::pair< OPCHANDLE, Group* >(newGroup->getServerHandle(), newGroup ) );
 			if(phServerGroup)
 				*phServerGroup = newGroup->getServerHandle();
-			return S_OK;
+			return res;
 		}
 
 		HRESULT STDMETHODCALLTYPE OPCServer::GetErrorString( /* [in] */ HRESULT dwError, /* [in] */ LCID dwLocale, /* [string][out] */ LPWSTR *ppString )
@@ -138,7 +141,7 @@ namespace frl
 
 			std::map< String, OPCHANDLE >::iterator it = groupItemIndex.find( szName );
 			if(it == groupItemIndex.end() )
-				return E_FAIL;
+				return E_INVALIDARG;
 
 			OPCHANDLE handle = (*it).second;
 			if( groupItem.find( handle ) == groupItem.end())
@@ -199,7 +202,7 @@ namespace frl
 
 			if( riid == IID_IEnumUnknown )
 			{
-				std::vector< Group*> unkn( groupItem.size() );
+				std::vector< Group* > unkn( groupItem.size() );
 				std::map< OPCHANDLE, frl::opc::Group* >::iterator it;
 				for( it = groupItem.begin(); it!= groupItem.end(); ++it)
 					unkn.push_back( (*it).second );
@@ -217,12 +220,83 @@ namespace frl
 			}
 			if( riid == IID_IEnumString )
 			{
+				std::vector< String > nameList( groupItem.size() );
+				std::map< OPCHANDLE, frl::opc::Group* >::iterator it;
+				for( it = groupItem.begin(); it!= groupItem.end(); ++it)
+					nameList.push_back( (*it).second->getName() );
+				
+				EnumString *enumString = new EnumString();
+				if( nameList.size() )
+				{
+					enumString->init( nameList );
+					HRESULT result = enumString->QueryInterface( riid, (void**)ppUnk );
+					if( FAILED(result) )
+						delete enumString;
+					return result;
+				}
+				return S_FALSE;
 			}
 			else
-				return E_INVALIDARG;
+				return E_NOINTERFACE;
 			return S_OK;
 		}
 
+		frl::Bool OPCServer::setGroupName( const String &oldName, const String &newName )
+		{
+			lock::Mutex::ScopeGuard guard( scopeGuard );
+			std::map< String, OPCHANDLE >::iterator it = groupItemIndex.find( oldName );
+			if( it == groupItemIndex.end() )
+				return False;
+			OPCHANDLE tmpHandle = (*it).second;
+			groupItemIndex.erase( it );
+			groupItemIndex.insert( std::pair< String, OPCHANDLE>( newName, tmpHandle) );
+			return True;
+		}
+
+		HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Group **ppClone )
+		{
+			if ( ppClone == NULL )
+				return E_INVALIDARG;
+
+			lock::Mutex::ScopeGuard guard( scopeGuard );
+
+			std::map< String, OPCHANDLE >::iterator itInd = groupItemIndex.find( cloneName );
+			if( itInd != groupItemIndex.end() )
+				return OPC_E_DUPLICATENAME;
+			
+			itInd = groupItemIndex.find( name );
+			if( itInd == groupItemIndex.end() )
+				return E_INVALIDARG;
+
+			std::map< OPCHANDLE, Group* >::iterator it = groupItem.find( (*itInd).second );
+			if( it == groupItem.end() )
+				return E_INVALIDARG;
+
+			*ppClone = new Group( *((*it).second) );
+			if ( ppClone == NULL )
+				return E_OUTOFMEMORY;
+			(*ppClone)->setName( cloneName );
+			return addNewGroup( ppClone );
+		}
+
+		HRESULT OPCServer::addNewGroup( Group **group )
+		{
+			if ( group == NULL )
+				FRL_THROW( FRL_STR("Invalid agrument") );
+
+			std::map< String, OPCHANDLE >::iterator itInd = groupItemIndex.find( (*group)->getName() );
+			if( itInd != groupItemIndex.end() )
+				return OPC_E_DUPLICATENAME;
+
+			if( (*group)->getName().empty() )
+				(*group)->setName( util::getUniqueName() );
+
+			OPCHANDLE handle = util::getUniqueServerHandle();
+			(*group)->setServerHandle( handle );
+			groupItemIndex.insert( std::pair< String, OPCHANDLE >( (*group)->getName(), handle ) );
+			groupItem.insert( std::pair< OPCHANDLE, Group* >( handle, (*group ) ) );
+			return S_OK;
+		}
 	} // namespace opc
 } // namespace FatRat Library
 #endif /* FRL_PLATFORM_WIN32 */

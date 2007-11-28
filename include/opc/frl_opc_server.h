@@ -11,13 +11,15 @@
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
 #include "opc/frl_opc_item_mgt.h"
-#include "opc/frl_opc_group.h"
 #include "frl_lock.h"
+#include "opc/frl_opc_group_state_mgt.h"
 
 namespace frl
 {
 	namespace opc
-	{		
+	{
+		class Group;
+		template < class T>  class  GroupStateMgt;
 		class OPCServer
 			:	public CComObjectRootEx<CComMultiThreadModel>,
 				public CComCoClass<OPCServer>,
@@ -28,6 +30,8 @@ namespace frl
 				public ItemProperties< OPCServer >,
 				public BrowseServerAddressSpace< OPCServer >
 		{
+		friend Group;
+		friend GroupStateMgt<Group>;
 		private:
 			std::map< OPCHANDLE, frl::opc::Group* > groupItem;
 			std::map< String, OPCHANDLE > groupItemIndex;
@@ -52,6 +56,9 @@ namespace frl
 			END_CONNECTION_POINT_MAP()
 
 			OPCServer();
+			Bool setGroupName( const String &oldName, const String &newName );
+			HRESULT cloneGroup( const String &name, const String &cloneName, Group **group );
+			HRESULT addNewGroup( Group **group );
 
 			//////////////////////////////////////////////////////////////////////////
 			// IOPCServer implementation

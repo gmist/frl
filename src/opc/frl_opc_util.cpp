@@ -64,6 +64,54 @@ namespace frl
 				result += FRL_STR("_Name");
 				return result;
 			}
+
+			char* duplicateString( const char *str )
+			{
+				char* ret = NULL;
+				if( str != NULL )
+				{
+					size_t size = strlen( str ) + 1;
+					ret = util::allocMemory< char >( size );
+					strcpy_s( ret, size, str );
+				}
+				return ret;
+			}
+
+			wchar_t* duplicateString( const wchar_t *str )
+			{
+				wchar_t* ret = NULL;
+				if( str != NULL )
+				{
+					size_t size = wcslen( str ) + 1;
+					ret = util::allocMemory< wchar_t >( size );
+					wcscpy_s( ret, size, str );
+				}
+				return ret;
+			}
+
+			char* duplicateString( const std::string &string )
+			{
+				char* ret = NULL;
+				if( !string.empty() )
+				{
+					size_t size = string.length() + 1;
+					ret = util::allocMemory< char >( size );
+					strcpy_s( ret, size, string.c_str() );
+				}
+				return ret;
+			}
+
+			wchar_t* duplicateString( const std::wstring &string )
+			{
+				wchar_t* ret = NULL;
+				if( !string.empty() )
+				{
+					size_t size = string.length() + 1;
+					ret = util::allocMemory< wchar_t >( size );
+					wcscpy_s( ret, size, string.c_str() );
+				}
+				return ret;
+			}
 		}	// namespace util
 	} // namespace opc
 } // // namespace FatRat Library

@@ -46,6 +46,11 @@ namespace frl
 			}
 
 			Bool isValidType( VARTYPE vtType );
+
+			char* duplicateString( const char *str );
+			wchar_t* duplicateString( const wchar_t *str );
+			char* duplicateString( const std::string &string );
+			wchar_t* duplicateString( const std::wstring &string );
 		} // namespace util
 	} // namespace opc
 } // namespace FatRat Library

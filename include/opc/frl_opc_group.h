@@ -63,6 +63,7 @@ namespace frl
 			// Constructors
 			Group();
 			Group( const String &groupName );
+			Group( const Group &group );
 			~Group(); // Destructor
 			void Init();
 			void setServerHandle( OPCHANDLE handle );
@@ -71,6 +72,7 @@ namespace frl
 			const String getName();
 			Bool isDeleted();
 			void isDeleted( Bool deleteFlag );
+			void setName( const String &newName );
 		}; // class Group
 	} // namespace opc
 } // namespace FatRat Library
