@@ -28,27 +28,27 @@ namespace frl
 		STDMETHODIMP EnumGroup::QueryInterface( REFIID iid, LPVOID* ppInterface )
 		{
 			if ( ppInterface == NULL )
-			{			
+			{
 				return E_INVALIDARG;
 			}
 
 			if ( iid == IID_IUnknown )
-			{								
+			{
 				*ppInterface = (IUnknown*) this;
 			}
 			else if ( iid == IID_IEnumUnknown )
-			{				
+			{
 				*ppInterface = this;
 			}
 			else
-			{				
+			{
 				*ppInterface = NULL;
 				return E_NOINTERFACE;
 			}
 
 			AddRef();
 			return S_OK;
-		}		
+		}
 
 		ULONG EnumGroup::AddRef( void )
 		{
@@ -65,14 +65,14 @@ namespace frl
 
 		STDMETHODIMP EnumGroup::Next( ULONG Requested, IUnknown **ppGrp, ULONG *pActual )
 		{
-			if ( ppGrp == NULL || Requested == 0 )			
-				return E_INVALIDARG;			
+			if ( ppGrp == NULL || Requested == 0 )
+				return E_INVALIDARG;
 
 			if( pActual == NULL && Requested != 1 )
 				return E_POINTER;
 
 			if( pActual != NULL )
-				*pActual = 0;			
+				*pActual = 0;	
 
 			if( currentIndex >= groupList.size() )
 				return S_FALSE;
@@ -118,7 +118,7 @@ namespace frl
 		}
 
 		STDMETHODIMP EnumGroup::Clone( IEnumUnknown **ppEnum )
-		{			
+		{
 			if (ppEnum == NULL)
 				return E_INVALIDARG;
 
@@ -135,13 +135,13 @@ namespace frl
 			for( it = groupList.begin(); it != groupList.end();  it++ )
 			{
 				pNewEnum->groupList.push_back( *it );
-			}			
+			}
 			pNewEnum->currentIndex = currentIndex;
 			HRESULT hResult = pNewEnum->QueryInterface( IID_IEnumUnknown, (void**) ppEnum );
 			pNewEnum->Release();
 			return S_OK;
-		}		
+		}
 	} // namespace opc
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_PLATFORM_WIN32 */

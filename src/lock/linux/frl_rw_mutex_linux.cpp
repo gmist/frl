@@ -23,7 +23,7 @@ namespace frl
 		}
 
 	}// namespace lock
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* __linux__ */
 

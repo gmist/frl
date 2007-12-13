@@ -242,10 +242,6 @@
 				Name="opc"
 				>
 				<File
-					RelativePath="..\..\..\src\opc\frl_opc_cache_item.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\opc\frl_opc_common.cpp"
 					>
 				</File>
@@ -259,10 +255,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\src\opc\frl_opc_enum_string.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_flat_data_cache.cpp"
 					>
 				</File>
 				<File
@@ -293,12 +285,44 @@
 					RelativePath="..\..\..\src\opc\frl_opc_util.cpp"
 					>
 				</File>
+				<Filter
+					Name="address_space"
+					>
+					<File
+						RelativePath="..\..\..\src\opc\address_space\frl_opc_address_space.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\address_space\frl_opc_tag.cpp"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="sys"
 				>
 				<File
 					RelativePath="..\..\..\src\sys\frl_sys_util.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="thread"
+				>
+				<File
+					RelativePath="..\..\..\src\thread\frl_thread_fn_linux.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\thread\frl_thread_fn_win32.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="event"
+				>
+				<File
+					RelativePath="..\..\..\src\event\frl_event.cpp"
 					>
 				</File>
 			</Filter>
@@ -564,10 +588,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_cache_item.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\opc\frl_opc_common.h"
 					>
 				</File>
@@ -585,10 +605,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_enum_string.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_flat_data_cache.h"
 					>
 				</File>
 				<File
@@ -635,12 +651,48 @@
 					RelativePath="..\..\..\include\opc\frl_opc_util.h"
 					>
 				</File>
+				<Filter
+					Name="address_space"
+					>
+					<File
+						RelativePath="..\..\..\include\opc\address_space\frl_opc_address_space.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\address_space\frl_opc_tag.h"
+						>
+					</File>
+				</Filter>
 			</Filter>
 			<Filter
 				Name="sys"
 				>
 				<File
 					RelativePath="..\..\..\include\sys\frl_sys_util.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="thread"
+				>
+				<File
+					RelativePath="..\..\..\include\thread\frl_thread.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\thread\frl_thread_fn.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\thread\frl_thread_list.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="event"
+				>
+				<File
+					RelativePath="..\..\..\include\event\frl_event.h"
 					>
 				</File>
 			</Filter>

@@ -62,6 +62,39 @@ namespace frl
 	const frl::Bool True = true;
 	const frl::Bool False = false;
 
+	#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+	typedef unsigned long frl_timeout;
+	#endif // __linux__
+
+	#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+	typedef DWORD frl_timeout;
+	#endif // WIN32
+
+
+	namespace thread
+	{		
+		#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+		typedef void* ( *FRL_LPTHREAD_START_ROUTINE ) ( void *thread_param );
+
+		// Переопределяем переменную идентификатор нити
+		typedef pthread_t ThreadDescriptor;			
+
+		// Define invalid thread descriptor
+		const ThreadDescriptor InvalidThreadDescriptor = 0;
+		#endif // FRL_PLATFORM_LINUX
+
+		#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+		typedef LPTHREAD_START_ROUTINE FRL_LPTHREAD_START_ROUTINE;
+
+		// Переопределяем переменную идентификатор нити
+		typedef HANDLE ThreadDescriptor;
+
+		// Define invalid thread descriptor
+		const ThreadDescriptor InvalidThreadDescriptor = INVALID_HANDLE_VALUE;
+		# endif // FRL_PLATFORM_WIN32
+	} // namespace tread
+
+
 } // Fat Rat Library
 
 #endif /* FRL_TYPES_H_ */

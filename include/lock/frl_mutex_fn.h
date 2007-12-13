@@ -8,13 +8,13 @@
 namespace frl
 {
 	namespace lock
-	{		
+	{
 		void MutexInit( MutexDescriptor &mutex );
 		void MutexDestroy( MutexDescriptor &mutex );
 		void MutexLock( MutexDescriptor &mutex );
 		void MutexUnlock( MutexDescriptor &mutex );
 		Bool MutexTryLock( MutexDescriptor &mutex );
 	} // namespace lock
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_MUTEX_FN_H_ */

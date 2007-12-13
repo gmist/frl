@@ -16,11 +16,15 @@ namespace frl
 	#if defined ( UNICODE )
 		#define FRL_FUNCTION_NAME __FUNCTIONW__
 	#else
-		#define FRL_FUNCTION_NAME __FUNCTION__	
+		#define FRL_FUNCTION_NAME __FUNCTION__
 	#endif
 
+	#define FRL_THROW_S throw( frl::Exception( FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
 	#define FRL_THROW( description ) throw( frl::Exception( description, FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
-	#define FRL_THROW_EX( description, function ) throw( frl::Exception( description, function, __FILE__, __LINE__ ) )	
+	#define FRL_THROW_EX( description, function ) throw( frl::Exception( description, function, __FILE__, __LINE__ ) )
+	#define FRL_THROW_S_CLASS( xClass ) throw( xClass( FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
+	#define FRL_THROW_CLASS( xClass, description ) throw( xClass( description, FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
+	#define FRL_THROW_CLASS_EX( xClass, description, function ) throw( xClass( description, function, __FILE__, __LINE__ ) )
 
 #define FRL_THROW_SYSAPI( description ) throw( frl::Exception(description + frl::String( FRL_STR( " " ) ) + frl::sys::util::getLastErrorDescription(), FRL_FUNCTION_NAME, __FILE__, __LINE__ ) );
 #define FRL_THROW_SYSAPI_EX( description, error ) throw( frl::Exception(description + frl::String( FRL_STR( " " ) ) + frl::sys::util::getCodeErrorDescription(error), FRL_FUNCTION_NAME, __FILE__, __LINE__ ) );
@@ -47,11 +51,15 @@ class Exception
 			// Default constructor.
 			Exception();
 		public:
+
 			// Constructor.
 			Exception( const String &description_);
 
 			// Constructor.
 			Exception( const String &description_, const String &function_ );
+
+			// Constructor.
+			Exception( const String &function_, char *file_, ULong line_);
 
 			// Constructor.
 			Exception( const String &description_, const String &function_, char *file_, ULong line_ );
@@ -107,6 +115,17 @@ class Exception
 				}
 			};
 		};
+
+#define FRL_EXCEPTION_CLASS( xClass )\
+class xClass : public frl::Exception\
+{\
+public:\
+	xClass( const String &description_) : Exception( description_ ) {}\
+	xClass( const String &function_, char *file_, ULong line_) : Exception( function_, file_, line_ ) {}\
+	xClass( const String &description_, const String &function_ ) : Exception( description_, function_ ) {}\
+	xClass( const String &description_, const String &function_, char *file_, ULong line_ ) : Exception( description_, function_, file_, line_ ) {}\
+};
+
 } // Fat Rat Library
 
 #endif /* FRL_EXCEPTION_H_ */

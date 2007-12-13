@@ -48,7 +48,7 @@ namespace frl
 				);
 		}; // class EnumGroup
 	} // namespace opc
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_PLATFORM_WIN32 */
 #endif /* frl_opc_enum_group_h_*/

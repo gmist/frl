@@ -22,6 +22,6 @@ namespace frl
 		// istringstream
 		typedef std::basic_istringstream< frl::Char > InString;
 	}// namespace stream_std
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_SSTREAM_H_STREAM_STD_ */

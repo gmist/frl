@@ -32,6 +32,7 @@ namespace frl
 		{
 		friend Group;
 		friend GroupStateMgt<Group>;
+		friend ItemProperties< OPCServer >;
 		private:
 			std::map< OPCHANDLE, frl::opc::Group* > groupItem;
 			std::map< String, OPCHANDLE > groupItemIndex;

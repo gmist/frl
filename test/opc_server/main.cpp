@@ -142,8 +142,13 @@ int _tmain(int , _TCHAR*)
 		return 1;
 	}
 
-	frl::opc::flatDataCache.AddTag( FRL_STR("wee") );
-	frl::opc::flatDataCache.AddTag( FRL_STR("wee1") );
+	frl::opc::opcAddressSpace.finalConstruct( FRL_STR("."));
+	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1" ) );
+	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch2" ) );
+	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1.branch11" ) );
+	frl::opc::opcAddressSpace.addLeaf( FRL_STR("rootLeaf"));
+	frl::opc::opcAddressSpace.addLeaf( FRL_STR("rootLeaf1"));
+	frl::opc::opcAddressSpace.addLeaf( FRL_STR( "branch1.leaf11" ) );
 
 	factory.serverAdd();
 

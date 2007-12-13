@@ -36,6 +36,6 @@ namespace frl
 
 		}; // class NullMutex
 	}	// namespace lock
-}	// FatRat Library
+}	// namespace FatRat Library
 
 #endif // FRL_NULL_MUTEX_H_

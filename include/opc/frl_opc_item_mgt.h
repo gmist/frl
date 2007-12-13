@@ -6,6 +6,7 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_enum_item_attributes.h"
+#include "opc/address_space/frl_opc_address_space.h"
 
 namespace frl
 {
@@ -54,8 +55,8 @@ namespace frl
 						res = S_FALSE;
 						continue;
 					}
-					
-					if( ! flatDataCache.isExistItem( pItemArray[ii].szItemID ) )
+
+					if( ! opcAddressSpace.isExistLeaf( pItemArray[ii].szItemID ) )
 					{
 						(*ppErrors)[ii] = OPC_E_UNKNOWNITEMID;
 						res = S_FALSE;
@@ -80,10 +81,10 @@ namespace frl
 					OPCHANDLE serverHandle = util::getUniqueServerHandle();
 					item.Init( serverHandle, pItemArray[ii] );
 					(*ppAddResults)[ii].hServer = serverHandle;
-					CacheItem caheItem;
-					flatDataCache.getItem( pItemArray[ii].szItemID, caheItem );
-					(*ppAddResults)[ii].vtCanonicalDataType = caheItem.getCanonicalDataType();
-					(*ppAddResults)[ii].dwAccessRights = caheItem.getAccessRights();
+
+					address_space::Tag *tag = opcAddressSpace.getTag( pItemArray[ii].szItemID );
+					(*ppAddResults)[ii].vtCanonicalDataType = tag->getCanonicalDataType();
+					(*ppAddResults)[ii].dwAccessRights = tag->getAccessRights();
 					(*ppAddResults)[ii].dwBlobSize = 0;
 					(*ppAddResults)[ii].pBlob = NULL;
 					pT->itemList.insert( std::pair< OPCHANDLE, GroupItem > ( serverHandle, item ));
@@ -127,7 +128,7 @@ namespace frl
 				/// check exist of the specified tags
 				for( DWORD i=0;i<dwCount; ++i) 
 				{
-					if( ! flatDataCache.isExistItem( pItemArray[i].szItemID ) ) 
+					if( ! opcAddressSpace.isExistLeaf( pItemArray[i].szItemID ) )
 					{
 						(*ppErrors)[i] = OPC_E_UNKNOWNITEMID;
 						res = S_FALSE;
@@ -142,10 +143,9 @@ namespace frl
 						continue;
 					}
 
-					CacheItem caheItem;
-					flatDataCache.getItem( pItemArray[i].szItemID, caheItem );
-					ppValidationResults[0][i].vtCanonicalDataType = caheItem.getCanonicalDataType();
-					ppValidationResults[0][i].dwAccessRights = caheItem.getAccessRights();
+					address_space::Tag *item = opcAddressSpace.getTag( pItemArray[i].szItemID );					
+					ppValidationResults[0][i].vtCanonicalDataType = item->getCanonicalDataType();
+					ppValidationResults[0][i].dwAccessRights = item->getAccessRights();
 					ppValidationResults[0][i].dwBlobSize = 0;
 					ppValidationResults[0][i].pBlob = NULL;
 					ppValidationResults[0][i].hServer = 	util::getUniqueServerHandle();

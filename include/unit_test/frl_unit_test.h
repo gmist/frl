@@ -7,6 +7,7 @@
 #include "unit_test/frl_unit_test_statistics.h"
 #include "unit_test/frl_console_out_policy.h"
 #include "frl_non_copyable.h"
+#include <conio.h>
 
 namespace frl
 {
@@ -48,6 +49,8 @@ namespace frl
 			~UnitTest( void )
 			{
 				outPolicy.PrintStatistics( statistics );
+				frl::console_std::Out << FRL_STR( "Press any key for exit." );
+				_getch();
 			}
 
 			// Add test
@@ -82,6 +85,6 @@ namespace frl
 
 		typedef UnitTest< frl::unit_test::ConsoleOutPolicy > ConsoleUnitTest;
 	}// namespace unit_test
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /*FRL_UNIT_TEST_H_*/

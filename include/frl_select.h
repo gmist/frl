@@ -14,6 +14,6 @@ namespace frl
 	{
 		typedef Y Result;
 	};
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif // FRL_SELECT_H_

@@ -9,7 +9,7 @@ namespace frl
 	{
 		void SemaphoreInit( SemaphoreDescriptor &semaphore, Long value_ )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			if ( semaphore.isInitialize )
 				FRL_THROW( "Semaphore already initialize." );
 			
@@ -19,14 +19,14 @@ namespace frl
 
 		void SemaphoreIsValid( SemaphoreDescriptor &semaphore )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			if ( ! semaphore.isInitialize)
 				FRL_THROW( "Semaphore not valid. Maybe semaphore not initialize." );
 		}
 
 		void SemaphoreDestroy( SemaphoreDescriptor &semaphore )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );
 			if( sem_destroy( &semaphore.semaphore ) != 0 )
 				FRL_THROW( "Semaphore destroy error." );
@@ -35,7 +35,7 @@ namespace frl
 
 		Long SemaphoreGetValue( SemaphoreDescriptor &semaphore )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );
 			frl::Long value = -1;
 			sem_getvalue( &semaphore.semaphore ,reinterpret_cast<int*>( &value ) );
@@ -44,7 +44,7 @@ namespace frl
 
 		void SemaphorePost( SemaphoreDescriptor &semaphore )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );
 			if( sem_post( &semaphore ) != 0 )
 				FRL_THROW("Semaphore posting error." );
@@ -52,14 +52,14 @@ namespace frl
 
 		void SemaphoreWait( SemaphoreDescriptor &semaphore )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );
 			sem_wait( &semaphore.semaphore ); // FIXME return value
 		}
 
 		Bool SemaphoreTryWait( SemaphoreDescriptor &semaphore )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );
 			if( sem_trywait( &semaphore ) != 0 )
 				FRL_THROW( "Semaphore try-wait error." );
@@ -67,7 +67,7 @@ namespace frl
 
 		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, frl::frl_timeout time_ )
 		{
-			FrlExceptionGuard( FRL_FUNCTION );
+			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );
 			timespec ts;
 			timeval cur_time_val;

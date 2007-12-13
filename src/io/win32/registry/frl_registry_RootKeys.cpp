@@ -1,7 +1,5 @@
 #include "frl_platform.h"
-
 #if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-
 #include "io/win32/registry/frl_registry_RootKeys.h"
 
 namespace frl
@@ -24,6 +22,6 @@ namespace frl
 			} // namespace registry
 		} // namespace win32
 	} // namespace io
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_PLATFORM_WIN32 */

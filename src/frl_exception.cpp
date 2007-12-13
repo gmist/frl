@@ -23,6 +23,16 @@ namespace frl
 		last = this;
 	}
 
+	Exception::Exception( const frl::String &function_, char *file_, frl::ULong line_ )
+		:	line( line_ ),
+			description( FRL_STR("Unknown description") ),
+			function( function_ ),
+			file( unicodeIndependString( file_) ),
+			stackDepth( msStackDepth )
+	{
+		last = this;
+	}
+
 	Exception::Exception( const frl::String &description_, const frl::String &function_, char *file_, frl::ULong line_ )
 		:	line( line_ ),
 			description( description_ ),

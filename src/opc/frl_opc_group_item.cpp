@@ -1,6 +1,8 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_group_item.h"
+#include "../dependency/vendors/opc_foundation/opcerror.h"
+#include "opc/address_space/frl_opc_address_space.h"
 
 namespace frl
 {
@@ -28,11 +30,11 @@ namespace frl
 
 		void GroupItem::Init( OPCHANDLE serverHandle_, OPCITEMDEF &itemDef )
 		{
-			Init();			
+			Init();
 			serverHandle = serverHandle_;
 			clientHandle = itemDef.hClient;
 			itemID = itemDef.szItemID;
-			accessPath = itemDef.szAccessPath;			
+			accessPath = itemDef.szAccessPath;
 			actived = ( itemDef.bActive == TRUE );
 			requestDataType = itemDef.vtRequestedDataType;
 		}
@@ -74,6 +76,19 @@ namespace frl
 		VARTYPE GroupItem::getReguestDataType()
 		{
 			return requestDataType;
+		}
+
+		HRESULT GroupItem::readValue( VARIANT &value )
+		{
+			if( ! opcAddressSpace.isExistTag( serverHandle ) )
+				return OPC_E_INVALIDHANDLE;
+
+			return E_NOTIMPL;
+		}
+
+		HRESULT GroupItem::writeValue( const VARIANT &newValue )
+		{
+			return E_NOTIMPL;
 		}
 	} // namespace opc
 } // namespace FatRat Library

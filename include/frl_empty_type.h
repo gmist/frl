@@ -4,6 +4,6 @@
 namespace frl
 {
 	struct EmptyType {};
-}; // FatRat Library
+}; // namespace FatRat Library
 
 #endif // FRL_EMPTY_TYPE_H_

@@ -15,6 +15,6 @@ namespace frl
 		// Преопределяем переменные
 		typedef std::basic_ostream< frl::Char, std::char_traits< frl::Char > > Out;
 	}// namespace stream_std
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_OSTREAM_H_STREAM_STD_ */

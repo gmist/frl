@@ -9,6 +9,6 @@ namespace frl
 	{
 		typedef TYPE OriginalType;
 	};
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_TYPE_TO_TYPE_H_ */

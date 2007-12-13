@@ -52,6 +52,6 @@ namespace frl
 
 		};	// class Semaphore
 	} // namespace lock
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /*FRL_SEMAPHORE_H_*/

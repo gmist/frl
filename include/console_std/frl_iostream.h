@@ -81,6 +81,6 @@ namespace frl
 		};	// class ColorOut
 
 	}// namespace console_std
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_IOSTREAM_H_CONSOLE_STD_ */

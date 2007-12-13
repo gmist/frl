@@ -73,6 +73,6 @@ namespace frl
 	Bool removeSimbolsFromEnd( String &string, Char simbol );
 	Bool removeSimbols( String &string, Char simbol );
 	
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_STRING_H_ */

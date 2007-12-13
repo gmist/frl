@@ -8,7 +8,7 @@
 namespace frl
 {
 	namespace lock
-	{		
+	{
 		class Mutex
 			:	private NonCopyable
 		{
@@ -35,6 +35,6 @@ namespace frl
 			void UnLock( void );
 		}; // class Mutex
 	} // namespace lock
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /*FRL_MUTEX_H_*/

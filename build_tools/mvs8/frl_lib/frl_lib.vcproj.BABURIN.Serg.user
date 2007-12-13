@@ -9,7 +9,7 @@
 			Name="Debug|Win32"
 			>
 			<DebugSettings
-				Command="D:\home\Serg\work\cpp\frl\output\test\io_win32_registry\test_io_win32_registry_d.exe"
+				Command=""
 				WorkingDirectory=""
 				CommandArguments=""
 				Attach="false"

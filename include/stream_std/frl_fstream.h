@@ -21,6 +21,6 @@ namespace frl
 		typedef std::basic_ofstream< frl::Char, std::char_traits< frl::Char > > OutFile;
 		typedef std::basic_filebuf< frl::Char, std::char_traits< frl::Char > > FileBuf;
 	}; // namespace stream_std
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_STREAM_H_STREAM_STD_ */

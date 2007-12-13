@@ -28,6 +28,6 @@ namespace frl
 			typedef std::streampos Pos;
 		#endif
 	}// namespace stream_std
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_IOS_H_STREAM_STD_ */

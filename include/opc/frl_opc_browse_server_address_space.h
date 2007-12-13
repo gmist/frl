@@ -4,7 +4,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_enum_string.h"
-#include "opc/frl_opc_flat_data_cache.h"
+#include "opc/address_space/frl_opc_address_space.h"
 #include "frl_lock.h"
 
 namespace frl
@@ -21,7 +21,9 @@ namespace frl
 			HRESULT STDMETHODCALLTYPE QueryOrganization( 
 				/* [out] */ OPCNAMESPACETYPE *pNameSpaceType )
 			{
-				*pNameSpaceType = OPC_NS_FLAT;
+				if( pNameSpaceType == NULL )
+					return E_INVALIDARG;
+				*pNameSpaceType = OPC_NS_HIERARCHIAL;
 				return S_OK;
 			}
 
@@ -29,7 +31,50 @@ namespace frl
 				/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 				/* [string][in] */ LPCWSTR szString )
 			{
-				return E_FAIL;
+				switch( dwBrowseDirection )
+				{
+					case OPC_BROWSE_UP:
+					{
+						if( ! opcAddressSpace.goUp() )
+							return E_FAIL;
+						return S_OK;
+					}
+
+					case OPC_BROWSE_DOWN:
+					{
+						if (szString == NULL || wcslen(szString) == 0)
+							return E_INVALIDARG;
+						try
+						{
+							opcAddressSpace.goDown( szString );
+						}
+						catch( ... )
+						{
+							return E_INVALIDARG;
+						}
+						return S_OK;
+					}
+
+					case OPC_BROWSE_TO:
+					{
+						if (szString == NULL || wcslen(szString) == 0)
+						{
+							opcAddressSpace.goToRoot();
+							return S_OK;
+						}
+						try
+						{
+							opcAddressSpace.goTo( szString );
+						}
+						catch( ... )
+						{
+							return E_INVALIDARG;
+						}
+						return S_OK;
+					}
+
+				}
+				return E_INVALIDARG;
 			}
 
 			HRESULT STDMETHODCALLTYPE BrowseOPCItemIDs( 
@@ -41,15 +86,11 @@ namespace frl
 			{
 				// validate browse filters.
 				if (dwBrowseFilterType < OPC_BRANCH || dwBrowseFilterType > OPC_FLAT)
-				{
 					return E_INVALIDARG;
-				}
 
 				// validate access rights.
 				if ((dwAccessRightsFilter & 0xFFFFFFFC) != 0)
-				{
 					return E_INVALIDARG;
-				}
 				
 				if( ppIEnumString == NULL )
 					return E_POINTER;
@@ -60,12 +101,26 @@ namespace frl
 				if( pEnum == NULL )
 					return E_OUTOFMEMORY;
 				std::vector<String> items;
-				flatDataCache.Browse( items );
+
+				switch( dwBrowseFilterType )
+				{
+					case OPC_LEAF:
+						opcAddressSpace.browseLeafs( items );
+						break;
+
+					case OPC_BRANCH:
+						opcAddressSpace.browseBranches( items );
+						break;
+				}
+
 				pEnum->init( items );
 				HRESULT hResult = pEnum->QueryInterface( IID_IEnumString, (void**) ppIEnumString );
 				if( FAILED( hResult ) )
+				{
 					delete pEnum;
-				return hResult;
+					return hResult;
+				}
+				return items.size() ? S_OK : S_FALSE;
 			}
 
 			HRESULT STDMETHODCALLTYPE GetItemID( 
@@ -76,7 +131,7 @@ namespace frl
 					return E_INVALIDARG;
 				*szItemID = NULL;
 				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
-				if( ! opc::flatDataCache.isExistItem( szItemDataID ) )
+				if( ! opcAddressSpace.isExistItem( szItemDataID ) )
 					return E_INVALIDARG;
 				*szItemID = szItemDataID;
 				return S_OK;

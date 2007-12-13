@@ -53,6 +53,7 @@ namespace frl
 				frl::console_std::Out << FRL_STR( "Tests fail: " );
 				console_std::ColorOut( console_std::foregroundColor::iRed )
 					<< statistics_in.failTestsNumber << std::endl;
+				PrintSeparator();
 			}
 
 			void PrintTestOk( const frl::String &name_in, const frl::unit_test::UnitTestStatistics &statistics_in )

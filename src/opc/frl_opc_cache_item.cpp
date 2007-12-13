@@ -105,6 +105,13 @@ namespace frl
 		{
 			return ( accessRights & OPC_WRITEABLE ) == 1;
 		}
+
+		HRESULT CacheItem::read( VARIANT &retValue )
+		{
+			VariantInit( &retValue );
+			VariantCopy( &retValue, &value );
+			return S_OK;
+		}
 	} // namespace opc
 } // namespace FatRat Library
 

@@ -4,6 +4,8 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "../dependency/vendors/opc_foundation/opcerror.h"
+#include "opc/address_space/frl_opc_address_space.h"
+#include "opc/frl_opc_util.h"
 
 namespace frl
 {
@@ -36,9 +38,10 @@ namespace frl
 				*ppDescriptions = NULL;
 				*ppvtDataTypes = NULL;
 
-				CacheItem item;
-				if( ! flatDataCache.getItem( szItemID, item ) )
+				if( ! opcAddressSpace.isExistTag( szItemID ) )
 					return OPC_E_INVALIDITEMID;
+
+				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 				*pdwCount = 1;
 				*ppPropertyIDs  = (DWORD*)CoTaskMemAlloc( *pdwCount * sizeof(DWORD));
 				*ppDescriptions = (LPWSTR*)CoTaskMemAlloc( *pdwCount * sizeof(LPWSTR));
@@ -46,14 +49,9 @@ namespace frl
 				if( ppPropertyIDs == NULL || ppDescriptions ==NULL || ppvtDataTypes == NULL)
 					return E_OUTOFMEMORY;
 
-				*ppPropertyIDs[0] = item.getServerHandle();
-
-				WCHAR* pCopy = NULL;
-				size_t size = ((item.getID().length()+1) * sizeof(WCHAR));
-				pCopy = new WCHAR[size];
-				wcsncpy_s(pCopy, size, item.getID().c_str(), item.getID().length() );
-				*ppDescriptions[0] = pCopy;
-				*ppvtDataTypes[0] = item.getCanonicalDataType();
+				*ppPropertyIDs[0] = item->getServerHandle();
+				*ppDescriptions[0] = util::duplicateString( item->getID() );
+				*ppvtDataTypes[0] = item->getCanonicalDataType();
 	
 				return S_OK;
 			}
@@ -78,15 +76,21 @@ namespace frl
 
 				if( dwCount == 0 )
 					return E_INVALIDARG;
-
-				*ppvData = (VARIANT*)CoTaskMemAlloc( dwCount * sizeof(VARIANT) );
-				*ppErrors = ( HRESULT*)CoTaskMemAlloc( dwCount * sizeof(HRESULT) );
-				if( ppvData == NULL || ppErrors == NULL )
+				
+				*ppvData = util::allocMemory< VARIANT >( dwCount );
+				if( ppvData == NULL )
 					return E_OUTOFMEMORY;
+				util::zeroMemory< VARIANT >( *ppvData, dwCount );
+				
+				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				if( ppErrors == NULL )
+					return E_OUTOFMEMORY;
+				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
-				CacheItem item;
-				if( ! flatDataCache.getItem( szItemID, item ) )
+				if( ! opcAddressSpace.isExistTag( szItemID ) )
 					return OPC_E_INVALIDITEMID;
+
+				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 
 				HRESULT res = S_OK;
 				for( DWORD i = 0; i < dwCount; i++ )
@@ -97,13 +101,13 @@ namespace frl
 						{
 							VariantInit( &*ppvData[i] );
 							V_VT(&*ppvData[i]) = VT_I2;
-							V_I2(&*ppvData[i]) = item.getCanonicalDataType();
+							V_I2(&*ppvData[i]) = item->getCanonicalDataType();
 						}
 						break;
 					case 2:
 						{
 							VariantInit( &*ppvData[i] );
-							HRESULT r1 = VariantChangeType( &*ppvData[i],&*ppvData[i],0, item.getReguestedDataType() );
+							HRESULT r1 = VariantChangeType( &*ppvData[i],&*ppvData[i],0, item->getReguestedDataType() );
 							//*ppvData[i] =  // TODO
 						}
 						break;
@@ -125,7 +129,7 @@ namespace frl
 						{
 							VariantInit( &*ppvData[i] );
 							V_VT(&*ppvData[i]) = VT_I4;
-							V_I4(&*ppvData[i]) = item.getAccessRights();
+							V_I4(&*ppvData[i]) = item->getAccessRights();
 						}
 						break;
 					case 6:
@@ -151,38 +155,36 @@ namespace frl
 				/* [size_is][size_is][string][out] */ LPWSTR **ppszNewItemIDs,
 				/* [size_is][size_is][out] */ HRESULT **ppErrors)
 			{
-				if (
-					szItemID == NULL ||
-					ppszNewItemIDs == NULL ||
-					ppErrors == NULL
-					)
-				{
+				if ( szItemID == NULL || ppszNewItemIDs == NULL || ppErrors == NULL )
 					return E_INVALIDARG;
-				}
 
 				*ppszNewItemIDs = NULL;
 				*ppErrors = NULL;
 				
 				if (dwCount == 0)
-				{
 					return E_INVALIDARG;
-				}
-				CacheItem item;
-				if( ! flatDataCache.getItem( szItemID, item ) )
+				
+				if( ! opcAddressSpace.isExistTag( szItemID ) )
 					return OPC_E_INVALIDITEMID;
+				
+				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 
-				*ppszNewItemIDs = (LPWSTR*)CoTaskMemAlloc( dwCount * sizeof(LPWSTR) );
-				*ppErrors = ( HRESULT*)CoTaskMemAlloc( dwCount * sizeof(HRESULT) );
-				if( ppszNewItemIDs == NULL || ppErrors == NULL )
+				*ppszNewItemIDs = util::allocMemory< LPWSTR >( dwCount );
+				if( ppszNewItemIDs == NULL )
 					return E_OUTOFMEMORY;
+				util::zeroMemory< LPWSTR>( *ppszNewItemIDs, dwCount );
+
+				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				if( ppErrors == NULL )
+					return E_OUTOFMEMORY;
+				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
-					size_t size = wcslen( szItemID );
-					*ppszNewItemIDs[i] = new WCHAR[(size+1) * sizeof(WCHAR)];
-					wcsncpy_s( *ppszNewItemIDs[i], (size+1)*sizeof(WCHAR), szItemID, size );
-					ppErrors[i] = S_OK;
+					*ppszNewItemIDs[i] = util::duplicateString( szItemID );
+					*ppErrors[i] = S_OK;
 				}
-				return E_NOTIMPL;
+				return S_OK;
 			}
 		}; // class ItemProperties
 	} // namespace opc

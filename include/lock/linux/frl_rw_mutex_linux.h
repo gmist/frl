@@ -1,10 +1,7 @@
 #ifndef FRL_RW_MUTEX_LINUX_H_
 #define FRL_RW_MUTEX_LINUX_H_
-
 #include "frl_platform.h"
-
 #if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-
 #include <pthread.h>
 
 namespace frl
@@ -25,7 +22,7 @@ namespace frl
 			bool UnLock( void );
 		}; // class RWMutex
 	} // namespace lock
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_PLATFORM_LINUX */
 

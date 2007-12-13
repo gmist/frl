@@ -14,6 +14,6 @@ namespace frl
 	{
 		typedef std::basic_streambuf< frl::Char, std::char_traits< frl::Char > > Buf;
 	}// namespace stream_std
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_STREAMBUF_H_STREAM_STD_ */

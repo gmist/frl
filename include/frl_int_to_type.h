@@ -9,6 +9,6 @@ namespace frl
 	{
 		enum { value = TYPE };
 	};
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /* FRL_INT_TO_TYPE_H_ */

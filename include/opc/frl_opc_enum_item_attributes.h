@@ -6,8 +6,7 @@
 #include <atlstr.h>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_group_item.h"
-#include "opc/frl_opc_cache_item.h"
-#include "opc/frl_opc_flat_data_cache.h"
+#include "opc/address_space/frl_opc_address_space.h"
 
 namespace frl
 {
@@ -17,8 +16,8 @@ namespace frl
 		{
 		private:
 			std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array
-			size_t curIndex;				// Current element
-			LONG volatile refCount;	// Enum Object reference count
+			size_t curIndex; // Current element
+			LONG volatile refCount; // Enum Object reference count
 		public:
 			EnumOPCItemAttributes()
 				:	curIndex( 0 ), refCount( 0 )
@@ -133,12 +132,11 @@ namespace frl
 					attributes->szItemID = accessPath;
 				}
 
-				CacheItem caheItem;
-				flatDataCache.getItem( i->getItemID(), caheItem );
-				attributes->dwAccessRights = caheItem.getAccessRights();
+				address_space::Tag *item = opcAddressSpace.getTag( i->getItemID() );
+				attributes->dwAccessRights = item->getAccessRights();
 				attributes->dwBlobSize = 0;
 				attributes->pBlob = NULL;
-				attributes->vtCanonicalDataType = caheItem.getCanonicalDataType();
+				attributes->vtCanonicalDataType = item->getCanonicalDataType();
 				attributes->vtRequestedDataType = i->getReguestDataType();
 				itemList.push_back( attributes );
 			}

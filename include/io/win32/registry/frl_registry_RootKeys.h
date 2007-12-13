@@ -1,6 +1,5 @@
 #ifndef FRL_OS_WINDOWS_REGISTRY_ROOTKEYS_H_
 #define FRL_OS_WINDOWS_REGISTRY_ROOTKEYS_H_
-
 #include "io/win32/registry/frl_registry_RootKey.h"
 
 namespace frl
@@ -26,6 +25,6 @@ namespace frl
 			} // namespace registry
 		} // namespace win32
 	} // namespace io
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_OS_WINDOWS_REGISTRY_ROOTKEYS_H_ */

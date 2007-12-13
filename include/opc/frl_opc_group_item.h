@@ -31,6 +31,8 @@ namespace frl
 			OPCHANDLE getClientHandle();
 			const String& getItemID();
 			const String& getAccessPath();
+			HRESULT readValue( VARIANT &value );
+			HRESULT writeValue( const VARIANT &newValue );
 		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library

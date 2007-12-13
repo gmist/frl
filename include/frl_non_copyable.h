@@ -12,6 +12,6 @@ namespace frl
 		NonCopyable( const NonCopyable& );
 		const NonCopyable& operator=( const NonCopyable& );
 	}; // class NonCopyable
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif /* FRL_NON_COPYABLE_H_ */

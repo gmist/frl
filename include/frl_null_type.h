@@ -4,6 +4,6 @@
 namespace frl
 {
 	class NullType{};
-} // FatRat Library
+} // namespace FatRat Library
 
 #endif // FRL_NULL_TYPE_H_

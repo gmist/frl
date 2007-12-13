@@ -13,6 +13,6 @@ namespace frl
 			unsigned int failTestsNumber;	// Number fail worked tests
 		}; // struct UnitTestStatistic
 	};
-}// FatRat Library
+}// namespace FatRat Library
 
 #endif /*FRL_UNIT_TEST_STATISTICS_H_*/
