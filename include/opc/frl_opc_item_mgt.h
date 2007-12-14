@@ -70,16 +70,16 @@ namespace frl
 						continue;
 					}
 
-					if( pT->itemList.find( pItemArray[ii].hClient) == pT->itemList.end() )
+					if( pT->itemList.find( pItemArray[ii].hClient) != pT->itemList.end() )
 					{
 						(*ppErrors)[ii] = E_FAIL;
 						res = S_FALSE;
 						continue;
 					}
 
-					GroupItem item;
+					GroupItem *item = new GroupItem();
 					OPCHANDLE serverHandle = util::getUniqueServerHandle();
-					item.Init( serverHandle, pItemArray[ii] );
+					item->Init( serverHandle, pItemArray[ii] );
 					(*ppAddResults)[ii].hServer = serverHandle;
 
 					address_space::Tag *tag = opcAddressSpace.getTag( pItemArray[ii].szItemID );
@@ -87,7 +87,7 @@ namespace frl
 					(*ppAddResults)[ii].dwAccessRights = tag->getAccessRights();
 					(*ppAddResults)[ii].dwBlobSize = 0;
 					(*ppAddResults)[ii].pBlob = NULL;
-					pT->itemList.insert( std::pair< OPCHANDLE, GroupItem > ( serverHandle, item ));
+					pT->itemList.insert( std::pair< OPCHANDLE, GroupItem* > ( serverHandle, item ));
 				}
 				return res;
 			}
@@ -174,7 +174,7 @@ namespace frl
 				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
 				HRESULT res = S_OK;
 				
-				std::map< OPCHANDLE, GroupItem >::iterator it;
+				std::map< OPCHANDLE, GroupItem* >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++)
 				{
@@ -214,7 +214,7 @@ namespace frl
 				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
-				std::map< OPCHANDLE, GroupItem >::iterator it;
+				std::map< OPCHANDLE, GroupItem* >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for (DWORD ii = 0; ii < dwCount; ii++)
 				{
@@ -225,7 +225,7 @@ namespace frl
 						res = S_FALSE;
 						continue;
 					}
-					(*it).second.isActived( ( bActive == TRUE ) );
+					(*it).second->isActived( ( bActive == TRUE ) );
 					(*ppErrors)[ii] = S_OK;
 				}
 				return res;
@@ -252,7 +252,7 @@ namespace frl
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
-				std::map< OPCHANDLE, GroupItem >::iterator it;
+				std::map< OPCHANDLE, GroupItem* >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++ )
 				{
@@ -263,7 +263,7 @@ namespace frl
 						res = S_FALSE;
 					}
 					else
-						(*it).second.setClientHandle( phClient[i] );
+						(*it).second->setClientHandle( phClient[i] );
 				}
 				return res;
 			}
@@ -289,7 +289,7 @@ namespace frl
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
-				std::map< OPCHANDLE, GroupItem >::iterator it;
+				std::map< OPCHANDLE, GroupItem* >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++ )
 				{
@@ -300,7 +300,7 @@ namespace frl
 						res = S_FALSE;
 					}
 					else
-						(*it).second.setRequestDataType( pRequestedDatatypes[i] );
+						(*it).second->setRequestDataType( pRequestedDatatypes[i] );
 				}
 				return res;
 			}
@@ -321,12 +321,12 @@ namespace frl
 					EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 					if (temp == NULL)
 						return (E_OUTOFMEMORY);
-					std::map< OPCHANDLE, GroupItem >::iterator it;
+					std::map< OPCHANDLE, GroupItem* >::iterator it;
 					lock::Mutex::ScopeGuard guard( pT->groupGuard );
 					for( it = pT->itemList.begin(); it != pT->itemList.end(); ++it )
 					{
 						OPCHANDLE h = it->first;
-						GroupItem* i = &(*it).second;
+						GroupItem* i = (*it).second;
 						temp->AddItem ( h, i );
 					}
 					return temp->QueryInterface(riid,(void**)ppUnk);

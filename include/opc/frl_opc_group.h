@@ -48,7 +48,7 @@ namespace frl
 			LONGLONG tickOffset;
 		
 			lock::Mutex groupGuard;
-			std::map<OPCHANDLE, GroupItem > itemList;
+			std::map<OPCHANDLE, GroupItem* > itemList;
 		protected:
 			REFCLSID GetCLSID();
 		public:

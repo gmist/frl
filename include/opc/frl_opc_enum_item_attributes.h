@@ -7,6 +7,7 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_group_item.h"
 #include "opc/address_space/frl_opc_address_space.h"
+#include "opc/frl_opc_util.h"
 
 namespace frl
 {
@@ -31,10 +32,11 @@ namespace frl
 					if( itemList[i] != NULL )
 					{
 						if( itemList[i]->szItemID != NULL )
-						{
-							SysFreeString( itemList[i]->szItemID );
-							itemList[i]->szItemID = NULL;
-						}
+							util::deleteString( itemList[i]->szItemID );
+						
+						if( itemList[i]->szAccessPath != NULL )
+							util::deleteString( itemList[i]->szAccessPath );
+
 						CoTaskMemFree( itemList[i] );
 					}
 				}
@@ -94,8 +96,8 @@ namespace frl
 				c->hClient = i->hClient;
 				c->hServer = i->hServer;
 				c->pBlob = i->pBlob;
-				c->szAccessPath = SysAllocString( i->szAccessPath );
-				c->szItemID = SysAllocString( i->szItemID );
+				c->szAccessPath = util::duplicateString( i->szAccessPath );
+				c->szItemID = util::duplicateString( i->szItemID );
 				VariantCopy(&c->vEUInfo , &i->vEUInfo );
 				c->vtCanonicalDataType = i->vtCanonicalDataType;
 				c->vtRequestedDataType = i->vtRequestedDataType;
@@ -112,24 +114,21 @@ namespace frl
 				
 				if( i->getItemID().empty() )
 				{
-					attributes->szItemID = SysAllocString(L""); // NULL
+					attributes->szItemID = util::duplicateString( FRL_STR("") );
 				}
 				else
 				{
-					LPWSTR itemID = new WCHAR[ i->getItemID().size() ];
-					wcscpy_s( itemID, i->getItemID().size(), i->getItemID().c_str() );
-					attributes->szItemID = itemID;
+					attributes->szItemID = util::duplicateString( i->getItemID() );
+
 				}
 
 				if( i->getAccessPath().empty() )
 				{
-					attributes->szAccessPath = SysAllocString(L""); //NULL;
+					attributes->szAccessPath = util::duplicateString( FRL_STR(""));
 				}
 				else
 				{
-					LPWSTR accessPath = new WCHAR[ i->getAccessPath().size() ];
-					wcscpy_s( accessPath, i->getAccessPath().size(), i->getAccessPath().c_str() );
-					attributes->szItemID = accessPath;
+					attributes->szItemID = util::duplicateString( i->getAccessPath() );
 				}
 
 				address_space::Tag *item = opcAddressSpace.getTag( i->getItemID() );
@@ -187,9 +186,7 @@ namespace frl
 			{
 				// check for invalid arguments.
 				if (ppEnum == NULL)
-				{
 					return E_INVALIDARG;
-				}
 
 				// allocate enumerator.
 				EnumOPCItemAttributes* pEnum = new EnumOPCItemAttributes();

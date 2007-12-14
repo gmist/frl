@@ -109,6 +109,16 @@ namespace frl
 
 		Group::~Group()
 		{
+			if( ! itemList.empty())
+			{
+				std::map<OPCHANDLE, GroupItem*>::iterator it;
+				for( it  = itemList.begin(); it != itemList.end(); ++it )
+				{
+					GroupItem *item = (*it).second;
+					delete item;
+				}
+				itemList.erase( itemList.begin(), itemList.end() );
+			}
 		}
 
 		void Group::Init()

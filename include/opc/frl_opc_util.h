@@ -51,6 +51,8 @@ namespace frl
 			wchar_t* duplicateString( const wchar_t *str );
 			char* duplicateString( const std::string &string );
 			wchar_t* duplicateString( const std::wstring &string );
+
+			void deleteString( const wchar_t *str );
 		} // namespace util
 	} // namespace opc
 } // namespace FatRat Library

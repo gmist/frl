@@ -48,7 +48,7 @@ namespace frl
 
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
-					std::map< OPCHANDLE, GroupItem >::iterator it = pT->itemList.find( phServer[i] );
+					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
 					if( it == pT->itemList.end() )
 					{
 						result = S_FALSE;
@@ -64,7 +64,7 @@ namespace frl
 						continue;
 					}
 
-					(*ppErrors)[i] = (*it).second.readValue( (*ppItemValues)[i].vDataValue );
+					(*ppErrors)[i] = (*it).second->readValue( (*ppItemValues)[i].vDataValue );
 
 					if( FAILED( (*ppErrors)[i] ) )
 					{
@@ -72,7 +72,7 @@ namespace frl
 						continue;
 					}
 					
-					(*ppItemValues)[i].hClient = (*it).second.getClientHandle();
+					(*ppItemValues)[i].hClient = (*it).second->getClientHandle();
 					(*ppItemValues)[i].wQuality = OPC_QUALITY_GOOD;
 					//(*ppItemValues)[i].ftTimeStamp = value.m_Time;
 					//VariantInit( &(*ppItemValues)[i].vDataValue );

@@ -112,6 +112,12 @@ namespace frl
 				}
 				return ret;
 			}
+
+			void deleteString( const wchar_t *str )
+			{
+				CoTaskMemFree( (void*) str );
+				str = NULL;
+			}
 		}	// namespace util
 	} // namespace opc
 } // // namespace FatRat Library
