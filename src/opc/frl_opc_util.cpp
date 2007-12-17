@@ -1,6 +1,7 @@
 #include "opc/frl_opc_util.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_lexical_cast.h"
+#include "frl_exception.h"
 
 namespace frl
 {
@@ -113,10 +114,18 @@ namespace frl
 				return ret;
 			}
 
-			void deleteString( const wchar_t *str )
+			void* allocMemory( size_t size )
 			{
-				CoTaskMemFree( (void*) str );
-				str = NULL;
+				FRL_EXCEPT_GUARD();
+				if( size == 0 )
+					FRL_THROW( FRL_STR("Invalid argument") );
+				return CoTaskMemAlloc( size );
+			}
+
+			void freeMemory( void *ptr )
+			{
+				CoTaskMemFree( ptr );
+				ptr = NULL;
 			}
 		}	// namespace util
 	} // namespace opc

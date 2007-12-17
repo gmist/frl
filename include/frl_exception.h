@@ -19,7 +19,7 @@ namespace frl
 		#define FRL_FUNCTION_NAME __FUNCTION__
 	#endif
 
-	#define FRL_THROW_S throw( frl::Exception( FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
+	#define FRL_THROW_S() throw( frl::Exception( FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
 	#define FRL_THROW( description ) throw( frl::Exception( description, FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )
 	#define FRL_THROW_EX( description, function ) throw( frl::Exception( description, function, __FILE__, __LINE__ ) )
 	#define FRL_THROW_S_CLASS( xClass ) throw( xClass( FRL_FUNCTION_NAME, __FILE__, __LINE__ ) )

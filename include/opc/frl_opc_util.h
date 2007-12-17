@@ -17,9 +17,12 @@ namespace frl
 			FILETIME getFileTime();
 			String getUniqueName();
 
+			void* allocMemory( size_t size );			
+
 			template< typename Type >
 			Type* allocMemory( size_t size )
 			{
+				FRL_EXCEPT_GUARD();
 				if( size == 0 )
 					FRL_THROW( FRL_STR("Invalid argument") );
 				return reinterpret_cast< Type* >(CoTaskMemAlloc( size * sizeof(Type) ) );
@@ -32,8 +35,18 @@ namespace frl
 			}
 
 			template< typename Type >
+			Type* reAllocMemory( size_t oldSize, size_t newSize )
+			{
+				FRL_EXCEPT_GUARD();
+				if( newSize == oldSize == 0 )
+					FRL_THROW( FRL_STR("Invalid argument") );
+				return reinterpret_cast< Type* >(CoTaskMemRealloc( oldSize * sizeof(Type), newSize * sizeof(Type) ) );
+			}
+
+			template< typename Type >
 			void zeroMemory( Type* ptr, size_t size )
 			{
+				FRL_EXCEPT_GUARD();
 				if( size == 0 )
 					FRL_THROW( FRL_STR("Invalid argument") );
 				::ZeroMemory( ptr, sizeof(Type) * size );
@@ -52,7 +65,7 @@ namespace frl
 			char* duplicateString( const std::string &string );
 			wchar_t* duplicateString( const std::wstring &string );
 
-			void deleteString( const wchar_t *str );
+			void freeMemory( void *ptr );
 		} // namespace util
 	} // namespace opc
 } // namespace FatRat Library

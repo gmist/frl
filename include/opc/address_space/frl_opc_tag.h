@@ -6,6 +6,8 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
 #include "frl_exception.h"
+#include "opc/frl_opc_com_variant.h"
+#include <atlcomcli.h>
 
 namespace frl
 {
@@ -27,15 +29,15 @@ namespace frl
 				VARTYPE requestedDataType, canonicalDataType;				
 				DWORD accessRights;
 				Bool active;
-				VARIANT value;
 				String delimiter;
-
 				Tag *parent;
 				std::list< Tag* > tags;
+				ComVariant value;
+				DWORD quality;
+				FILETIME timeStamp;
 
-				void addTag( const String &name, Bool is_Branch_ );
-				
 				Tag();
+				void addTag( const String &name, Bool is_Branch_ );
 			public:
 
 				Tag( Bool is_Branch_, const String &delimiter_ );
@@ -96,6 +98,11 @@ namespace frl
 
 				void browseLeafs( std::vector< String > &leaf );
 
+				const ComVariant& read();
+
+				void write( const ComVariant &newVal );
+
+				ComVariant getTimeStamp();
 			};
 		} // namespace address_space
 	} // namespace opc

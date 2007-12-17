@@ -18,6 +18,10 @@ namespace frl
 				clientHandle = serverHandle = 0;
 				accessRights = OPC_READABLE & OPC_WRITEABLE;
 				active = True;
+
+				SYSTEMTIME SystemTime;
+				GetSystemTime( &SystemTime );
+				SystemTimeToFileTime( &SystemTime, &timeStamp );
 			}
 
 			Tag::Tag( Bool is_Branch_, const String &delimiter_ )
@@ -31,10 +35,16 @@ namespace frl
 				is_Branch = is_Branch_;
 				if( is_Branch )
 					canonicalDataType = VT_ARRAY;
+				else
+					canonicalDataType = VT_EMPTY;
 				requestedDataType = VT_EMPTY;
 				clientHandle = serverHandle = 0;
-				accessRights = OPC_READABLE & OPC_WRITEABLE;
+				accessRights = OPC_READABLE | OPC_WRITEABLE;
 				active = True;
+
+				SYSTEMTIME SystemTime;
+				GetSystemTime( &SystemTime );
+				SystemTimeToFileTime( &SystemTime, &timeStamp );
 			}
 
 			Tag::~Tag()
@@ -234,7 +244,25 @@ namespace frl
 						leafs.push_back( (*it)->getID() );
 				}
 			}
-		} // namespace address_space			
+
+			const ComVariant& Tag::read()
+			{
+				return value;
+			}
+
+			void Tag::write( const ComVariant &newVal )
+			{
+				value = newVal;
+				SYSTEMTIME SystemTime;
+				GetSystemTime( &SystemTime );
+				SystemTimeToFileTime( &SystemTime, &timeStamp );
+			}
+
+			ComVariant Tag::getTimeStamp()
+			{
+				return timeStamp;
+			}
+		} // namespace address_space
 	} // namespace opc
 } // namespace FatRat Library
 

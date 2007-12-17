@@ -6,6 +6,7 @@
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_util.h"
+#include "opc/frl_opc_com_variant.h"
 
 namespace frl
 {
@@ -34,25 +35,58 @@ namespace frl
 				}
 
 				*pdwCount = 0;
-				*ppPropertyIDs = NULL;
+				/**ppPropertyIDs = NULL;
 				*ppDescriptions = NULL;
-				*ppvtDataTypes = NULL;
+				*ppvtDataTypes = NULL;*/
 
 				if( ! opcAddressSpace.isExistTag( szItemID ) )
 					return OPC_E_INVALIDITEMID;
 
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
-				*pdwCount = 1;
-				*ppPropertyIDs  = (DWORD*)CoTaskMemAlloc( *pdwCount * sizeof(DWORD));
-				*ppDescriptions = (LPWSTR*)CoTaskMemAlloc( *pdwCount * sizeof(LPWSTR));
-				*ppvtDataTypes  = (VARTYPE*)CoTaskMemAlloc( *pdwCount * sizeof(VARTYPE));
-				if( ppPropertyIDs == NULL || ppDescriptions ==NULL || ppvtDataTypes == NULL)
-					return E_OUTOFMEMORY;
+				*pdwCount = 4;
 
-				*ppPropertyIDs[0] = item->getServerHandle();
-				*ppDescriptions[0] = util::duplicateString( item->getID() );
-				*ppvtDataTypes[0] = item->getCanonicalDataType();
-	
+				*ppPropertyIDs = util::allocMemory<DWORD>( *pdwCount );
+				if( *ppPropertyIDs == NULL )
+					return E_OUTOFMEMORY;
+				util::zeroMemory<DWORD>( *ppPropertyIDs, *pdwCount );
+
+				*ppDescriptions = util::allocMemory< LPWSTR >( *pdwCount );
+				if( *ppDescriptions == NULL )
+				{
+					util::freeMemory( *ppPropertyIDs );
+					return E_OUTOFMEMORY;
+				}
+				util::zeroMemory< LPWSTR >( *ppDescriptions, *pdwCount );
+
+				*ppvtDataTypes = util::allocMemory< VARTYPE >( *pdwCount );
+				if( *ppvtDataTypes == NULL )
+				{
+					util::freeMemory( *ppPropertyIDs );
+					util::freeMemory( *ppDescriptions );
+					return E_OUTOFMEMORY;
+				}
+				util::zeroMemory< VARTYPE >( *ppvtDataTypes, *pdwCount );
+
+				// Data type
+				(*ppPropertyIDs)[0] = OPC_PROPERTY_DATATYPE;
+				(*ppDescriptions)[0] = util::duplicateString( OPC_PROPERTY_DESC_DATATYPE );
+				(*ppvtDataTypes)[0] = VT_I2;
+
+				// value
+				(*ppPropertyIDs)[1] = OPC_PROPERTY_VALUE;
+				(*ppDescriptions)[1] = util::duplicateString( OPC_PROPERTY_DESC_VALUE );
+				(*ppvtDataTypes)[1] = item->getCanonicalDataType();
+
+				// time stamp
+				(*ppPropertyIDs)[2] = OPC_PROPERTY_TIMESTAMP;
+				(*ppDescriptions)[2] = util::duplicateString( OPC_PROPERTY_DESC_TIMESTAMP );
+				(*ppvtDataTypes)[2] = VT_DATE;
+
+				// access rights
+				(*ppPropertyIDs)[3] = OPC_PROPERTY_ACCESS_RIGHTS;
+				(*ppDescriptions)[3] = util::duplicateString( OPC_PROPERTY_DESC_ACCESS_RIGHTS );
+				(*ppvtDataTypes)[3] = VT_I4;
+
 				return S_OK;
 			}
 
@@ -63,13 +97,8 @@ namespace frl
 				/* [size_is][size_is][out] */ VARIANT **ppvData,
 				/* [size_is][size_is][out] */ HRESULT **ppErrors)
 			{
-				if (	szItemID == NULL ||
-						ppvData == NULL ||
-						ppErrors  == NULL
-					)
-				{
+				if ( szItemID == NULL || ppvData == NULL || ppErrors  == NULL )
 					return E_INVALIDARG;
-				}
 				
 				*ppvData  = NULL;
 				*ppErrors = NULL;
@@ -78,12 +107,12 @@ namespace frl
 					return E_INVALIDARG;
 				
 				*ppvData = util::allocMemory< VARIANT >( dwCount );
-				if( ppvData == NULL )
+				if( *ppvData == NULL )
 					return E_OUTOFMEMORY;
 				util::zeroMemory< VARIANT >( *ppvData, dwCount );
 				
 				*ppErrors = util::allocMemory< HRESULT >( dwCount );
-				if( ppErrors == NULL )
+				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
@@ -97,52 +126,42 @@ namespace frl
 				{
 					switch( pdwPropertyIDs[i] )
 					{
-					case 1:
+						::VariantInit( &(*ppvData)[i] );
+
+						case OPC_PROPERTY_DATATYPE:
 						{
-							VariantInit( &*ppvData[i] );
-							V_VT(&*ppvData[i]) = VT_I2;
-							V_I2(&*ppvData[i]) = item->getCanonicalDataType();
+							ComVariant retVal = (unsigned short)item->getCanonicalDataType();
+							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
-					case 2:
+						
+						case OPC_PROPERTY_VALUE:
 						{
-							VariantInit( &*ppvData[i] );
-							HRESULT r1 = VariantChangeType( &*ppvData[i],&*ppvData[i],0, item->getReguestedDataType() );
-							//*ppvData[i] =  // TODO
+							ComVariant retVal = item->read();
+							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
-					case 3:
+						
+						case OPC_PROPERTY_TIMESTAMP:
 						{
-							VariantInit( &*ppvData[i] );
-							V_VT(&*ppvData[i]) = VT_I2;
-							V_I2(&*ppvData[i]); // TODO =
+							ComVariant retVal = item->getTimeStamp();
+							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
-					case 4:
+
+						case OPC_PROPERTY_ACCESS_RIGHTS:
 						{
-							VariantInit( &*ppvData[i] );
-							V_VT(&*ppvData[i]) = VT_DATE;
-							V_DATE(&*ppvData[i]); // TODO =
+							ComVariant retVal = (long)item->getAccessRights();
+							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
-					case 5:
+
+						default:
 						{
-							VariantInit( &*ppvData[i] );
-							V_VT(&*ppvData[i]) = VT_I4;
-							V_I4(&*ppvData[i]) = item->getAccessRights();
+							(*ppErrors)[i] = OPC_E_INVALID_PID;
+							res = S_FALSE;
+							continue;
 						}
-						break;
-					case 6:
-						{
-							VariantInit( &*ppvData[i] );
-							V_VT(&*ppvData[i]) = VT_R4;
-							V_R4(&*ppvData[i]); // TODO =
-						}
-						break;
-					default:
-						*ppErrors[i] = OPC_E_INVALID_PID;
-						res = S_FALSE;
-						continue;
 					}
 				}
 				return res;
@@ -179,16 +198,53 @@ namespace frl
 					return E_OUTOFMEMORY;
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
+				HRESULT ret = S_OK;
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
-					*ppszNewItemIDs[i] = util::duplicateString( szItemID );
-					*ppErrors[i] = S_OK;
+					switch( pdwPropertyIDs[i] )
+					{
+						case OPC_PROPERTY_DATATYPE:
+						{
+							(*ppszNewItemIDs)[i] = util::duplicateString( OPC_PROPERTY_DESC_DATATYPE );
+						}
+						break;
+
+						case OPC_PROPERTY_VALUE:
+						{
+							util::duplicateString( OPC_PROPERTY_DESC_VALUE );
+						}
+						break;
+
+						case OPC_PROPERTY_TIMESTAMP:
+						{
+							util::duplicateString( OPC_PROPERTY_DESC_TIMESTAMP );
+						}
+						break;
+
+						case OPC_PROPERTY_ACCESS_RIGHTS:
+						{
+							util::duplicateString( OPC_PROPERTY_DESC_ACCESS_RIGHTS );
+						}
+						break;
+						default:
+							util::duplicateString( FRL_STR("") );
+					}
+
+					if( pdwPropertyIDs[i] <= OPC_PROPERTY_EU_INFO)
+					{
+						(*ppErrors)[i] = OPC_E_INVALID_PID;
+						ret = S_FALSE;
+					}
+					else
+					{
+						(*ppErrors)[i] = S_OK;
+					}
 				}
-				return S_OK;
+				return ret;
 			}
 		}; // class ItemProperties
 	} // namespace opc
 } // namespace FatRat Library
 
-#endif /* FRL_PLATFORM_WIN32 */
-#endif /* frl_opc_item_properties_h_ */
+#endif // FRL_PLATFORM_WIN32
+#endif // frl_opc_item_properties_h_

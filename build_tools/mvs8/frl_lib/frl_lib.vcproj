@@ -242,6 +242,10 @@
 				Name="opc"
 				>
 				<File
+					RelativePath="..\..\..\src\opc\frl_opc_com_variant.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\opc\frl_opc_common.cpp"
 					>
 				</File>
@@ -585,6 +589,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_browse_server_address_space.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_com_variant.h"
 					>
 				</File>
 				<File

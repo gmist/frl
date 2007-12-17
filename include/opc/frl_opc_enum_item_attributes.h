@@ -32,10 +32,10 @@ namespace frl
 					if( itemList[i] != NULL )
 					{
 						if( itemList[i]->szItemID != NULL )
-							util::deleteString( itemList[i]->szItemID );
+							util::freeMemory( itemList[i]->szItemID );
 						
 						if( itemList[i]->szAccessPath != NULL )
-							util::deleteString( itemList[i]->szAccessPath );
+							util::freeMemory( itemList[i]->szAccessPath );
 
 						CoTaskMemFree( itemList[i] );
 					}
