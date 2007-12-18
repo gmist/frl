@@ -49,7 +49,7 @@ namespace frl
 			(*pdwLcid)[3] = LOCALE_USER_DEFAULT;
 			(*pdwLcid)[4] = LOCALE_NEUTRAL;
 			(*pdwLcid)[5] = LOCALE_INVARIANT;
-			
+
 			return S_OK;
 		}
 
@@ -59,40 +59,7 @@ namespace frl
 				return E_INVALIDARG;
 
 			*ppString = NULL;
-
-			LANGID langID = LANGIDFROMLCID(lcid);
-			switch (lcid)
-			{
-			case LOCALE_SYSTEM_DEFAULT:
-				{
-					langID = GetSystemDefaultLangID();
-					break;
-				}
-
-			case LOCALE_USER_DEFAULT:
-				{
-					langID = GetUserDefaultLangID();
-					break;
-				}
-
-			case LOCALE_INVARIANT:
-				{
-					langID = LANGIDFROMLCID(LOCALE_NEUTRAL);
-					break;
-				}
-			}
-
-			String cMsg = sys::util::getCodeErrorDescription( langID, dwError );
-			
-			if( cMsg.size() == 0 )
-				return E_INVALIDARG;
-
-			size_t size = ( cMsg.size() + 1 ) * sizeof(WCHAR);
-			*ppString = (LPWSTR)CoTaskMemAlloc( size );
-			if( ppString == NULL )
-				return E_OUTOFMEMORY;			
-			wcscpy_s( *ppString, size/sizeof(WCHAR), cMsg.c_str() );
-			return S_OK;
+			return util::getErrorString( dwError, lcid, &ppString );
 		}
 
 		HRESULT STDMETHODCALLTYPE OPCCommon::SetClientName( /* [string][in] */ LPCWSTR szName )

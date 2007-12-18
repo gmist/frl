@@ -94,38 +94,7 @@ namespace frl
 				return E_INVALIDARG;
 
 			*ppString = NULL;
-			LANGID langID;
-			switch (dwLocale)
-			{
-			case LOCALE_SYSTEM_DEFAULT:
-				{
-					langID = GetSystemDefaultLangID();
-					break;
-				}
-			case LOCALE_USER_DEFAULT:
-				{
-					langID = GetUserDefaultLangID();
-					break;
-				}
-			case LOCALE_INVARIANT:
-				{
-					langID = LANGIDFROMLCID(LOCALE_NEUTRAL);
-					break;
-				}
-			default:
-				langID = LANGIDFROMLCID(LOCALE_NEUTRAL);
-			}
-
-			String cMsg = sys::util::getCodeErrorDescription( langID, dwError );
-			if( cMsg.size() == 0 )
-				return E_INVALIDARG;
-
-			size_t size = ( cMsg.size() + 1 ) * sizeof(WCHAR);
-			*ppString = (LPWSTR)CoTaskMemAlloc( size );
-			if( ppString == NULL )
-				return E_OUTOFMEMORY;
-			wcscpy_s( *ppString, size/sizeof(WCHAR), cMsg.c_str() );
-			return S_OK;
+			return util::getErrorString( dwError, dwLocale, &ppString );
 		}
 
 		HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR szName, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
