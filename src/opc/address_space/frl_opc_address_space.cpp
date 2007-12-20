@@ -207,11 +207,11 @@ namespace frl
 				curPos->browseBranches( branches );
 			}
 
-			void AddressSpace::browseLeafs( std::vector< String > &leafs )
+			void AddressSpace::browseLeafs( std::vector< String > &leafs, DWORD accessFilter )
 			{
 				if( leafs.size() )
 					leafs.erase( leafs.begin(), leafs.end() );
-				curPos->browseLeafs( leafs );
+				curPos->browseLeafs( leafs, accessFilter );
 			}
 
 			frl::Bool AddressSpace::isExistBranch( const String &name )

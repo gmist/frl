@@ -6,6 +6,7 @@
 #include "opc/frl_opc_enum_string.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "frl_lock.h"
+#include "frl_string.h"
 
 namespace frl
 {
@@ -42,7 +43,7 @@ namespace frl
 
 					case OPC_BROWSE_DOWN:
 					{
-						if (szString == NULL || wcslen(szString) == 0)
+						if( szString == NULL || stringLength( szString ) == 0 )
 							return E_INVALIDARG;
 						try
 						{
@@ -57,7 +58,7 @@ namespace frl
 
 					case OPC_BROWSE_TO:
 					{
-						if (szString == NULL || wcslen(szString) == 0)
+						if( szString == NULL || stringLength( szString ) == 0 )
 						{
 							opcAddressSpace.goToRoot();
 							return S_OK;
@@ -105,15 +106,34 @@ namespace frl
 				switch( dwBrowseFilterType )
 				{
 					case OPC_LEAF:
-						opcAddressSpace.browseLeafs( items );
+						opcAddressSpace.browseLeafs( items, dwAccessRightsFilter );
 						break;
 
 					case OPC_BRANCH:
 						opcAddressSpace.browseBranches( items );
 						break;
+
+					case OPC_FLAT:
+						opcAddressSpace.browseLeafs( items, dwAccessRightsFilter );
+						break;
 				}
 
-				pEnum->init( items );
+				// filtration by name
+				if( szFilterCriteria != NULL )
+				{
+					std::vector< String > filtredItems;
+					for( std::vector< String >::iterator it = items.begin(); it != items.end(); ++it )
+					{
+						if( util::matchStringPattern( (*it), szFilterCriteria ) )
+							filtredItems.push_back( (*it) );
+					}
+					pEnum->init( filtredItems );
+				}
+				else
+				{
+					pEnum->init( items );
+				}
+
 				HRESULT hResult = pEnum->QueryInterface( IID_IEnumString, (void**) ppIEnumString );
 				if( FAILED( hResult ) )
 				{
@@ -130,6 +150,14 @@ namespace frl
 				if( szItemDataID == NULL || szItemID == NULL )
 					return E_INVALIDARG;
 				*szItemID = NULL;
+
+				// is root item
+				if( stringLength( szItemDataID ) == 0 )
+				{
+					*szItemID = szItemDataID;
+					return S_OK;
+				}
+
 				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
 				if( ! opcAddressSpace.isExistItem( szItemDataID ) )
 					return E_INVALIDARG;

@@ -56,6 +56,8 @@ namespace frl
 			if (rgelt == NULL || pceltFetched == NULL)
 				return E_INVALIDARG;
 
+			*pceltFetched = 0;
+
 			if( curIndex >= strings.size() )
 				return S_FALSE;
 

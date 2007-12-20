@@ -1,8 +1,8 @@
 #include "frl_string.h"
+#include <algorithm>
 
 namespace frl
 {
-
 	// Return string length
 	#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		size_t stringLength(const frl::Char *string )
@@ -76,7 +76,7 @@ namespace frl
 		return wstring2string( str );
 	}
 
-	Bool RemoveSimbolsFromStart( String &string, Char simbol)
+	Bool removeSimbolsFromStart( String &string, Char simbol)
 	{
 		if ( string.empty() )
 			return False;
@@ -93,7 +93,7 @@ namespace frl
 		return True;
 	}
 
-	Bool RemoveSimbolsFromEnd( String &string, Char simbol )
+	Bool removeSimbolsFromEnd( String &string, Char simbol )
 	{
 		if ( string.empty() )
 			return False;
@@ -110,7 +110,7 @@ namespace frl
 		return True;
 	}
 
-	Bool RemoveSimbols( String &string, Char simbol )
+	Bool removeSimbols( String &string, Char simbol )
 	{
 		if ( string.empty() )
 			return False;
@@ -122,6 +122,22 @@ namespace frl
 		}
 		string = tmp;
 		return True;
+	}
+
+	String toUpper( const String &str, const std::locale &loc ) 
+	{ 
+		String result;
+		result.resize( str.length() );
+		std::transform(str.begin(), str.end(), result.begin(), private_::ToUpperF( loc ) ); 
+		return result; 
+	} 
+
+	String toLower( const String &str, const std::locale &loc ) 
+	{ 
+		String result;
+		result.resize( str.length() );
+		std::transform(str.begin(), str.end(), result.begin(), private_::ToLowerF( loc ) ); 
+		return result; 
 	}
 
 } // Fat Rat Library

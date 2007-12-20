@@ -67,6 +67,7 @@ namespace frl
 			void freeMemory( void *ptr );
 
 			HRESULT getErrorString(  HRESULT dwError, LCID dwLocale, LPWSTR **ppString );
+			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensintive = False );
 		} // namespace util
 	} // namespace opc
 } // namespace FatRat Library

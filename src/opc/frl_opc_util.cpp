@@ -302,6 +302,68 @@ namespace frl
 				**ppString = util::duplicateString( cMsg );
 				return S_OK;
 			}
+
+			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensintive )
+			{
+				if( pattern.empty() )
+					return True;
+				if( str.empty() )
+					return False;
+
+				String strIn, patternIn;
+				if( ! caseSensintive )
+				{
+					strIn = lexicalCast< lexicalCastMutators::lower >::get( str );
+					patternIn = lexicalCast< lexicalCastMutators::upper >::get( pattern );
+				}
+				else
+				{
+					strIn = str;
+					patternIn = pattern;
+				}
+				
+				if( patternIn.size() == 1 )
+				{
+					if( pattern == FRL_STR("*") )
+						return True;
+					else
+						return str == pattern;
+				}
+				
+				if( patternIn.size() > 2 && patternIn[0] == L'[' )
+				{
+					size_t posCloseBracket = patternIn.find( L']' );
+					if( posCloseBracket == String::npos )
+						return False; // syntax error
+
+					String bracketsStr = patternIn.substr( 1, posCloseBracket - 1 );
+					String residual = patternIn.substr( posCloseBracket + 1, patternIn.size() - 1 );
+					
+					std::vector< Char > chars;
+					for( size_t i = 0; i < bracketsStr.size(); i++ )
+						chars.push_back( bracketsStr[i] );
+
+					std::vector< String > fullStr;
+					size_t starPos = residual.find( L'*' );
+					if( starPos == String::npos )
+					{
+						for( size_t i = 0; i < chars.size(); i++ )
+							fullStr.push_back( chars[i] + residual );
+					}	
+					
+					if( fullStr.size() == 0 )
+						return False;
+
+					size_t pos;
+					for( size_t i = 0; i < fullStr.size(); i++ )
+					{
+						pos = str.find( fullStr[i] );
+						if( pos != String::npos )
+							return True;
+					}
+				}
+				return False;
+			}
 		}	// namespace util
 	} // namespace opc
 } // // namespace FatRat Library

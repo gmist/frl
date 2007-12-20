@@ -71,8 +71,7 @@ namespace frl
 			if( pActual == NULL && Requested != 1 )
 				return E_POINTER;
 
-			if( pActual != NULL )
-				*pActual = 0;	
+			*pActual = 0;
 
 			if( currentIndex >= groupList.size() )
 				return S_FALSE;
@@ -85,9 +84,13 @@ namespace frl
 				if( pGroup != NULL  )
 				{
 					pGroup->AddRef();
-					ppGrp[i] = reinterpret_cast< IUnknown*>( pGroup );
-					(*pActual)++;
+					ppGrp[*pActual] = reinterpret_cast< IUnknown*>( pGroup );
 				}
+				else
+				{
+					ppGrp[*pActual] = NULL;
+				}
+				(*pActual)++;
 			}
 
 			if( *pActual < Requested )

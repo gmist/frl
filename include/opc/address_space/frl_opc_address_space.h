@@ -58,7 +58,7 @@ namespace frl
 
 				void browseBranches( std::vector< String > &branches );
 
-				void browseLeafs( std::vector< String > &leafs );
+				void browseLeafs( std::vector< String > &leafs, DWORD accessFilter = 0 );
 
 				Bool isExistBranch( const String &name );
 

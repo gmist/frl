@@ -4,13 +4,13 @@
 #include "stream_std/frl_sstream.h"
 #include "stream_std/frl_ostream.h"
 #include "frl_empty_type.h"
+#include "frl_string.h"
 
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
-#include "frl_string.h"
 #include <stdio.h>
 #include "frl_exception.h"
-#endif
+#endif // FRL_PLATFORM_WIN32
 
 namespace frl
 {
@@ -95,7 +95,33 @@ namespace frl
 				to << std::oct << v;
 			}
 		};
+
+		struct lower
+		{
+		};
+
+		struct upper
+		{
+		};
 	}
+
+	template<>
+	struct lexicalCast< lexicalCastMutators::lower >
+	{
+		static frl::String get( const String &from )
+		{
+			return frl::toLower( from );
+		}
+	};
+
+	template<>
+	struct lexicalCast< lexicalCastMutators::upper >
+	{
+		static frl::String get( const String &from )
+		{
+			return frl::toUpper( from );
+		}
+	};
 
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 
@@ -210,7 +236,7 @@ namespace frl
 		}
 	};
 
-	#endif /* FRL_PLATFORM_WIN32 */
+	#endif // FRL_PLATFORM_WIN32
 }
 
-#endif /* FRL_LEXICAL_CAST_H_ */
+#endif // FRL_LEXICAL_CAST_H_

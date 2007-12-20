@@ -96,7 +96,7 @@ namespace frl
 
 				void browseBranches( std::vector< String > &branches );
 
-				void browseLeafs( std::vector< String > &leaf );
+				void browseLeafs( std::vector< String > &leaf, DWORD accessFilter = 0 );
 
 				const ComVariant& read();
 

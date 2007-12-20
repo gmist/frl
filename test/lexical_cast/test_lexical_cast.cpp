@@ -67,6 +67,7 @@ frl::Bool decStringToInt()
 }
 
 #if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+
 frl::Bool guidToString()
 {
 	static const GUID testGuid = { 0x8f7cc534, 0xec16, 0x4471, { 0xa6, 0x74, 0x21, 0x2, 0x35, 0xfc, 0xd0, 0x67 } };
@@ -82,7 +83,25 @@ frl::Bool stringToGuid()
 	return (guid == originalGuid) == 1;
 }
 
-#endif /* FRL_PLATFORM_WIN32 */
+#endif // FRL_PLATFORM_WIN32
+
+frl::Bool lowerString()
+{
+	const frl::String original = FRL_STR( "QwErTy" );
+	frl::String modif = frl::lexicalCast< frl::lexicalCastMutators::lower >::get( original );
+	if( modif == FRL_STR("qwerty") )
+		return frl::True;
+	return frl::False;
+}
+
+frl::Bool upperString()
+{
+	const frl::String original = FRL_STR( "QwErTy" );
+	frl::String modif = frl::lexicalCast< frl::lexicalCastMutators::upper >::get( original );
+	if( modif == FRL_STR("QWERTY") )
+		return frl::True;
+	return frl::False;
+}
 
 int main( int argc, char *argv[] )
 {
@@ -95,11 +114,11 @@ int main( int argc, char *argv[] )
 	test.Add( hexStringToInt,  FRL_STR("HEX string to int.") );	
 	test.Add( octStringToInt, FRL_STR( "OCT string to int.") );
 	test.Add( decStringToInt, FRL_STR("DEC string to int.") );
-	
 	#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 	test.Add( guidToString, FRL_STR("GUID value to string.") );
 	test.Add( stringToGuid, FRL_STR( "String to guid value.") );
 	#endif
-
+	test.Add( lowerString, FRL_STR( "Lower cast string" ) );
+	test.Add( upperString, FRL_STR( "Upper cast string" ) );
 	return 0;
 }

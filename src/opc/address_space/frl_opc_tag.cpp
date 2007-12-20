@@ -236,12 +236,19 @@ namespace frl
 				}
 			}
 
-			void Tag::browseLeafs( std::vector< String > &leafs )
+			void Tag::browseLeafs( std::vector< String > &leafs, DWORD accessFilter )
 			{
 				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
 				{
 					if( (*it)->isLeaf() )
+					{
+						if( accessFilter != 0 )
+						{
+							if( ( accessFilter & (*it)->getAccessRights() ) == 0 )
+								continue;
+						}
 						leafs.push_back( (*it)->getID() );
+					}
 				}
 			}
 
