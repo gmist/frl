@@ -22,11 +22,12 @@ namespace frl
 
 			class Tag
 			{
-			private:			
+			private:
 				String id;
+				String shortID;
 				OPCHANDLE clientHandle, serverHandle;
 				Bool is_Branch;
-				VARTYPE requestedDataType, canonicalDataType;				
+				VARTYPE requestedDataType, canonicalDataType;
 				DWORD accessRights;
 				Bool active;
 				String delimiter;
@@ -47,6 +48,8 @@ namespace frl
 				void setID( const String& newID );
 
 				const String& getID();
+
+				const String& getShortID();
 
 				void setClientHandle( OPCHANDLE newHandle );
 

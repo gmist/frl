@@ -314,7 +314,7 @@ namespace frl
 				if( ! caseSensintive )
 				{
 					strIn = lexicalCast< lexicalCastMutators::lower >::get( str );
-					patternIn = lexicalCast< lexicalCastMutators::upper >::get( pattern );
+					patternIn = lexicalCast< lexicalCastMutators::lower >::get( pattern );
 				}
 				else
 				{
@@ -349,7 +349,19 @@ namespace frl
 					{
 						for( size_t i = 0; i < chars.size(); i++ )
 							fullStr.push_back( chars[i] + residual );
-					}	
+					}
+					else
+					{
+						if( starPos == residual.size() - 1 )
+						{
+							for( size_t i = 0; i < chars.size(); i++ )
+							{
+								String tt;
+								tt += chars[i];
+								fullStr.push_back( tt );
+							}
+						}
+					}
 					
 					if( fullStr.size() == 0 )
 						return False;

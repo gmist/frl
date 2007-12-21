@@ -22,7 +22,7 @@ namespace frl
 				String delimiter;
 				Tag *rootTag;
 				Tag *curPos;
-				
+
 			public:
 				AddressSpace();
 

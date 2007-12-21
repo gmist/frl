@@ -146,6 +146,7 @@ int _tmain(int , _TCHAR*)
 	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1" ) );
 	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch2" ) );
 	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1.branch11" ) );
+	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1.branch11.branch111" ) );
 
 	frl::opc::opcAddressSpace.addLeaf( FRL_STR("rootLeaf"));
 	frl::opc::address_space::Tag *tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR("rootLeaf") );
@@ -160,6 +161,11 @@ int _tmain(int , _TCHAR*)
 
 	frl::opc::opcAddressSpace.addLeaf( FRL_STR( "branch1.leaf11" ) );
 	tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR( "branch1.leaf11" ) );
+	tag->setCanonicalDataType( VT_BOOL );
+	tag->write( true );
+
+	frl::opc::opcAddressSpace.addLeaf( FRL_STR( "branch1.branch11.leaf111" ) );
+	tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR( "branch1.branch11.leaf111" ) );
 	tag->setCanonicalDataType( VT_BOOL );
 	tag->write( true );
 

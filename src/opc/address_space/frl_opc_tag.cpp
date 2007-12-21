@@ -50,7 +50,7 @@ namespace frl
 			Tag::~Tag()
 			{
 				if( tags.size() )
-				{						
+				{
 					for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
 					{
 						Tag *tmp = (*it);
@@ -63,12 +63,23 @@ namespace frl
 			void Tag::setID( const String& newID )
 			{
 				id = newID;
+				size_t pos = newID.rfind( delimiter );
+				if( pos == String::npos )
+					shortID = newID;
+				else
+					shortID = newID.substr( pos+1, newID.length() - 1 );
 			}
 
 			const String& Tag::getID()
 			{
 				return id;
 			}
+			
+			const String& Tag::getShortID()
+			{
+				return shortID;
+			}
+
 
 			void Tag::setClientHandle( OPCHANDLE newHandle )
 			{
@@ -201,7 +212,7 @@ namespace frl
 				FRL_THROW_S_CLASS( NotExistTag );
 				return NULL;
 			}
-			
+
 			Tag* Tag::getLeaf( const String &name )
 			{
 				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
@@ -232,7 +243,7 @@ namespace frl
 				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
 				{
 					if( (*it)->isBranch() )
-						branches.push_back( (*it)->getID() );
+						branches.push_back( (*it)->getShortID() );
 				}
 			}
 
@@ -247,7 +258,7 @@ namespace frl
 							if( ( accessFilter & (*it)->getAccessRights() ) == 0 )
 								continue;
 						}
-						leafs.push_back( (*it)->getID() );
+						leafs.push_back( (*it)->getShortID() );
 					}
 				}
 			}

@@ -73,7 +73,6 @@ namespace frl
 						}
 						return S_OK;
 					}
-
 				}
 				return E_INVALIDARG;
 			}
@@ -107,19 +106,19 @@ namespace frl
 				{
 					case OPC_LEAF:
 						opcAddressSpace.browseLeafs( items, dwAccessRightsFilter );
-						break;
+					break;
 
 					case OPC_BRANCH:
 						opcAddressSpace.browseBranches( items );
-						break;
+					break;
 
 					case OPC_FLAT:
 						opcAddressSpace.browseLeafs( items, dwAccessRightsFilter );
-						break;
+					break;
 				}
 
 				// filtration by name
-				if( szFilterCriteria != NULL )
+				if( szFilterCriteria != NULL && wcslen( szFilterCriteria ) != 0 )
 				{
 					std::vector< String > filtredItems;
 					for( std::vector< String >::iterator it = items.begin(); it != items.end(); ++it )
@@ -128,6 +127,7 @@ namespace frl
 							filtredItems.push_back( (*it) );
 					}
 					pEnum->init( filtredItems );
+					items = filtredItems;
 				}
 				else
 				{
@@ -159,9 +159,20 @@ namespace frl
 				}
 
 				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
-				if( ! opcAddressSpace.isExistItem( szItemDataID ) )
-					return E_INVALIDARG;
-				*szItemID = szItemDataID;
+				address_space::Tag *tag;
+				if( opcAddressSpace.getCurPosPath().size() )
+				{
+					if( ! opcAddressSpace.isExistTag( opcAddressSpace.getCurPosPath() + opcAddressSpace.getDelimiter() + szItemDataID) )
+						return E_INVALIDARG;
+					tag = opcAddressSpace.getTag( opcAddressSpace.getCurPosPath() + opcAddressSpace.getDelimiter() + szItemDataID );
+				}
+				else
+				{
+					if( ! opcAddressSpace.isExistTag( szItemDataID) )
+						return E_INVALIDARG;
+					tag = opcAddressSpace.getTag( szItemDataID );
+				}
+				*szItemID = util::duplicateString( tag->getID() );
 				return S_OK;
 			}
 

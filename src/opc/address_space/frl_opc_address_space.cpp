@@ -74,7 +74,10 @@ namespace frl
 				do
 				{
 					tmpBranch = tmpPath.substr( 0, pos );
-					tmpBr = brPos->getBranch( tmpBranch );
+					if( brPos->getID().size() )
+						tmpBr = brPos->getBranch( brPos->getID() + delimiter + tmpBranch );
+					else
+						tmpBr = brPos->getBranch( tmpBranch );
 					tmpPath = tmpPath.substr( pos+1, tmpPath.size()-1 );
 					pos = tmpPath.find( delimiter );
 					brPos = tmpBr;
@@ -102,7 +105,7 @@ namespace frl
 					return;
 				}
 				String fullBranchName = fullPath.substr(0, pos );
-								
+
 				try
 				{
 					getBranch( fullBranchName )->addLeaf( fullPath );
@@ -160,12 +163,15 @@ namespace frl
 
 			void AddressSpace::goDown( const String &path )
 			{
-				curPos = curPos->getBranch( path );
+				if( getCurPosPath().size() )
+					curPos = curPos->getBranch( getCurPosPath() + delimiter + path );
+				else
+					curPos = curPos->getBranch( path );
 			}
 
 			void AddressSpace::goTo( const String &fullPath )
 			{
-				curPos = rootTag->getBranch( fullPath );
+				curPos = getBranch( fullPath );
 			}
 
 			Tag* AddressSpace::getLeaf( const String& fullPath )
@@ -186,7 +192,10 @@ namespace frl
 				do
 				{
 					tmpBranch = tmpPath.substr( 0, pos );
-					tmpBr = brPos->getBranch( tmpBranch );
+					if( brPos->getID().size() )
+						tmpBr = brPos->getBranch( brPos->getID() + delimiter + tmpBranch );
+					else
+						tmpBr = brPos->getBranch( tmpBranch );
 					tmpPath = tmpPath.substr( pos+1, tmpPath.size()-1 );
 					pos = tmpPath.find( delimiter );
 					brPos = tmpBr;
