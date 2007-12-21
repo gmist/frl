@@ -32,6 +32,7 @@ namespace frl
 				/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 				/* [string][in] */ LPCWSTR szString )
 			{
+				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
 				switch( dwBrowseDirection )
 				{
 					case OPC_BROWSE_UP:
@@ -85,11 +86,11 @@ namespace frl
 				/* [out] */ LPENUMSTRING *ppIEnumString )
 			{
 				// validate browse filters.
-				if (dwBrowseFilterType < OPC_BRANCH || dwBrowseFilterType > OPC_FLAT)
+				if( dwBrowseFilterType < OPC_BRANCH || dwBrowseFilterType > OPC_FLAT )
 					return E_INVALIDARG;
 
 				// validate access rights.
-				if ((dwAccessRightsFilter & 0xFFFFFFFC) != 0)
+				if( (dwAccessRightsFilter & 0xFFFFFFFC) != 0 )
 					return E_INVALIDARG;
 				
 				if( ppIEnumString == NULL )
@@ -126,14 +127,11 @@ namespace frl
 						if( util::matchStringPattern( (*it), szFilterCriteria ) )
 							filtredItems.push_back( (*it) );
 					}
-					pEnum->init( filtredItems );
+					items.erase( items.begin(), items.end() );
 					items = filtredItems;
 				}
-				else
-				{
-					pEnum->init( items );
-				}
 
+				pEnum->init( items );
 				HRESULT hResult = pEnum->QueryInterface( IID_IEnumString, (void**) ppIEnumString );
 				if( FAILED( hResult ) )
 				{

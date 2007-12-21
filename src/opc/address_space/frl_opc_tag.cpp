@@ -18,6 +18,8 @@ namespace frl
 				clientHandle = serverHandle = 0;
 				accessRights = OPC_READABLE & OPC_WRITEABLE;
 				active = True;
+				quality = OPC_QUALITY_GOOD;
+				scanRate = 0;
 
 				SYSTEMTIME SystemTime;
 				GetSystemTime( &SystemTime );
@@ -41,6 +43,8 @@ namespace frl
 				clientHandle = serverHandle = 0;
 				accessRights = OPC_READABLE | OPC_WRITEABLE;
 				active = True;
+				quality = OPC_QUALITY_GOOD;
+				scanRate = 0;
 
 				SYSTEMTIME SystemTime;
 				GetSystemTime( &SystemTime );
@@ -279,6 +283,26 @@ namespace frl
 			ComVariant Tag::getTimeStamp()
 			{
 				return timeStamp;
+			}
+
+			void Tag::setQuality( DWORD quality_ )
+			{
+				quality = quality_;
+			}
+
+			DWORD Tag::getQuality()
+			{
+				return quality;
+			}
+
+			void Tag::setScanRate( DWORD scanRate_ )
+			{
+				scanRate = scanRate_;
+			}
+
+			DWORD Tag::getScanRate()
+			{
+				return scanRate;
 			}
 		} // namespace address_space
 	} // namespace opc

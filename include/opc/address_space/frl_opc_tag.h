@@ -36,9 +36,12 @@ namespace frl
 				ComVariant value;
 				DWORD quality;
 				FILETIME timeStamp;
+				DWORD scanRate;
 
 				Tag();
+
 				void addTag( const String &name, Bool is_Branch_ );
+
 			public:
 
 				Tag( Bool is_Branch_, const String &delimiter_ );
@@ -105,7 +108,16 @@ namespace frl
 
 				void write( const ComVariant &newVal );
 
+				void setQuality( DWORD quality_ );
+
+				DWORD getQuality();
+
 				ComVariant getTimeStamp();
+
+				void setScanRate( DWORD scanRate_ );
+
+				DWORD getScanRate();
+
 			};
 		} // namespace address_space
 	} // namespace opc

@@ -35,15 +35,21 @@ namespace frl
 				}
 
 				*pdwCount = 0;
-				/**ppPropertyIDs = NULL;
+				*ppPropertyIDs = NULL;
 				*ppDescriptions = NULL;
-				*ppvtDataTypes = NULL;*/
+				*ppvtDataTypes = NULL;
 
-				if( ! opcAddressSpace.isExistTag( szItemID ) )
+				if( wcslen( szItemID ) == 0 )
 					return OPC_E_INVALIDITEMID;
 
+				if( opcAddressSpace.isExistBranch( szItemID ) )
+					return S_OK;
+
+				if( ! opcAddressSpace.isExistLeaf( szItemID ) )
+					return OPC_E_UNKNOWNITEMID;
+
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
-				*pdwCount = 4;
+				*pdwCount = 6;
 
 				*ppPropertyIDs = util::allocMemory<DWORD>( *pdwCount );
 				if( *ppPropertyIDs == NULL )
@@ -77,15 +83,27 @@ namespace frl
 				(*ppDescriptions)[1] = util::duplicateString( OPC_PROPERTY_DESC_VALUE );
 				(*ppvtDataTypes)[1] = item->getCanonicalDataType();
 
+				// quality
+				(*ppPropertyIDs)[2] = OPC_PROPERTY_QUALITY;
+				(*ppDescriptions)[2] = util::duplicateString( OPC_PROPERTY_DESC_QUALITY );
+				(*ppvtDataTypes)[2] = VT_I2;
+
+
 				// time stamp
-				(*ppPropertyIDs)[2] = OPC_PROPERTY_TIMESTAMP;
-				(*ppDescriptions)[2] = util::duplicateString( OPC_PROPERTY_DESC_TIMESTAMP );
-				(*ppvtDataTypes)[2] = VT_DATE;
+				(*ppPropertyIDs)[3] = OPC_PROPERTY_TIMESTAMP;
+				(*ppDescriptions)[3] = util::duplicateString( OPC_PROPERTY_DESC_TIMESTAMP );
+				(*ppvtDataTypes)[3] = VT_DATE;
 
 				// access rights
-				(*ppPropertyIDs)[3] = OPC_PROPERTY_ACCESS_RIGHTS;
-				(*ppDescriptions)[3] = util::duplicateString( OPC_PROPERTY_DESC_ACCESS_RIGHTS );
-				(*ppvtDataTypes)[3] = VT_I4;
+				(*ppPropertyIDs)[4] = OPC_PROPERTY_ACCESS_RIGHTS;
+				(*ppDescriptions)[4] = util::duplicateString( OPC_PROPERTY_DESC_ACCESS_RIGHTS );
+				(*ppvtDataTypes)[4] = VT_I4;
+				
+				// scan rate
+				(*ppPropertyIDs)[5] = OPC_PROPERTY_SCAN_RATE;
+				(*ppDescriptions)[5] = util::duplicateString( OPC_PROPERTY_DESC_SCAN_RATE );
+				(*ppvtDataTypes)[5] = VT_R4;
+
 
 				return S_OK;
 			}
@@ -106,6 +124,12 @@ namespace frl
 				if( dwCount == 0 )
 					return E_INVALIDARG;
 				
+				if( wcslen( szItemID ) == 0 )
+					return OPC_E_INVALIDITEMID;
+
+				if( ! opcAddressSpace.isExistLeaf( szItemID ) )
+					return OPC_E_UNKNOWNITEMID;
+
 				*ppvData = util::allocMemory< VARIANT >( dwCount );
 				if( *ppvData == NULL )
 					return E_OUTOFMEMORY;
@@ -115,9 +139,6 @@ namespace frl
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
-
-				if( ! opcAddressSpace.isExistTag( szItemID ) )
-					return OPC_E_INVALIDITEMID;
 
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 
@@ -130,7 +151,7 @@ namespace frl
 
 						case OPC_PROPERTY_DATATYPE:
 						{
-							ComVariant retVal = (unsigned short)item->getCanonicalDataType();
+							ComVariant retVal = (short)item->getCanonicalDataType();
 							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
@@ -138,6 +159,13 @@ namespace frl
 						case OPC_PROPERTY_VALUE:
 						{
 							ComVariant retVal = item->read();
+							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+						}
+						break;
+
+						case OPC_PROPERTY_QUALITY:
+						{
+							ComVariant retVal = (short)item->getQuality();
 							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
@@ -152,6 +180,13 @@ namespace frl
 						case OPC_PROPERTY_ACCESS_RIGHTS:
 						{
 							ComVariant retVal = (long)item->getAccessRights();
+							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+						}
+						break;
+
+						case OPC_PROPERTY_SCAN_RATE:
+						{
+							ComVariant retVal = (float)item->getScanRate();
 							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
@@ -183,8 +218,11 @@ namespace frl
 				if (dwCount == 0)
 					return E_INVALIDARG;
 				
-				if( ! opcAddressSpace.isExistTag( szItemID ) )
+				if( wcslen( szItemID ) == 0 )
 					return OPC_E_INVALIDITEMID;
+
+				if( ! opcAddressSpace.isExistLeaf( szItemID ) )
+					return OPC_E_UNKNOWNITEMID;
 				
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 
@@ -211,23 +249,26 @@ namespace frl
 
 						case OPC_PROPERTY_VALUE:
 						{
-							util::duplicateString( OPC_PROPERTY_DESC_VALUE );
+							(*ppszNewItemIDs)[i] = util::duplicateString( OPC_PROPERTY_DESC_VALUE );
 						}
 						break;
 
 						case OPC_PROPERTY_TIMESTAMP:
 						{
-							util::duplicateString( OPC_PROPERTY_DESC_TIMESTAMP );
+							(*ppszNewItemIDs)[i] = util::duplicateString( OPC_PROPERTY_DESC_TIMESTAMP );
 						}
 						break;
 
 						case OPC_PROPERTY_ACCESS_RIGHTS:
 						{
-							util::duplicateString( OPC_PROPERTY_DESC_ACCESS_RIGHTS );
+							(*ppszNewItemIDs)[i] = util::duplicateString( OPC_PROPERTY_DESC_ACCESS_RIGHTS );
 						}
 						break;
 						default:
-							util::duplicateString( FRL_STR("") );
+						{
+							(*ppErrors)[i] = OPC_E_INVALID_PID;
+							ret = S_FALSE;
+						}
 					}
 
 					if( pdwPropertyIDs[i] <= OPC_PROPERTY_EU_INFO)

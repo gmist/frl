@@ -54,7 +54,7 @@ namespace frl
 			// methods
 			void init();
 			void clear();
-			VARTYPE getType();			
+			VARTYPE getType();
 			VARIANT& getRef();
 			VARIANT* getPtr();
 
