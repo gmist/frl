@@ -102,6 +102,9 @@ namespace frl
 					if ( rootTag->isExistTag( fullPath ) )
 						FRL_THROW_S_CLASS( IsExistTag );
 					rootTag->addLeaf( fullPath );
+					Tag *added = rootTag->getLeaf( fullPath );
+					OPCHANDLE handle = added->getServerHandle();
+					handleHash.insert( std::pair< OPCHANDLE, Tag* > ( handle, added ) );
 					return;
 				}
 				String fullBranchName = fullPath.substr(0, pos );
@@ -109,6 +112,9 @@ namespace frl
 				try
 				{
 					getBranch( fullBranchName )->addLeaf( fullPath );
+					Tag *added = getBranch( fullBranchName )->getLeaf( fullPath );
+					OPCHANDLE handle = added->getServerHandle();
+					handleHash.insert( std::pair< OPCHANDLE, Tag* > ( handle, added ) );
 					return;
 				}
 				catch( NotExistTag &ex )
@@ -141,6 +147,9 @@ namespace frl
 				}
 				while( pos != String::npos );
 				getBranch( fullBranchName )->addLeaf( fullPath );
+				Tag *added = getBranch( fullBranchName )->getLeaf( fullPath );
+				OPCHANDLE handle = added->getServerHandle();
+				handleHash.insert( std::pair< OPCHANDLE, Tag* > ( handle, added ) );
 			}
 
 			frl::Bool AddressSpace::isExistItem( const String &itemName )
@@ -177,7 +186,7 @@ namespace frl
 			Tag* AddressSpace::getLeaf( const String& fullPath )
 			{
 				if( fullPath.empty() )
-					return rootTag;
+					FRL_THROW_S_CLASS( InvalidLeafName );
 				size_t pos = fullPath.find( delimiter );
 				if( pos == String::npos )
 				{
@@ -202,6 +211,13 @@ namespace frl
 				}
 				while( pos != String::npos );
 				return tmpBr->getLeaf( fullPath );
+			}
+
+			Tag* AddressSpace::getLeaf( OPCHANDLE handle )
+			{
+				if( ! isExistLeaf( handle ) )
+					FRL_THROW_S_CLASS( NotExistTag );
+				return (*(handleHash.find( handle ))).second;
 			}
 
 			frl::Bool AddressSpace::isBrowseRoot()
@@ -274,9 +290,12 @@ namespace frl
 				return False;
 			}
 
-			Bool AddressSpace::isExistTag( OPCHANDLE serverHandle )
+			Bool AddressSpace::isExistLeaf( OPCHANDLE serverHandle )
 			{
-				return False; // TODO
+				std::map< OPCHANDLE, Tag* >::iterator it = handleHash.find( serverHandle );
+				if( it != handleHash.end() )
+					return True;
+				return False;
 			}
 		} // namespace address_space
 		address_space::AddressSpace opcAddressSpace;

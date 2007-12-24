@@ -45,7 +45,7 @@ namespace frl
 			}
 			else
 				groupName = szName;
-			Group *newGroup = new Group( groupName );	
+			Group *newGroup = new Group( groupName );
 			
 			if( newGroup == NULL )
 				return E_OUTOFMEMORY;
@@ -62,7 +62,7 @@ namespace frl
 			else
 			{
 				lTimeBias = *pTimeBias;
-			} 
+			}
 
 			HRESULT res = newGroup->SetState
 				( &dwRequestedUpdateRate, pRevisedUpdateRate, &bActive,
@@ -134,7 +134,7 @@ namespace frl
 			if(ppServerStatus == NULL)
 				return E_INVALIDARG;
 
-			lock::Mutex::ScopeGuard guard( scopeGuard );			
+			lock::Mutex::ScopeGuard guard( scopeGuard );
 			OPCSERVERSTATUS *stat = util::allocMemory<OPCSERVERSTATUS>();
 			memcpy( stat, &m_ServerStatus, sizeof(OPCSERVERSTATUS) );
 			CoFileTimeNow(&( stat->ftCurrentTime));
@@ -154,42 +154,45 @@ namespace frl
 			if( groupItem.find( hServerGroup ) == groupItem.end())
 				return E_FAIL;
 
-			HRESULT res = S_OK;
 			Group *grpItem = groupItem[ hServerGroup ];
-			if( grpItem->getRefCount() > 1 && ! bForce )
-				res = OPC_S_INUSE;
-
 			groupItemIndex.erase( grpItem->getName() );
 			groupItem.erase( hServerGroup );
 			grpItem->isDeleted( True );
-			delete grpItem;
-			return res;
+			if( grpItem->Release() != 0 && ! bForce )
+			{
+				return OPC_S_INUSE;
+			}
+			return S_OK;
 		}
+
 		HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 		{
 			lock::Mutex::ScopeGuard guard( scopeGuard );
 
 			if( riid == IID_IEnumUnknown )
 			{
-				std::vector< Group* > unkn( groupItem.size() );
+				std::vector< Group* > unkn;
 				std::map< OPCHANDLE, frl::opc::Group* >::iterator it;
 				for( it = groupItem.begin(); it!= groupItem.end(); ++it)
 					unkn.push_back( (*it).second );
 
+				EnumGroup *enumGroup;
 				if( unkn.size() )
 				{
-					unkn.push_back( NULL );
-					EnumGroup *enumGroup = new EnumGroup( unkn );
-					HRESULT result = enumGroup->QueryInterface( riid, (void**)ppUnk );
-					if( FAILED(result) )
-						delete enumGroup;
-					return result;
+					enumGroup = new EnumGroup( unkn );
 				}
-				return S_FALSE;
+				else
+				{
+					enumGroup = new EnumGroup();
+				}
+				HRESULT result = enumGroup->QueryInterface( riid, (void**)ppUnk );
+				if( FAILED(result) )
+					delete enumGroup;
+				return unkn.size() ? S_OK : S_FALSE;
 			}
 			if( riid == IID_IEnumString )
 			{
-				std::vector< String > nameList( groupItem.size() );
+				std::vector< String > nameList;
 				std::map< OPCHANDLE, frl::opc::Group* >::iterator it;
 				for( it = groupItem.begin(); it!= groupItem.end(); ++it)
 					nameList.push_back( (*it).second->getName() );
@@ -198,16 +201,13 @@ namespace frl
 				if( nameList.size() )
 				{
 					enumString->init( nameList );
-					HRESULT result = enumString->QueryInterface( riid, (void**)ppUnk );
-					if( FAILED(result) )
-						delete enumString;
-					return result;
 				}
-				return S_FALSE;
+				HRESULT result = enumString->QueryInterface( riid, (void**)ppUnk );
+				if( FAILED(result) )
+					delete enumString;
+				return nameList.size() ? S_OK : S_FALSE;
 			}
-			else
-				return E_NOINTERFACE;
-			return S_OK;
+			return E_NOINTERFACE;
 		}
 
 		frl::Bool OPCServer::setGroupName( const String &oldName, const String &newName )

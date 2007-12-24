@@ -3,6 +3,7 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <vector>
+#include <map>
 #include "opc/address_space/frl_opc_tag.h"
 #include "frl_exception.h"
 
@@ -22,6 +23,7 @@ namespace frl
 				String delimiter;
 				Tag *rootTag;
 				Tag *curPos;
+				std::map< OPCHANDLE, Tag* > handleHash;
 
 			public:
 				AddressSpace();
@@ -66,7 +68,9 @@ namespace frl
 
 				Bool isExistTag( const String &name );
 
-				Bool isExistTag( OPCHANDLE handle );
+				Bool isExistLeaf( OPCHANDLE handle );
+
+				Tag* getLeaf( OPCHANDLE handle );
 			};
 		} // namespace address_space
 		extern address_space::AddressSpace opcAddressSpace;

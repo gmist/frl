@@ -126,8 +126,15 @@ namespace frl
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				HRESULT res = S_OK;
 				/// check exist of the specified tags
-				for( DWORD i=0;i<dwCount; ++i) 
+				for( DWORD i=0; i<dwCount; i++ )
 				{
+					if (pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0 )
+					{
+						(*ppErrors)[i] = OPC_E_INVALIDITEMID;
+						res = S_FALSE;
+						continue;
+					}
+
 					if( ! opcAddressSpace.isExistLeaf( pItemArray[i].szItemID ) )
 					{
 						(*ppErrors)[i] = OPC_E_UNKNOWNITEMID;
@@ -136,14 +143,14 @@ namespace frl
 					}
 
 					// validate data type.
-					if (! util::isValidType(pItemArray[i].vtRequestedDataType) )
+					if (! util::isValidType(pItemArray[i].vtRequestedDataType ) )
 					{
 						(*ppErrors)[i] = OPC_E_BADTYPE;
 						res = S_FALSE;
 						continue;
 					}
 
-					address_space::Tag *item = opcAddressSpace.getTag( pItemArray[i].szItemID );					
+					address_space::Tag *item = opcAddressSpace.getTag( pItemArray[i].szItemID );
 					ppValidationResults[0][i].vtCanonicalDataType = item->getCanonicalDataType();
 					ppValidationResults[0][i].dwAccessRights = item->getAccessRights();
 					ppValidationResults[0][i].dwBlobSize = 0;
@@ -225,7 +232,7 @@ namespace frl
 						res = S_FALSE;
 						continue;
 					}
-					(*it).second->isActived( ( bActive == TRUE ) );
+					(*it).second->isActived( ( bActive == -1 ) );
 					(*ppErrors)[ii] = S_OK;
 				}
 				return res;
@@ -331,7 +338,7 @@ namespace frl
 					}
 					return temp->QueryInterface(riid,(void**)ppUnk);
 				}
-				return S_FALSE;
+				return E_NOINTERFACE;
 			}
 		}; // class ItemMgt
 	} // namespace opc

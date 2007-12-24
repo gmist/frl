@@ -4,6 +4,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
+#include <Windows.h>
 
 namespace frl
 {
@@ -33,6 +34,7 @@ namespace frl
 			const String& getAccessPath();
 			HRESULT readValue( VARIANT &value );
 			HRESULT writeValue( const VARIANT &newValue );
+			FILETIME getTimeStamp();
 		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library

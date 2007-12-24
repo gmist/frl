@@ -130,8 +130,10 @@ namespace frl
 					items.erase( items.begin(), items.end() );
 					items = filtredItems;
 				}
+				
+				if( items.size() )
+					pEnum->init( items );
 
-				pEnum->init( items );
 				HRESULT hResult = pEnum->QueryInterface( IID_IEnumString, (void**) ppIEnumString );
 				if( FAILED( hResult ) )
 				{

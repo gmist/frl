@@ -117,7 +117,6 @@ namespace frl
 				void setScanRate( DWORD scanRate_ );
 
 				DWORD getScanRate();
-
 			};
 		} // namespace address_space
 	} // namespace opc

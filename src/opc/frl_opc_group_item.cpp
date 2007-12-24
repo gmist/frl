@@ -80,15 +80,40 @@ namespace frl
 
 		HRESULT GroupItem::readValue( VARIANT &value )
 		{
-			if( ! opcAddressSpace.isExistTag( serverHandle ) )
+			address_space::Tag *tag;
+			try
+			{
+				tag = opcAddressSpace.getLeaf( itemID );
+			}
+			catch( frl::opc::address_space::NotExistTag &ex )
+			{
+				ex.~NotExistTag();
 				return OPC_E_INVALIDHANDLE;
-
-			return E_NOTIMPL;
+			}
+			value = tag->read();
+			return S_OK;
 		}
 
 		HRESULT GroupItem::writeValue( const VARIANT &newValue )
 		{
-			return E_NOTIMPL;
+			address_space::Tag *tag;
+			try
+			{
+				tag = opcAddressSpace.getLeaf( itemID );
+			}
+			catch( frl::opc::address_space::NotExistTag &ex )
+			{
+				ex.~NotExistTag();
+				return OPC_E_INVALIDHANDLE;
+			}
+			tag->write( newValue );
+			return S_OK;
+		}
+
+		FILETIME GroupItem::getTimeStamp()
+		{
+			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
+			return tag->getTimeStamp();
 		}
 	} // namespace opc
 } // namespace FatRat Library

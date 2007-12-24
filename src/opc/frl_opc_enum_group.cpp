@@ -1,7 +1,6 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_enum_group.h"
-#include "opc/frl_opc_util.h"
 
 namespace frl
 {
@@ -10,7 +9,6 @@ namespace frl
 		EnumGroup::EnumGroup()
 			: refCount( 0 ), currentIndex( 0 )
 		{
-
 		}
 
 		EnumGroup::EnumGroup( const std::vector< Group* > &groups )
@@ -63,37 +61,32 @@ namespace frl
 			return tmp;
 		}
 
-		STDMETHODIMP EnumGroup::Next( ULONG Requested, IUnknown **ppGrp, ULONG *pActual )
+		STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown **rgelt, ULONG *pceltFetched )
 		{
-			if ( ppGrp == NULL || Requested == 0 )
+			if ( rgelt == NULL || pceltFetched == NULL || celt == 0 )
 				return E_INVALIDARG;
 
-			if( pActual == NULL && Requested != 1 )
+			if( pceltFetched == NULL && celt != 1 )
 				return E_POINTER;
 
-			*pActual = 0;
+			*pceltFetched = 0;
 
 			if( currentIndex >= groupList.size() )
 				return S_FALSE;
 
 			Group *pGroup;
 			size_t i = currentIndex;
-			for ( ; ( i < groupList.size() ) && ( *pActual < Requested ); i++)
+			for ( ; ( i < groupList.size() ) && ( *pceltFetched < celt ); i++)
 			{
 				pGroup = groupList[i];
+				rgelt[*pceltFetched] = reinterpret_cast< IUnknown*>( pGroup );
 				if( pGroup != NULL  )
-				{
 					pGroup->AddRef();
-					ppGrp[*pActual] = reinterpret_cast< IUnknown*>( pGroup );
-				}
-				else
-				{
-					ppGrp[*pActual] = NULL;
-				}
-				(*pActual)++;
+
+				(*pceltFetched)++;
 			}
 
-			if( *pActual < Requested )
+			if( *pceltFetched < celt )
 			{
 				currentIndex = groupList.size();
 				return S_FALSE;
@@ -131,8 +124,6 @@ namespace frl
 				*ppEnum=NULL;
 				return E_OUTOFMEMORY;
 			}
-			
-			pNewEnum->AddRef();
 
 			std::vector< Group* >::iterator it;
 			for( it = groupList.begin(); it != groupList.end();  it++ )
@@ -141,7 +132,6 @@ namespace frl
 			}
 			pNewEnum->currentIndex = currentIndex;
 			HRESULT hResult = pNewEnum->QueryInterface( IID_IEnumUnknown, (void**) ppEnum );
-			pNewEnum->Release();
 			return S_OK;
 		}
 	} // namespace opc

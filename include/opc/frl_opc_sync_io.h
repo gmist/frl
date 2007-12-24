@@ -41,7 +41,10 @@ namespace frl
 
 				*ppErrors =  util::allocMemory< HRESULT >( dwCount );
 				if( ppErrors == NULL )
+				{
+					util::freeMemory( ppItemValues );
 					return E_OUTOFMEMORY;
+				}
 				util::zeroMemory< HRESULT >( *ppErrors );
 
 				HRESULT result = S_OK;
@@ -56,14 +59,6 @@ namespace frl
 						continue;
 					}
 
-					if ( !pT->actived )
-					{
-						(*ppItemValues)[i].wQuality = OPC_QUALITY_OUT_OF_SERVICE;
-						result = S_FALSE;
-						(*ppErrors)[i] = E_FAIL;
-						continue;
-					}
-
 					(*ppErrors)[i] = (*it).second->readValue( (*ppItemValues)[i].vDataValue );
 
 					if( FAILED( (*ppErrors)[i] ) )
@@ -72,12 +67,13 @@ namespace frl
 						continue;
 					}
 					
+					if (! (*it).second->isActived() && dwSource == OPC_DS_CACHE)
+						(*ppItemValues)[i].wQuality = OPC_QUALITY_OUT_OF_SERVICE;
+					else
+						(*ppItemValues)[i].wQuality = OPC_QUALITY_GOOD;
+
 					(*ppItemValues)[i].hClient = (*it).second->getClientHandle();
-					(*ppItemValues)[i].wQuality = OPC_QUALITY_GOOD;
-					//(*ppItemValues)[i].ftTimeStamp = value.m_Time;
-					//VariantInit( &(*ppItemValues)[i].vDataValue );
-					//VariantCopy( &(*ppItemValues)[i].vDataValue, &value.m_Value );
-					//(*ppErrors)[i] = S_OK;
+					(*ppItemValues)[i].ftTimeStamp = (*it).second->getTimeStamp();
 				}
 
 				return result;
@@ -93,7 +89,48 @@ namespace frl
 				if( pT->deleted )
 					return E_FAIL;
 
-				return E_NOTIMPL;
+				if (phServer == NULL || pItemValues == NULL || ppErrors == NULL)
+					return E_INVALIDARG;
+
+				*ppErrors = NULL;
+
+				if (dwCount == 0)
+					return E_INVALIDARG;
+
+				*ppErrors =  util::allocMemory< HRESULT >( dwCount );
+				if( ppErrors == NULL )
+					return E_OUTOFMEMORY;
+				util::zeroMemory< HRESULT >( *ppErrors );
+
+				HRESULT result = S_OK;
+
+				for( DWORD i = 0; i < dwCount; i++ )
+				{
+					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+					if( it == pT->itemList.end() )
+					{
+						result = S_FALSE;
+						(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
+						continue;
+					}
+
+					if ( !(*it).second->isActived() )
+					{
+						result = S_FALSE;
+						(*ppErrors)[i] = E_FAIL;
+						continue;
+					}
+					
+					(*ppErrors)[i] = (*it).second->writeValue( pItemValues[i] );
+
+					if( FAILED( (*ppErrors)[i] ) )
+					{
+						result = S_FALSE;
+						continue;
+					}
+					(*ppErrors)[i] = S_OK;
+				}
+				return result;
 			};
 		};
 	} // namespace opc

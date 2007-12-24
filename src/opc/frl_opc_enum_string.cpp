@@ -1,5 +1,7 @@
-#include "opc/frl_opc_enum_string.h"
+#include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include "opc/frl_opc_enum_string.h"
+#include "opc/frl_opc_util.h"
 
 namespace frl
 {
@@ -11,20 +13,20 @@ namespace frl
 
 		EnumString::~EnumString()
 		{
-			if ( ! strings.empty() )
+			if( ! strings.empty() )
 				strings.erase( strings.begin(), strings.end() );
 		}
 
 		STDMETHODIMP EnumString::QueryInterface( REFIID iid, LPVOID* ppInterface )
 		{
-			if ( ppInterface == NULL)
+			if( ppInterface == NULL )
 				return E_INVALIDARG;
 
-			if ( iid == IID_IUnknown )
+			if( iid == IID_IUnknown )
 			{
 				*ppInterface = (IUnknown*) this;
 			}
-			else if (iid == IID_IEnumString)
+			else if(iid == IID_IEnumString)
 			{
 				*ppInterface = this;
 			}
@@ -53,7 +55,7 @@ namespace frl
 
 		STDMETHODIMP EnumString::Next( ULONG celt, LPOLESTR* rgelt, ULONG* pceltFetched )
 		{
-			if (rgelt == NULL || pceltFetched == NULL)
+			if( rgelt == NULL || pceltFetched == NULL )
 				return E_INVALIDARG;
 
 			*pceltFetched = 0;
@@ -61,21 +63,16 @@ namespace frl
 			if( curIndex >= strings.size() )
 				return S_FALSE;
 
-			size_t ii = curIndex;
-			for ( ; ii < strings.size() && *pceltFetched < celt; ii++)
+			size_t i = curIndex;
+			for( ; i < strings.size() && *pceltFetched < celt; i++ )
 			{
-				size_t size = ( ( strings[ii].length() +1 ) * sizeof(WCHAR) );
-				rgelt[*pceltFetched] = (LPWSTR)CoTaskMemAlloc( size );
-				if( rgelt[*pceltFetched] == NULL )
-					return E_OUTOFMEMORY;
-
-				if ( strings[ii].empty() )
+				if ( strings[i].empty() )
 				{
 					rgelt[*pceltFetched] = NULL;
 				}
 				else
 				{
-					wcscpy_s( rgelt[*pceltFetched], size/sizeof(WCHAR), strings[ii].c_str() );
+					rgelt[*pceltFetched] = util::duplicateString( strings[i].c_str() );
 				}
 				(*pceltFetched)++;
 			}
@@ -86,7 +83,7 @@ namespace frl
 				return S_FALSE;
 			}
 
-			curIndex = ii;
+			curIndex = i;
 			return S_OK;
 		}
 
@@ -110,28 +107,24 @@ namespace frl
 
 		STDMETHODIMP EnumString::Clone( IEnumString **ppEnum )
 		{
-			if (ppEnum == NULL)
+			if( ppEnum == NULL )
 				return E_INVALIDARG;
 
 			EnumString* pEnum = new EnumString();
-			if ( pEnum == NULL )
+			if( pEnum == NULL )
 			{
 				*ppEnum = NULL;
 				return E_OUTOFMEMORY;
 			}
 
-			pEnum->AddRef();
-
-			for (UINT ii = 0; ii < strings.size(); ii++)
+			for( size_t i = 0; i < strings.size(); i++ )
 			{
-				pEnum->strings.push_back( strings[ii] );
+				pEnum->strings.push_back( strings[i] );
 			}
 
 			pEnum->curIndex = curIndex;
 
 			HRESULT hResult = pEnum->QueryInterface(IID_IEnumString, (void**)ppEnum);
-			// release local reference.
-			pEnum->Release();
 			return hResult;
 		}
 
