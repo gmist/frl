@@ -90,7 +90,8 @@ namespace frl
 				ex.~NotExistTag();
 				return OPC_E_INVALIDHANDLE;
 			}
-			value = tag->read();
+			ComVariant tmp = tag->read();
+			ComVariant::variantCopy( &value, tmp.getPtr() );
 			return S_OK;
 		}
 
@@ -114,6 +115,12 @@ namespace frl
 		{
 			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
 			return tag->getTimeStamp();
+		}
+
+		DWORD GroupItem::getAccessRights()
+		{
+			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
+			return tag->getAccessRights();
 		}
 	} // namespace opc
 } // namespace FatRat Library

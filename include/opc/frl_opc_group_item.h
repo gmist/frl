@@ -35,6 +35,7 @@ namespace frl
 			HRESULT readValue( VARIANT &value );
 			HRESULT writeValue( const VARIANT &newValue );
 			FILETIME getTimeStamp();
+			DWORD getAccessRights();
 		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library

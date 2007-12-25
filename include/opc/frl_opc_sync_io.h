@@ -114,10 +114,17 @@ namespace frl
 						continue;
 					}
 
-					if ( !(*it).second->isActived() )
+					if( ( (*it).second->getAccessRights() & OPC_WRITEABLE ) == 0 )
 					{
 						result = S_FALSE;
-						(*ppErrors)[i] = E_FAIL;
+						(*ppErrors)[i] = OPC_E_BADRIGHTS;
+						continue;
+					}
+
+					if( pItemValues[i].vt == VT_EMPTY )
+					{
+						result = S_FALSE;
+						(*ppErrors)[i] = OPC_E_BADRIGHTS;
 						continue;
 					}
 					

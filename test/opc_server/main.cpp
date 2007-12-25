@@ -154,6 +154,12 @@ int _tmain(int , _TCHAR*)
 	tag->setCanonicalDataType( VT_R4 );
 	tag->write( 0.1 );
 
+	frl::opc::opcAddressSpace.addLeaf( FRL_STR("rootLeaf-writable"));
+	tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR("rootLeaf-writable") );
+	tag->isWriteable( True );
+	tag->setCanonicalDataType( VT_R4 );
+	tag->write( 0.0 );
+
 	frl::opc::opcAddressSpace.addLeaf( FRL_STR("rootLeaf1") );
 	tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR("rootLeaf1") );
 	tag->setCanonicalDataType( VT_BSTR );
