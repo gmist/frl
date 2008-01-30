@@ -51,7 +51,44 @@ namespace frl
 			void ReInit( frl::Long value_ );
 
 		};	// class Semaphore
+
+		class SemaphoreMutex
+		{
+			Semaphore sem;
+		public:
+			typedef frl::lock::ScopeGuard< SemaphoreMutex > ScopeGuard;
+
+			// Конструктор
+			SemaphoreMutex( void )
+			{
+				sem.Init( 1 );
+			}
+
+			// Деструктор
+			~SemaphoreMutex( void )
+			{
+			}
+
+			// Захват мьютекса
+			void Lock( void )
+			{
+				sem.Wait();
+				sem.ReInit( 1 );
+			}
+
+			// Попытка захвата мьютекса
+			Bool TryLock( void )
+			{
+				return sem.TryWait();
+			}
+
+			// Освобождение мьютекса
+			void UnLock( void )
+			{
+				sem.Post();
+			}
+		};
 	} // namespace lock
 } // namespace FatRat Library
 
-#endif /*FRL_SEMAPHORE_H_*/
+#endif // FRL_SEMAPHORE_H_

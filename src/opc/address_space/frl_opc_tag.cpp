@@ -14,7 +14,7 @@ namespace frl
 				is_Branch = False;
 				parent = NULL;
 
-				requestedDataType = canonicalDataType = VT_EMPTY;
+				requestedDataType = VT_EMPTY;
 				clientHandle = serverHandle = 0;
 				accessRights = OPC_READABLE & OPC_WRITEABLE;
 				active = True;
@@ -36,9 +36,9 @@ namespace frl
 				parent = NULL;
 				is_Branch = is_Branch_;
 				if( is_Branch )
-					canonicalDataType = VT_ARRAY;
+					value.setType( VT_ARRAY );
 				else
-					canonicalDataType = VT_EMPTY;
+					value.setType( VT_EMPTY );
 				requestedDataType = VT_EMPTY;
 				clientHandle = serverHandle = 0;
 				accessRights = OPC_READABLE | OPC_WRITEABLE;
@@ -53,15 +53,9 @@ namespace frl
 
 			Tag::~Tag()
 			{
-				if( tags.size() )
-				{
-					for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
-					{
-						Tag *tmp = (*it);
-						delete tmp;
-					}
-					tags.erase( tags.begin(), tags.end() );
-				}
+				for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != tagsNameCache.end(); ++it )
+					delete (*it).second;
+				
 			}
 
 			void Tag::setID( const String& newID )
@@ -127,12 +121,12 @@ namespace frl
 
 			void Tag::setCanonicalDataType( VARTYPE newType )
 			{
-				canonicalDataType = newType;
+				value.setType( newType );
 			}
 
 			VARTYPE Tag::getCanonicalDataType()
 			{
-				return canonicalDataType;
+				return value.getType();
 			}
 
 			void Tag::setAccessRights( DWORD newAccessRights )
@@ -168,29 +162,27 @@ namespace frl
 				return ( accessRights & OPC_WRITEABLE ) == 1;
 			}
 
-			void Tag::addLeaf( const String &name )
+			Tag* Tag::addLeaf( const String &name )
 			{
 				FRL_EXCEPT_GUARD();
-				addTag( name, False );
+				return addTag( name, False );
 			}
 
 			frl::Bool Tag::isExistTag( const String &name )
 			{
-				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
-				{
-					if( (*it)->getID() == name )
-						return True;
-				}
-				return False;
+				std::map< String, Tag*>::iterator it = tagsNameCache.find( name );
+				if( it == tagsNameCache.end() )
+					return False;
+				return True;
 			}
 
-			void Tag::addBranch( const String &name )
+			Tag* Tag::addBranch( const String &name )
 			{
 				FRL_EXCEPT_GUARD();
-				addTag( name, True );
+				return addTag( name, True );
 			}
 
-			void Tag::addTag( const String &name, Bool is_Branch_ )
+			Tag* Tag::addTag( const String &name, Bool is_Branch_ )
 			{
 				FRL_EXCEPT_GUARD();
 				if( isExistTag( name ) )
@@ -199,37 +191,28 @@ namespace frl
 				newTag->setParent( this );
 				newTag->setID( name );
 				newTag->setServerHandle( util::getUniqueServerHandle() );
-				tags.push_back( newTag );
+				tagsNameCache.insert( std::pair< String, Tag* >( name, newTag ) );
+				return newTag;
 			}
 
 			Tag* Tag::getBranch( const String &name )
 			{
-				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
-				{
-					if( (*it)->getID() == name )
-					{
-						if( (*it)->isBranch() )
-							return (*it);
-						FRL_THROW_S_CLASS( IsNotBranch );
-					}
-				}
-				FRL_THROW_S_CLASS( NotExistTag );
-				return NULL;
+				std::map< String, Tag*>::iterator it = tagsNameCache.find( name );
+				if( it == tagsNameCache.end() )
+					FRL_THROW_S_CLASS( NotExistTag );
+				if( ! (*it).second->isBranch() )
+					FRL_THROW_S_CLASS( IsNotBranch );
+				return (*it).second;
 			}
 
 			Tag* Tag::getLeaf( const String &name )
 			{
-				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
-				{
-					if( (*it)->getID() == name )
-					{
-						if( (*it)->isLeaf() )
-							return (*it);
-						FRL_THROW_S_CLASS( IsNotLeaf );
-					}
-				}
-				FRL_THROW_S_CLASS( NotExistTag );
-				return NULL;
+				std::map< String, Tag*>::iterator it = tagsNameCache.find( name );
+				if( it == tagsNameCache.end() )
+					FRL_THROW_S_CLASS( NotExistTag );
+				if( ! (*it).second->isLeaf() )
+					FRL_THROW_S_CLASS( IsNotLeaf );
+				return (*it).second;
 			}
 
 			Tag* Tag::getParent()
@@ -244,25 +227,25 @@ namespace frl
 
 			void Tag::browseBranches( std::vector< String > &branches )
 			{
-				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
+				for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != tagsNameCache.end(); ++it )
 				{
-					if( (*it)->isBranch() )
-						branches.push_back( (*it)->getShortID() );
+					if( (*it).second->isBranch() )
+						branches.push_back( (*it).second->getShortID() );
 				}
 			}
 
 			void Tag::browseLeafs( std::vector< String > &leafs, DWORD accessFilter )
 			{
-				for( std::list< Tag* >::iterator it = tags.begin(); it != tags.end(); ++it )
+				for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != tagsNameCache.end(); ++it )
 				{
-					if( (*it)->isLeaf() )
+					if( (*it).second->isLeaf() )
 					{
 						if( accessFilter != 0 )
 						{
-							if( ( accessFilter & (*it)->getAccessRights() ) == 0 )
+							if( ( accessFilter & (*it).second->getAccessRights() ) == 0 )
 								continue;
 						}
-						leafs.push_back( (*it)->getShortID() );
+						leafs.push_back( (*it).second->getShortID() );
 					}
 				}
 			}
@@ -274,13 +257,16 @@ namespace frl
 
 			void Tag::write( const ComVariant &newVal )
 			{
+				if( ComVariant::isEqual( value, newVal ) )
+					return;
 				value = newVal;
 				SYSTEMTIME SystemTime;
 				GetSystemTime( &SystemTime );
 				SystemTimeToFileTime( &SystemTime, &timeStamp );
+				isChangeFlag = True;
 			}
 
-			ComVariant Tag::getTimeStamp()
+			const FILETIME& Tag::getTimeStamp()
 			{
 				return timeStamp;
 			}

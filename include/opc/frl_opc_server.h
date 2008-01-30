@@ -2,9 +2,6 @@
 #define frl_opc_server_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include <atlbase.h>
-#include <atlcom.h>
-#include <Guiddef.h>
 #include <map>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_common.h"
@@ -13,6 +10,8 @@
 #include "opc/frl_opc_item_mgt.h"
 #include "frl_lock.h"
 #include "opc/frl_opc_group_state_mgt.h"
+#include "opc/frl_opc_connection_point_container.h"
+#include "frl_non_copyable.h"
 
 namespace frl
 {
@@ -21,49 +20,35 @@ namespace frl
 		class Group;
 		template < class T>  class  GroupStateMgt;
 		class OPCServer
-			:	public CComObjectRootEx<CComMultiThreadModel>,
-				public CComCoClass<OPCServer>,
-				public OPCCommon,
+			:	public OPCCommon,
 				public IOPCServer,
-				public IConnectionPointContainerImpl<OPCServer>,
-				public IConnectionPointImpl< OPCServer, &__uuidof(IOPCShutdown)>,
 				public ItemProperties< OPCServer >,
-				public BrowseServerAddressSpace< OPCServer >
+				public BrowseServerAddressSpace< OPCServer >,
+				public ConnectionPointContainer,
+				private NonCopyable
 		{
-		friend Group;
 		friend GroupStateMgt<Group>;
-		friend ItemProperties< OPCServer >;
+
 		private:
 			std::map< OPCHANDLE, frl::opc::Group* > groupItem;
 			std::map< String, OPCHANDLE > groupItemIndex;
 			lock::Mutex scopeGuard;
+			volatile LONG refCount;
+
 		public:
 			OPCSERVERSTATUS m_ServerStatus;
-
-			BEGIN_CATEGORY_MAP(OPCServer)
-				IMPLEMENTED_CATEGORY(CATID_OPCDAServer20)
-			END_CATEGORY_MAP()
-
-			BEGIN_COM_MAP(OPCServer)
-				COM_INTERFACE_ENTRY(IOPCCommon)
-				COM_INTERFACE_ENTRY(IOPCServer)
-				COM_INTERFACE_ENTRY(IOPCItemProperties)
-				COM_INTERFACE_ENTRY(IOPCBrowseServerAddressSpace)
-				COM_INTERFACE_ENTRY(IConnectionPointContainer)
-			END_COM_MAP()
-
-			BEGIN_CONNECTION_POINT_MAP(OPCServer)
-				CONNECTION_POINT_ENTRY(__uuidof(IOPCShutdown))
-			END_CONNECTION_POINT_MAP()
 
 			OPCServer();
 			Bool setGroupName( const String &oldName, const String &newName );
 			HRESULT cloneGroup( const String &name, const String &cloneName, Group **group );
 			HRESULT addNewGroup( Group **group );
 
-			//////////////////////////////////////////////////////////////////////////
-			// IOPCServer implementation
+			// IUnknown implementation
+			STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface);
+			STDMETHODIMP_(ULONG) AddRef( void);
+			STDMETHODIMP_(ULONG) Release( void);
 
+			// IOPCServer implementation
 			HRESULT STDMETHODCALLTYPE AddGroup( 
 				/* [string][in] */ LPCWSTR szName,
 				/* [in] */ BOOL bActive,
@@ -103,5 +88,5 @@ namespace frl
 	} // namespace opc
 } // namespace FatRat Library
 
-#endif /* FRL_PLATFORM_WIN32 */
-#endif /* frl_opc_server_h_ */
+#endif // FRL_PLATFORM_WIN32
+#endif // frl_opc_server_h_

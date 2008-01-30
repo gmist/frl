@@ -9,19 +9,23 @@
 #include "opc/frl_opc_sync_io.h"
 #include "opc/frl_opc_async_io2.h"
 #include "opc/frl_opc_group_item.h"
+#include "opc/frl_opc_connection_point_container.h"
+#include "opc/frl_opc_timer.h"
+#include "opc/frl_opc_async_request.h"
 #include "frl_lock.h"
+#include "frl_non_copyable.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class OPCServer;
-
 		class Group :
 			public GroupStateMgt< Group >,
 			public ItemMgt< Group >,
 			public SyncIO< Group >,
-			public AsyncIO2< Group >
+			public AsyncIO2< Group >,
+			public ConnectionPointContainer,
+			private NonCopyable
 		{
 		friend class GroupStateMgt< Group >;
 		friend class ItemMgt< Group >;
@@ -49,6 +53,14 @@ namespace frl
 		
 			lock::Mutex groupGuard;
 			std::map<OPCHANDLE, GroupItem* > itemList;
+			std::list< AsyncRequest* > asyncReadList;
+			std::list< AsyncRequest* > asyncWriteList;
+			std::list< AsyncRequest* > asyncRefreshList;
+
+			Timer< Group > timerRead;
+			Timer< Group > timerWrite;
+			Timer< Group > timerRefresh;
+			Timer< Group > timerUpdate;
 		protected:
 			REFCLSID GetCLSID();
 		public:
@@ -57,8 +69,7 @@ namespace frl
 			QueryInterface( /* [in] */ REFIID iid, /* [iid_is][out] */ void** ppInterface );
 			ULONG STDMETHODCALLTYPE AddRef( void);
 			ULONG STDMETHODCALLTYPE Release( void);
-			HRESULT STDMETHODCALLTYPE CreateInstance(IUnknown** ippUnknown, const CLSID* pClsid);
-			LONG getRefCount();
+			HRESULT STDMETHODCALLTYPE CreateInstance(IUnknown** ippUnknown, const CLSID* pClsid);			
 
 			// Constructors
 			Group();
@@ -66,13 +77,21 @@ namespace frl
 			Group( const Group &group );
 			~Group(); // Destructor
 			void Init();
-			void setServerHandle( OPCHANDLE handle );
 			OPCHANDLE getServerHandle();
 			void setServerPtr( OPCServer *serverPtr );
 			const String getName();
 			Bool isDeleted();
 			void isDeleted( Bool deleteFlag );
 			void setName( const String &newName );
+			LONG getRefCount();
+			void onReadTimer();
+			void onWriteTimer();
+			void onRefreshTimer();
+			void onUpdateTimer();
+			void doAsyncRead( IOPCDataCallback** callBack, const AsyncRequest *request );
+			void doAsyncRefresh( IOPCDataCallback** callBack, const AsyncRequest *request );
+			void doAsyncWrite( IOPCDataCallback** callBack, const AsyncRequest *request );
+			static Group* cloneFrom( const Group &group );
 		}; // class Group
 	} // namespace opc
 } // namespace FatRat Library

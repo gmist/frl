@@ -46,47 +46,31 @@ namespace frl
 				pos = fullPath.rfind( delimiter );
 				if( pos == String::npos )
 				{
-					rootTag->addBranch( fullPath );
+					Tag *added = rootTag->addBranch( fullPath );
+					nameBranchHash.insert( std::pair< String, Tag*>( fullPath, added ) );
 					return;
 				}
 				// last or first symbol in branch name == delimiter
 				if( pos == fullPath.size()-1 || pos == 0 )
 					FRL_THROW_S_CLASS( InvalidBranchName );
 				String tmpPath = fullPath.substr( 0, pos );
-				getBranch( tmpPath )->addBranch( fullPath );
+				Tag *added = getBranch( tmpPath )->addBranch( fullPath );
+				nameBranchHash.insert( std::pair< String, Tag*>( fullPath, added ) );
 			}
 
 			Tag* AddressSpace::getBranch( const String& fullPath )
 			{
 				if( fullPath.empty() )
 					return rootTag;
-				size_t pos = fullPath.find( delimiter );
-				if( pos == String::npos )
+				std::map< String, Tag*>::iterator it = nameBranchHash.find( fullPath );
+				if( it == nameBranchHash.end() )
 				{
-					if( ! rootTag->isExistTag( fullPath ) )
-						FRL_THROW_S_CLASS( NotExistTag );
-					return rootTag->getBranch( fullPath );
+					FRL_THROW_S_CLASS( NotExistTag );
 				}
-				String tmpBranch;
-				String tmpPath = fullPath;
-				Tag *brPos = rootTag;
-				Tag *tmpBr;
-				do
-				{
-					tmpBranch = tmpPath.substr( 0, pos );
-					if( brPos->getID().size() )
-						tmpBr = brPos->getBranch( brPos->getID() + delimiter + tmpBranch );
-					else
-						tmpBr = brPos->getBranch( tmpBranch );
-					tmpPath = tmpPath.substr( pos+1, tmpPath.size()-1 );
-					pos = tmpPath.find( delimiter );
-					brPos = tmpBr;
-				}
-				while( pos != String::npos );
-				return tmpBr->getBranch( fullPath );
+				return (*(it) ).second;				
 			}
 
-			void AddressSpace::addLeaf( const String &fullPath, Bool createPath )
+			Tag* AddressSpace::addLeaf( const String &fullPath, Bool createPath )
 			{
 				FRL_EXCEPT_GUARD();
 				if( fullPath.empty() )
@@ -105,7 +89,8 @@ namespace frl
 					Tag *added = rootTag->getLeaf( fullPath );
 					OPCHANDLE handle = added->getServerHandle();
 					handleHash.insert( std::pair< OPCHANDLE, Tag* > ( handle, added ) );
-					return;
+					nameLeafHash.insert( std::pair< String, Tag*>( fullPath, added ) );
+					return added;
 				}
 				String fullBranchName = fullPath.substr(0, pos );
 
@@ -115,7 +100,8 @@ namespace frl
 					Tag *added = getBranch( fullBranchName )->getLeaf( fullPath );
 					OPCHANDLE handle = added->getServerHandle();
 					handleHash.insert( std::pair< OPCHANDLE, Tag* > ( handle, added ) );
-					return;
+					nameLeafHash.insert( std::pair< String, Tag*>( fullPath, added ) );
+					return added;
 				}
 				catch( NotExistTag &ex )
 				{
@@ -123,33 +109,7 @@ namespace frl
 					if( ! createPath )
 						FRL_THROW_S_CLASS( NotExistTag );
 				}
-
-				pos = fullBranchName.find( delimiter );
-				String tmpPath = fullBranchName;
-				String tmpBranch;
-				Tag* brPos = rootTag;
-				Tag* tmpBr;
-				do
-				{
-					tmpBranch = tmpPath.substr( 0, pos );
-					try
-					{
-						tmpBr = brPos->getBranch( tmpBranch );
-					}
-					catch( NotExistTag &ex )
-					{
-						ex.~NotExistTag();
-						brPos->addBranch( tmpBranch );
-					}
-					tmpPath = tmpPath.substr( pos+1, tmpPath.size()-1 );
-					pos = tmpPath.find( delimiter );
-					brPos = tmpBr;
-				}
-				while( pos != String::npos );
-				getBranch( fullBranchName )->addLeaf( fullPath );
-				Tag *added = getBranch( fullBranchName )->getLeaf( fullPath );
-				OPCHANDLE handle = added->getServerHandle();
-				handleHash.insert( std::pair< OPCHANDLE, Tag* > ( handle, added ) );
+				return NULL;
 			}
 
 			frl::Bool AddressSpace::isExistItem( const String &itemName )
@@ -187,30 +147,12 @@ namespace frl
 			{
 				if( fullPath.empty() )
 					FRL_THROW_S_CLASS( InvalidLeafName );
-				size_t pos = fullPath.find( delimiter );
-				if( pos == String::npos )
+				std::map< String, Tag*>::iterator it = nameLeafHash.find( fullPath );
+				if( it == nameLeafHash.end() )
 				{
-					if( ! rootTag->isExistTag( fullPath ) )
-						FRL_THROW_S_CLASS( NotExistTag );
-					return rootTag->getLeaf( fullPath );
+					FRL_THROW_S_CLASS( NotExistTag );
 				}
-				String tmpBranch;
-				String tmpPath = fullPath;
-				Tag *brPos = rootTag;
-				Tag *tmpBr;
-				do
-				{
-					tmpBranch = tmpPath.substr( 0, pos );
-					if( brPos->getID().size() )
-						tmpBr = brPos->getBranch( brPos->getID() + delimiter + tmpBranch );
-					else
-						tmpBr = brPos->getBranch( tmpBranch );
-					tmpPath = tmpPath.substr( pos+1, tmpPath.size()-1 );
-					pos = tmpPath.find( delimiter );
-					brPos = tmpBr;
-				}
-				while( pos != String::npos );
-				return tmpBr->getLeaf( fullPath );
+				return (*(it) ).second;
 			}
 
 			Tag* AddressSpace::getLeaf( OPCHANDLE handle )

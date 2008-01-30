@@ -35,7 +35,7 @@ bool test_ThreadCreate( void )
 {	
 	try
 	{
-		frl::thread::Thread<void, void> test_thread;
+		frl::thread::Thread< void, void > test_thread;
 		test_thread.Create( NullThreadFunc, true );	
 	}
 	catch ( const frl::Exception *e)
@@ -115,6 +115,106 @@ bool test_ThreadEqual( void )
 	
 }
 
+
+frl::Long g_value = 0L;
+
+frl::Bool testClassVoidVoid()
+{
+	int vlaue = 0;
+	try
+	{	
+		struct X
+		{
+			void aa( void )
+			{
+				g_value = 1L;
+			}
+		};
+	
+		X x;
+		frl::thread::Thread< void, void, X > thread1;
+		thread1.Create( &X::aa, x );
+		thread1.Start();
+		thread1.Join();
+		if( g_value == 1L )
+		{
+			return frl::True;
+		}
+		return frl::False;
+	}
+	catch( frl::Exception &ex )
+	{
+		ex.~Exception();
+		return frl::False;
+	}
+	return frl::False;
+}
+
+
+frl::Bool testClassLongVoid()
+{
+	try
+	{	
+		struct X
+		{
+			frl::Long aa( void )
+			{
+				return 12345L;
+			}
+		};
+		X x;
+		frl::thread::Thread< frl::Long, void, X > thread1;
+		thread1.Create( &X::aa, x );
+		thread1.Start();
+		thread1.Join();
+		frl::Long res = thread1.GetWorkResult();
+		if( res == 12345L )
+		{
+			return frl::True;
+		}
+		return frl::False;
+	}
+	catch( frl::Exception &ex )
+	{
+		ex.~Exception();
+		return frl::False;
+	}
+	return frl::False;
+}
+
+frl::Bool testClassVoidLong()
+{
+	try
+	{	
+		struct X
+		{
+			void aa( frl::Long a )
+			{
+				g_value = a;
+			}
+		};
+		X x;
+		frl::thread::Thread< void, frl::Long, X > thread1;
+		thread1.Create( &X::aa, x );
+		thread1.Start( 12345L );
+		thread1.Join();
+		if( g_value == 12345L )
+		{
+			return frl::True;
+		}
+		return frl::False;
+	}
+	catch( frl::Exception &ex )
+	{
+		ex.~Exception();
+		return frl::False;
+	}
+	return frl::False;
+}
+
+
+
+
 int main( int argc, char *argv[] )
 {	
 	FRL_EXCEPT_GUARD();
@@ -125,6 +225,9 @@ int main( int argc, char *argv[] )
 		test_thread.Add( test_ThreadJoin, FRL_STR("Thread::Join()") );
 		test_thread.Add( test_ThreadKill, FRL_STR("Thread::Kill()") );
 		test_thread.Add( test_ThreadEqual, FRL_STR("Thread::operator ==, Thread::operator!=") );
+		test_thread.Add( testClassVoidVoid, FRL_STR("Thread class (void, void)") );
+		test_thread.Add( testClassLongVoid, FRL_STR("Thread class (void, void)") );
+		test_thread.Add( testClassVoidLong, FRL_STR("Thread class (void, void)") );
 	}
 	catch ( frl::Exception& e)
 	{

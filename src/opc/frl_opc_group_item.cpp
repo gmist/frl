@@ -13,6 +13,16 @@ namespace frl
 			Init();
 		}
 
+		/*GroupItem::GroupItem( const GroupItem &item_ )
+		{
+			serverHandle = util::getUniqueServerHandle();
+			clientHandle = item_.clientHandle;
+			actived = item_.actived;
+			accessPath = item_.accessPath;
+			itemID = item_.itemID;
+			requestDataType = item_.requestDataType;
+		}*/
+
 		GroupItem::~GroupItem()
 		{
 
@@ -24,7 +34,7 @@ namespace frl
 			clientHandle = 0;
 			itemID = FRL_STR("");
 			accessPath = FRL_STR("");
-			actived = false;
+			actived = False;
 			requestDataType = VT_EMPTY;
 		}
 
@@ -35,7 +45,7 @@ namespace frl
 			clientHandle = itemDef.hClient;
 			itemID = itemDef.szItemID;
 			accessPath = itemDef.szAccessPath;
-			actived = ( itemDef.bActive == TRUE );
+			actived = ( itemDef.bActive == TRUE || itemDef.bActive == VARIANT_TRUE );
 			requestDataType = itemDef.vtRequestedDataType;
 		}
 
@@ -78,21 +88,12 @@ namespace frl
 			return requestDataType;
 		}
 
-		HRESULT GroupItem::readValue( VARIANT &value )
+		const ComVariant& GroupItem::readValue()
 		{
-			address_space::Tag *tag;
-			try
-			{
-				tag = opcAddressSpace.getLeaf( itemID );
-			}
-			catch( frl::opc::address_space::NotExistTag &ex )
-			{
-				ex.~NotExistTag();
-				return OPC_E_INVALIDHANDLE;
-			}
-			ComVariant tmp = tag->read();
-			ComVariant::variantCopy( &value, tmp.getPtr() );
-			return S_OK;
+			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
+			cachedValue = tag->read();
+			lastChange = tag->getTimeStamp();
+			return cachedValue;
 		}
 
 		HRESULT GroupItem::writeValue( const VARIANT &newValue )
@@ -107,20 +108,59 @@ namespace frl
 				ex.~NotExistTag();
 				return OPC_E_INVALIDHANDLE;
 			}
-			tag->write( newValue );
+			VARIANT tmp;
+			::VariantInit( &tmp );
+			ComVariant::variantCopy( &tmp, &newValue );
+			::VariantChangeType( &tmp, &tmp, 0, tag->getCanonicalDataType() );
+			tag->write( tmp );
 			return S_OK;
 		}
 
-		FILETIME GroupItem::getTimeStamp()
+		const FILETIME& GroupItem::getTimeStamp()
 		{
-			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
-			return tag->getTimeStamp();
+			return lastChange;
 		}
 
 		DWORD GroupItem::getAccessRights()
 		{
 			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
 			return tag->getAccessRights();
+		}
+
+		DWORD GroupItem::getQuality()
+		{
+			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
+			return tag->getQuality();
+		}
+
+		OPCHANDLE GroupItem::getServerHandle()
+		{
+			return serverHandle;
+		}
+
+		frl::Bool GroupItem::isChange()
+		{
+			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
+			FILETIME tmp = tag->getTimeStamp();
+			return ( ( lastChange.dwHighDateTime != tmp.dwHighDateTime)
+						|| ( lastChange.dwLowDateTime != tmp.dwLowDateTime ) );
+		}
+
+		GroupItem* GroupItem::cloneFrom( const GroupItem &rhv )
+		{
+			GroupItem *grItem= new GroupItem();
+			grItem->serverHandle = util::getUniqueServerHandle();
+			grItem->clientHandle = rhv.clientHandle;
+			grItem->actived = rhv.actived;
+			grItem->accessPath = rhv.accessPath;
+			grItem->itemID = rhv.itemID;
+			grItem->requestDataType = rhv.requestDataType;
+			return grItem;
+		}
+
+		const ComVariant& GroupItem::getCachedValue()
+		{
+			return cachedValue;
 		}
 	} // namespace opc
 } // namespace FatRat Library

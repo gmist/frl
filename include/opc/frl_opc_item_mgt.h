@@ -7,6 +7,7 @@
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_enum_item_attributes.h"
 #include "opc/address_space/frl_opc_address_space.h"
+#include "opc/frl_opc_async_request.h"
 
 namespace frl
 {
@@ -87,6 +88,7 @@ namespace frl
 					(*ppAddResults)[ii].dwAccessRights = tag->getAccessRights();
 					(*ppAddResults)[ii].dwBlobSize = 0;
 					(*ppAddResults)[ii].pBlob = NULL;
+
 					pT->itemList.insert( std::pair< OPCHANDLE, GroupItem* > ( serverHandle, item ));
 				}
 				return res;
@@ -123,8 +125,8 @@ namespace frl
 				}
 				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				HRESULT res = S_OK;
+				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				/// check exist of the specified tags
 				for( DWORD i=0; i<dwCount; i++ )
 				{
@@ -179,8 +181,8 @@ namespace frl
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
 				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
+
 				HRESULT res = S_OK;
-				
 				std::map< OPCHANDLE, GroupItem* >::iterator it;
 				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++)
@@ -193,6 +195,53 @@ namespace frl
 					}
 					else 
 					{
+						 // and disconnected from all async requests
+						std::vector< size_t > requestRemove;
+						for( std::list< AsyncRequest* >::iterator iter = pT->asyncReadList.begin(), remIt; iter != pT->asyncReadList.end(); iter = remIt )
+						{
+							remIt = iter;
+							++remIt;
+
+							(*iter)->removeHandles( phServer[i] );
+							if( (*iter)->getCounts() == 0 )
+							{
+								AsyncRequest * request = (*iter);
+								delete request;
+								pT->asyncReadList.erase( iter );
+							}
+
+						}
+
+						requestRemove.clear();
+						for( std::list< AsyncRequest* >::iterator iter = pT->asyncWriteList.begin(), remIt; iter != pT->asyncWriteList.end(); iter = remIt )
+						{
+							remIt = iter;
+							++remIt;
+
+							(*iter)->removeHandles( phServer[i] );
+							if( (*iter)->getCounts() == 0 )
+							{
+								AsyncRequest * request = (*iter);
+								delete request;
+								pT->asyncWriteList.erase( iter );
+							}
+
+						}
+
+						requestRemove.clear();
+						for( std::list< AsyncRequest* >::iterator iter = pT->asyncRefreshList.begin(), remIt; iter != pT->asyncRefreshList.end(); iter = remIt )
+						{
+							remIt = iter;
+							++remIt;
+
+							(*iter)->removeHandles( phServer[i] );
+							if( (*iter)->getCounts() == 0 )
+							{
+								AsyncRequest * request = (*iter);
+								delete request;
+								pT->asyncRefreshList.erase( iter );
+							}
+						}
 						pT->itemList.erase( it );
 					}
 				}
@@ -232,7 +281,7 @@ namespace frl
 						res = S_FALSE;
 						continue;
 					}
-					(*it).second->isActived( ( bActive == -1 ) );
+					(*it).second->isActived( ( bActive == VARIANT_TRUE ) || ( bActive == TRUE ) );
 					(*ppErrors)[ii] = S_OK;
 				}
 				return res;
@@ -284,8 +333,10 @@ namespace frl
 				T* pT = static_cast<T*> (this);
 				if( pT->deleted )
 					return E_FAIL;
-				if( *phServer == NULL || *pRequestedDatatypes == NULL || *ppErrors == NULL )
+
+				if( phServer == NULL || pRequestedDatatypes == NULL || ppErrors == NULL )
 					return E_INVALIDARG;
+
 				*ppErrors = NULL;
 				if( dwCount == 0 )
 					return E_INVALIDARG;
@@ -303,11 +354,17 @@ namespace frl
 					it = pT->itemList.find( phServer[i] );
 					if(it == pT->itemList.end())
 					{
-						(*ppErrors)[i] = E_FAIL;
+						(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 						res = S_FALSE;
+						continue;
 					}
-					else
-						(*it).second->setRequestDataType( pRequestedDatatypes[i] );
+					if( ! util::isValidType( pRequestedDatatypes[i] ) )
+					{
+						(*ppErrors)[i] = OPC_E_BADTYPE;
+						res = S_FALSE;
+						continue;
+					}
+					(*it).second->setRequestDataType( pRequestedDatatypes[i] );
 				}
 				return res;
 			}

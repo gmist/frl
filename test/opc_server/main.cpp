@@ -2,16 +2,8 @@
 #include "frl_lock.h"
 #include "sys/frl_sys_util.h"
 #include <conio.h>
-#include <atlbase.h>
 
-class COPCServerModule : public CAtlExeModuleT< COPCServerModule >
-{
-public :
-
-};
-
-COPCServerModule _AtlModule;
-CComObject<frl::opc:: OPCServer> *g_Server = NULL;
+frl::opc::OPCServer *g_Server = NULL;
 
 class OpcClassFactory : public IClassFactory
 {
@@ -55,7 +47,7 @@ public:
 
 		if( create && g_Server == NULL) 
 		{
-			CComObject<frl::opc::OPCServer>::CreateInstance( &g_Server );
+			g_Server = new frl::opc::OPCServer();
 			if( g_Server )
 				g_Server->AddRef();
 			else 

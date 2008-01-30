@@ -2,15 +2,17 @@
 #define frl_opc_group_item_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <Windows.h>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
-#include <Windows.h>
+#include "frl_non_copyable.h"
+#include "opc/frl_opc_com_variant.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class GroupItem
+		class GroupItem : private NonCopyable
 		{
 		private:
 			OPCHANDLE clientHandle;
@@ -19,6 +21,8 @@ namespace frl
 			String accessPath;
 			String itemID;
 			VARTYPE requestDataType;
+			FILETIME lastChange;
+			ComVariant cachedValue;
 		public:
 			GroupItem();
 			~GroupItem();
@@ -32,10 +36,15 @@ namespace frl
 			OPCHANDLE getClientHandle();
 			const String& getItemID();
 			const String& getAccessPath();
-			HRESULT readValue( VARIANT &value );
+			const ComVariant& readValue();
 			HRESULT writeValue( const VARIANT &newValue );
-			FILETIME getTimeStamp();
+			const FILETIME& getTimeStamp();
 			DWORD getAccessRights();
+			DWORD getQuality();
+			OPCHANDLE getServerHandle();
+			Bool isChange();
+			static GroupItem* cloneFrom( const GroupItem &rhv );
+			const ComVariant& getCachedValue();
 		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library

@@ -16,7 +16,7 @@ namespace frl
 			struct SemaphoreDescriptor
 			{
 				HANDLE semaphore;
-				Long curValue;
+				volatile Long curValue;
 				SemaphoreDescriptor()
 					:	semaphore( INVALID_HANDLE_VALUE ),
 						curValue( -1 )

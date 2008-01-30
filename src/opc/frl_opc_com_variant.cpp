@@ -105,7 +105,7 @@ namespace frl
 			*this = cValue;
 		}
 
-		ComVariant::ComVariant( FILETIME cValue )
+		ComVariant::ComVariant( const FILETIME &cValue )
 		{
 			init();
 			*this = cValue;
@@ -161,18 +161,20 @@ namespace frl
 			return &value;
 		}
 
-		void ComVariant::variantCopy( VARIANT *dst, const VARIANT *src )
+		HRESULT ComVariant::variantCopy( VARIANT *dst, const VARIANT *src )
 		{
 			if( dst == NULL )
-				return;
+				return E_FAIL;
 			ComVariant::variantClear( dst );
 			if( src == NULL )
-				return;
-			HRESULT result = ::VariantCopy( dst, (VARIANT*)src );
-			if( FAILED( result ) )
-				return;
-			else
-				return;
+				return E_FAIL;
+			return ::VariantCopy( dst, (VARIANT*)src );
+		}
+
+		HRESULT ComVariant::variantCopy( VARIANT &dst, const VARIANT &src )
+		{
+			::VariantInit( &dst );
+			return ::VariantCopy( &dst, (VARIANT*)&src );
 		}
 
 		ComVariant& ComVariant::operator=( const ComVariant &rVal )
@@ -288,7 +290,7 @@ namespace frl
 			return *this;
 		}
 			
-		ComVariant& ComVariant::operator=( CY rVal )
+		ComVariant& ComVariant::operator=( const CY &rVal )
 		{
 			clear();
 			value.vt = VT_CY;
@@ -296,13 +298,14 @@ namespace frl
 			return *this;
 		}
 
-		ComVariant& ComVariant::operator=( FILETIME rVal )
+		ComVariant& ComVariant::operator=( const FILETIME &rVal )
 		{
 			clear();
 			value.vt = VT_DATE;
-			DATE dblDate = ( *(__int64*)(&rVal) / 8.64e11 ) - (double)(363 + (1899 - 1601) * 365 + (24 + 24 + 24));
-			dblDate = floor(dblDate*1e9 + 0.5)/1e9;
-			value.date = dblDate;
+			SYSTEMTIME st;
+			FileTimeToSystemTime( &rVal, &st );
+			SystemTimeToVariantTime( &st, &value.date );
+			::ZeroMemory( &st, sizeof(SYSTEMTIME) );
 			return *this;
 		}
 		
@@ -438,8 +441,17 @@ namespace frl
 			FRL_EXCEPT_GUARD();
 			if( value.vt != VT_DATE )
 				FRL_THROW_S();
-			__int64 tmp = (__int64)( (value.date + (double)(363 + (1899 - 1601) * 365 + (24 + 24 + 24))) * 8.64e11);
-			return *(FILETIME*)( &tmp );
+			SYSTEMTIME st;
+			if( ! ::VariantTimeToSystemTime( value.date, &st ) )
+				FRL_THROW_S();
+			FILETIME ft;
+			if( ! ::SystemTimeToFileTime( &st, &ft ) )
+			{
+				::ZeroMemory( &st, sizeof(SYSTEMTIME) );
+				FRL_THROW_S();
+			}
+			::ZeroMemory( &st, sizeof(SYSTEMTIME) );
+			return ft;
 		}
 
 		ComVariant::operator String() const
@@ -457,7 +469,8 @@ namespace frl
 
 		bool ComVariant::isEqual( const VARIANT &val1, const VARIANT &val2 )
 		{
-			if ( val1.vt != val2.vt ) return false;
+			if ( val1.vt != val2.vt )
+				return false;
 
 			if (val1.vt & VT_ARRAY)
 			{
@@ -500,6 +513,21 @@ namespace frl
 					return ( val1.bstrVal == val2.bstrVal );
 			}
 			return false;
+		}
+
+		void ComVariant::setType( VARTYPE type )
+		{
+			::VariantChangeType( &value, &value, 0, type );
+		}
+
+		HRESULT ComVariant::copyTo( VARIANT &dst ) const
+		{
+			return ComVariant::variantCopy( dst, value );
+		}
+
+		HRESULT ComVariant::copyTo( VARIANT *dst ) const
+		{
+			return ComVariant::variantCopy( dst, &value );
 		}
 	} // namespace opc
 } // namespace FatRat Library

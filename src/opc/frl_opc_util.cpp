@@ -16,9 +16,9 @@ namespace frl
 				return ++handle;
 			}
 
-			FILETIME getFileTime()
+			const FILETIME& getFileTime()
 			{
-				FILETIME fileTime;
+				static FILETIME fileTime;
 				GetSystemTimeAsFileTime( &fileTime );
 				return fileTime;
 			}
@@ -84,7 +84,7 @@ namespace frl
 				wchar_t* ret = NULL;
 				if( str != NULL )
 				{
-					size_t size = wcslen( str ) + 1;
+					size_t size = wcslen( str ) + 2;
 					ret = util::allocMemory< wchar_t >( size );
 					wcscpy_s( ret, size, str );
 				}
@@ -108,7 +108,7 @@ namespace frl
 				wchar_t* ret = NULL;
 				if( !string.empty() )
 				{
-					size_t size = string.length() + 1;
+					size_t size = string.length() + 2;
 					ret = util::allocMemory< wchar_t >( size );
 					wcscpy_s( ret, size, string.c_str() );
 				}
@@ -298,7 +298,10 @@ namespace frl
 							return E_INVALIDARG;
 					}
 				}
-
+				if( cMsg.rfind( FRL_STR("\r\n") ) == cMsg.length()-2 )
+				{
+					cMsg = cMsg.substr(0, cMsg.length() - 2 );
+				}
 				**ppString = util::duplicateString( cMsg );
 				return S_OK;
 			}

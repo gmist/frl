@@ -14,7 +14,7 @@ namespace frl
 		namespace util
 		{
 			OPCHANDLE getUniqueServerHandle();	
-			FILETIME getFileTime();
+			const FILETIME& getFileTime();
 			String getUniqueName();
 
 			void* allocMemory( size_t size );			
@@ -22,9 +22,10 @@ namespace frl
 			template< typename Type >
 			Type* allocMemory( size_t size )
 			{
-				FRL_EXCEPT_GUARD();
 				if( size == 0 )
-					FRL_THROW( FRL_STR("Invalid argument") );
+					return NULL;
+				if( size == 1 )
+					return reinterpret_cast< Type* >(CoTaskMemAlloc( sizeof(Type) ) );
 				return reinterpret_cast< Type* >(CoTaskMemAlloc( size * sizeof(Type) ) );
 			}
 
@@ -67,7 +68,7 @@ namespace frl
 			void freeMemory( void *ptr );
 
 			HRESULT getErrorString(  HRESULT dwError, LCID dwLocale, LPWSTR **ppString );
-			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensintive = False );
+			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensintive = True );
 		} // namespace util
 	} // namespace opc
 } // namespace FatRat Library

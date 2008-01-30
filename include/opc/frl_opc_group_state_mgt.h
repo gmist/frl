@@ -64,6 +64,9 @@ namespace frl
 					pT->deadband = *pPercentDeadband;
 				}
 
+				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				pT->timerUpdate.stop();
+
 				// set update rate
 				if( pRequestedUpdateRate != NULL )
 				{
@@ -79,6 +82,7 @@ namespace frl
 					// reset tick baseline.
 					pT->tickOffset = -2;
 					*pRevisedUpdateRate = pT->updateRate = dwUpdateRate;
+					pT->timerUpdate.setTimer( dwUpdateRate );
 				}
 
 				// set other parameters.
@@ -89,13 +93,41 @@ namespace frl
 				if( phClientGroup != NULL )
 					pT->clientHandle = *phClientGroup; 
 
+				Bool oldState = pT->actived;
 				if( pActive != NULL )
 				{
-					// TODO: insert registration for updates
+					if( (*pActive == TRUE ) || (*pActive == VARIANT_TRUE ) )
+						pT->actived = True;
+					else
+						pT->actived = False;
 
-					pT->actived = (*pActive == TRUE);
+					if( pT->actived )
+					{
+						if( ! oldState )
+						{
+							std::list< OPCHANDLE > handles;
+							for( std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.begin(); it != pT->itemList.end(); ++it )
+							{
+								if( (*it).second->isActived() )
+									handles.push_back( (*it).first );
+							}
+
+							if( handles.size() != 0 )
+							{
+								AsyncRequest *request = new AsyncRequest( handles );
+								request->setTransactionID( 0 );
+								pT->asyncRefreshList.push_back( request );
+							}
+						}
+						pT->timerUpdate.start();
+					}
+					else
+					{
+						pT->asyncReadList.clear();
+						pT->asyncRefreshList.clear();
+						pT->asyncWriteList.clear();
+					}
 				}
-
 				return hResult;
 			}
 
@@ -105,6 +137,20 @@ namespace frl
 				T* pT = static_cast<T*> (this);
 				if( pT->deleted )
 					return E_FAIL;
+
+				if( szName == NULL || wcslen( szName ) == 0 )
+					return E_INVALIDARG;
+
+				pT->server->scopeGuard.Lock();
+
+				std::map< String, OPCHANDLE >::iterator it =  pT->server->groupItemIndex.find( szName );
+				if( it != pT->server->groupItemIndex.end() )
+				{
+					pT->server->scopeGuard.UnLock();
+					return OPC_E_DUPLICATENAME;
+				}
+
+				pT->server->scopeGuard.UnLock();
 
 				Bool res = pT->server->setGroupName( pT->name, szName);
 				if( ! res )
@@ -126,15 +172,18 @@ namespace frl
 					return E_INVALIDARG;
 
 				Group* group = NULL;
+
+				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+
 				HRESULT result = pT->server->cloneGroup( pT->name, szName, &group );
 				if( FAILED( result ) )
 					return result;
+
 				result = group->QueryInterface( riid, (void**)ppUnk );
 				
 				if( FAILED( result ) )
-				{
 					pT->server->RemoveGroup( group->getServerHandle(), FALSE );
-				}
+
 				return result;
 			}
 		}; // class GroupStateMgt

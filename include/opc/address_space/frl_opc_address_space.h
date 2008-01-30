@@ -6,6 +6,7 @@
 #include <map>
 #include "opc/address_space/frl_opc_tag.h"
 #include "frl_exception.h"
+#include "frl_non_copyable.h"
 
 namespace frl
 {
@@ -17,13 +18,15 @@ namespace frl
 			FRL_EXCEPTION_CLASS( InvalidBranchName );
 			FRL_EXCEPTION_CLASS( InvalidLeafName );
 
-			class AddressSpace
+			class AddressSpace : private NonCopyable
 			{
 			private:
 				String delimiter;
 				Tag *rootTag;
 				Tag *curPos;
 				std::map< OPCHANDLE, Tag* > handleHash;
+				std::map< String, Tag* > nameLeafHash;
+				std::map< String, Tag* > nameBranchHash;
 
 			public:
 				AddressSpace();
@@ -42,7 +45,7 @@ namespace frl
 
 				Tag* getTag( const String &fullPath );
 
-				void addLeaf( const String& fullPath, Bool createPath = False );
+				Tag* addLeaf( const String& fullPath, Bool createPath = False );
 
 				String getCurPosPath(); 
 

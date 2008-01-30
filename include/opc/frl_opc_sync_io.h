@@ -23,10 +23,10 @@ namespace frl
 				if( pT->deleted )
 					return E_FAIL;
 
-				if (phServer == NULL || ppItemValues == NULL || ppErrors == NULL)
+				if( phServer == NULL || ppItemValues == NULL || ppErrors == NULL )
 					return E_INVALIDARG;
 				
-				if (dwSource != OPC_DS_CACHE && dwSource != OPC_DS_DEVICE)
+				if( dwSource != OPC_DS_CACHE && dwSource != OPC_DS_DEVICE )
 					return E_INVALIDARG;
 
 				*ppErrors = NULL;
@@ -37,7 +37,7 @@ namespace frl
 				*ppItemValues = util::allocMemory< OPCITEMSTATE >( dwCount );
 				if( ppItemValues == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< OPCITEMSTATE >( *ppItemValues );
+				util::zeroMemory< OPCITEMSTATE >( *ppItemValues, dwCount );
 
 				*ppErrors =  util::allocMemory< HRESULT >( dwCount );
 				if( ppErrors == NULL )
@@ -45,10 +45,11 @@ namespace frl
 					util::freeMemory( ppItemValues );
 					return E_OUTOFMEMORY;
 				}
-				util::zeroMemory< HRESULT >( *ppErrors );
+				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT result = S_OK;
 
+				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
 					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
@@ -59,15 +60,33 @@ namespace frl
 						continue;
 					}
 
-					(*ppErrors)[i] = (*it).second->readValue( (*ppItemValues)[i].vDataValue );
+					if( ! ( (*it).second->getAccessRights() & OPC_READABLE ) )
+					{
+						result = S_FALSE;
+						(*ppErrors)[i] = OPC_E_BADRIGHTS;
+						continue;
+					}
 
-					if( FAILED( (*ppErrors)[i] ) )
+					try
+					{
+						if( dwSource == OPC_DS_CACHE )
+							( *ppErrors )[i] = ( (*it).second->getCachedValue().copyTo( (*ppItemValues)[i].vDataValue ) );
+						else
+							( *ppErrors )[i] = ( (*it).second->readValue() ).copyTo( (*ppItemValues)[i].vDataValue );
+					}
+					catch( frl::opc::address_space::NotExistTag &ex )
+					{
+						ex.~NotExistTag();
+						( *ppErrors )[i] = OPC_E_INVALIDHANDLE;
+					}
+
+					if( FAILED( ( *ppErrors)[i] ) )
 					{
 						result = S_FALSE;
 						continue;
 					}
-					
-					if (! (*it).second->isActived() && dwSource == OPC_DS_CACHE)
+
+					if ( ( ! (*it).second->isActived() || ! pT->actived ) && dwSource == OPC_DS_CACHE )
 						(*ppItemValues)[i].wQuality = OPC_QUALITY_OUT_OF_SERVICE;
 					else
 						(*ppItemValues)[i].wQuality = OPC_QUALITY_GOOD;
@@ -103,7 +122,7 @@ namespace frl
 				util::zeroMemory< HRESULT >( *ppErrors );
 
 				HRESULT result = S_OK;
-
+				lock::Mutex::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
 					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
@@ -114,7 +133,7 @@ namespace frl
 						continue;
 					}
 
-					if( ( (*it).second->getAccessRights() & OPC_WRITEABLE ) == 0 )
+					if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )
 					{
 						result = S_FALSE;
 						(*ppErrors)[i] = OPC_E_BADRIGHTS;
@@ -124,7 +143,7 @@ namespace frl
 					if( pItemValues[i].vt == VT_EMPTY )
 					{
 						result = S_FALSE;
-						(*ppErrors)[i] = OPC_E_BADRIGHTS;
+						(*ppErrors)[i] = OPC_E_BADTYPE;
 						continue;
 					}
 					
@@ -135,7 +154,6 @@ namespace frl
 						result = S_FALSE;
 						continue;
 					}
-					(*ppErrors)[i] = S_OK;
 				}
 				return result;
 			};

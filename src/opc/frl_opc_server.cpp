@@ -18,6 +18,65 @@ namespace frl
 			m_ServerStatus.dwServerState = OPC_STATUS_NOCONFIG;
 			m_ServerStatus.dwBandWidth = 0xFFFFFFFF;
 			m_ServerStatus.wMajorVersion = 2;
+			registerInterface(IID_IOPCShutdown);
+		}
+
+		STDMETHODIMP OPCServer::QueryInterface( REFIID iid, LPVOID* ppInterface )
+		{
+			if( ppInterface == NULL )
+				return E_POINTER;
+
+			*ppInterface = NULL;
+
+			if( iid == __uuidof( IOPCCommon ) || iid == IID_IUnknown )
+			{
+				*ppInterface = (dynamic_cast< IOPCCommon* >( this ) );
+				AddRef();
+				return S_OK;
+			}
+
+			if( iid == __uuidof( IOPCServer ) )
+			{
+				*ppInterface = (dynamic_cast< IOPCServer* >( this ) );
+				AddRef();
+				return S_OK;
+			}
+
+			if( iid == __uuidof( IOPCItemProperties ) )
+			{
+				*ppInterface = (dynamic_cast< IOPCItemProperties* >( this ) );
+				AddRef();
+				return S_OK;
+			}
+
+			if( iid == __uuidof( IOPCBrowseServerAddressSpace ) )
+			{
+				*ppInterface = (dynamic_cast< IOPCBrowseServerAddressSpace* >( this ) );
+				AddRef();
+				return S_OK;
+			}
+
+			if( iid == __uuidof( IConnectionPointContainer ) )
+			{
+				*ppInterface = (dynamic_cast< IConnectionPointContainer* >( this ) );
+				AddRef();
+				return S_OK;
+			}
+
+			return E_NOINTERFACE;
+		}
+
+		ULONG OPCServer::AddRef( void )
+		{
+			return ::InterlockedIncrement( &refCount );
+		}
+
+		ULONG OPCServer::Release( void )
+		{
+			LONG tmp = ::InterlockedDecrement( &refCount );
+			if( tmp == 0 )
+				delete this;
+			return tmp;
 		}
 
 		HRESULT STDMETHODCALLTYPE OPCServer::AddGroup( /* [string][in] */ LPCWSTR szName, /* [in] */ BOOL bActive, /* [in] */ DWORD dwRequestedUpdateRate, /* [in] */ OPCHANDLE hClientGroup, /* [in][unique] */ LONG *pTimeBias, /* [in][unique] */ FLOAT *pPercentDeadband, /* [in] */ DWORD dwLCID, /* [out] */ OPCHANDLE *phServerGroup, /* [out] */ DWORD *pRevisedUpdateRate, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
@@ -80,7 +139,6 @@ namespace frl
 			}
 
 			newGroup->setServerPtr( this );
-			newGroup->setServerHandle( util::getUniqueServerHandle() );
 			groupItemIndex.insert( std::pair< String, OPCHANDLE >( groupName, newGroup->getServerHandle() ) );
 			groupItem.insert( std::pair< OPCHANDLE, Group* >(newGroup->getServerHandle(), newGroup ) );
 			if(phServerGroup)
@@ -113,12 +171,11 @@ namespace frl
 				return E_INVALIDARG;
 
 			OPCHANDLE handle = (*it).second;
-			if( groupItem.find( handle ) == groupItem.end())
+			std::map< OPCHANDLE, Group*>::iterator it1 = groupItem.find( handle );
+			if( it1 == groupItem.end())
 				return E_FAIL;
 
-			Group *grpItem = groupItem[ handle ];
-			if(grpItem == NULL)
-				return E_FAIL;
+			Group *grpItem = (*it1).second;
 
 			HRESULT hr = grpItem->QueryInterface( riid, (void**)ppUnk );
 			if( FAILED(hr) || *ppUnk == NULL) 
@@ -151,10 +208,11 @@ namespace frl
 		{
 			lock::Mutex::ScopeGuard guard( scopeGuard );
 
-			if( groupItem.find( hServerGroup ) == groupItem.end())
+			std::map< OPCHANDLE, Group*>::iterator it = groupItem.find( hServerGroup );
+			if( it == groupItem.end() )
 				return E_FAIL;
 
-			Group *grpItem = groupItem[ hServerGroup ];
+			Group *grpItem = (*it).second;
 			groupItemIndex.erase( grpItem->getName() );
 			groupItem.erase( hServerGroup );
 			grpItem->isDeleted( True );
@@ -172,8 +230,8 @@ namespace frl
 			if( riid == IID_IEnumUnknown )
 			{
 				std::vector< Group* > unkn;
-				std::map< OPCHANDLE, frl::opc::Group* >::iterator it;
-				for( it = groupItem.begin(); it!= groupItem.end(); ++it)
+				unkn.reserve( groupItem.size() );
+				for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
 					unkn.push_back( (*it).second );
 
 				EnumGroup *enumGroup;
@@ -186,15 +244,15 @@ namespace frl
 					enumGroup = new EnumGroup();
 				}
 				HRESULT result = enumGroup->QueryInterface( riid, (void**)ppUnk );
-				if( FAILED(result) )
+				if( FAILED( result ) )
 					delete enumGroup;
 				return unkn.size() ? S_OK : S_FALSE;
 			}
 			if( riid == IID_IEnumString )
 			{
 				std::vector< String > nameList;
-				std::map< OPCHANDLE, frl::opc::Group* >::iterator it;
-				for( it = groupItem.begin(); it!= groupItem.end(); ++it)
+				nameList.reserve( groupItem.size() );
+				for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
 					nameList.push_back( (*it).second->getName() );
 				
 				EnumString *enumString = new EnumString();
@@ -203,7 +261,7 @@ namespace frl
 					enumString->init( nameList );
 				}
 				HRESULT result = enumString->QueryInterface( riid, (void**)ppUnk );
-				if( FAILED(result) )
+				if( FAILED( result ) )
 					delete enumString;
 				return nameList.size() ? S_OK : S_FALSE;
 			}
@@ -241,9 +299,10 @@ namespace frl
 			if( it == groupItem.end() )
 				return E_INVALIDARG;
 
-			*ppClone = new Group( *((*it).second) );
+			*ppClone = Group::cloneFrom( *((*it).second) );
 			if ( ppClone == NULL )
 				return E_OUTOFMEMORY;
+			((IOPCItemMgt*)(*ppClone))->AddRef();
 			(*ppClone)->setName( cloneName );
 			return addNewGroup( ppClone );
 		}
@@ -253,19 +312,14 @@ namespace frl
 			if ( group == NULL )
 				FRL_THROW( FRL_STR("Invalid agrument") );
 
-			std::map< String, OPCHANDLE >::iterator itInd = groupItemIndex.find( (*group)->getName() );
-			if( itInd != groupItemIndex.end() )
-				return OPC_E_DUPLICATENAME;
-
 			if( (*group)->getName().empty() )
 				(*group)->setName( util::getUniqueName() );
 
-			OPCHANDLE handle = util::getUniqueServerHandle();
-			(*group)->setServerHandle( handle );
+			OPCHANDLE handle = (*group)->getServerHandle();
 			groupItemIndex.insert( std::pair< String, OPCHANDLE >( (*group)->getName(), handle ) );
 			groupItem.insert( std::pair< OPCHANDLE, Group* >( handle, (*group ) ) );
 			return S_OK;
 		}
 	} // namespace opc
 } // namespace FatRat Library
-#endif /* FRL_PLATFORM_WIN32 */
+#endif // FRL_PLATFORM_WIN32
