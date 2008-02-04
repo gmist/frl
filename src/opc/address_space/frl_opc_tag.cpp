@@ -263,7 +263,6 @@ namespace frl
 				SYSTEMTIME SystemTime;
 				GetSystemTime( &SystemTime );
 				SystemTimeToFileTime( &SystemTime, &timeStamp );
-				isChangeFlag = True;
 			}
 
 			const FILETIME& Tag::getTimeStamp()

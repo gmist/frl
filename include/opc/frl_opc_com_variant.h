@@ -4,28 +4,18 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <wtypes.h>
 #include "opc/frl_opc_util.h"
+#include "opc/frl_opc_com_allocator.h"
 #include "frl_exception.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class ComVariant
+		class ComVariant : public ComAllocator
 		{
 		private:
 			VARIANT value;
 		public:
-			void* operator new( size_t nSize )
-			{
-				FRL_EXCEPT_GUARD();
-				return util::allocMemory( nSize );
-			}
-			void operator delete(void* p)
-			{
-				FRL_EXCEPT_GUARD();
-				util::freeMemory( p );
-			}
-
 			// Constructors
 			ComVariant();
 			ComVariant( const ComVariant &rVal );

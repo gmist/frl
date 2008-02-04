@@ -10,7 +10,7 @@ namespace frl
 		{
 			AddressSpace::AddressSpace()
 			{
-				curPos = rootTag = NULL;
+				rootTag = NULL;
 			}
 
 			AddressSpace::~AddressSpace()
@@ -30,7 +30,6 @@ namespace frl
 				else
 					delimiter = delimiter_;
 				rootTag = new Tag( True, delimiter );
-				curPos = rootTag;
 			}
 
 			void AddressSpace::addBranch( const String &fullPath, Bool createPath /*= False */ )
@@ -112,37 +111,6 @@ namespace frl
 				return NULL;
 			}
 
-			frl::Bool AddressSpace::isExistItem( const String &itemName )
-			{
-				return curPos->isExistTag( itemName);
-			}
-
-			void AddressSpace::goToRoot()
-			{
-				curPos = rootTag;
-			}
-
-			Bool AddressSpace::goUp()
-			{
-				if( curPos == rootTag )
-					return False;
-				curPos = curPos->getParent();
-				return True;
-			}
-
-			void AddressSpace::goDown( const String &path )
-			{
-				if( getCurPosPath().size() )
-					curPos = curPos->getBranch( getCurPosPath() + delimiter + path );
-				else
-					curPos = curPos->getBranch( path );
-			}
-
-			void AddressSpace::goTo( const String &fullPath )
-			{
-				curPos = getBranch( fullPath );
-			}
-
 			Tag* AddressSpace::getLeaf( const String& fullPath )
 			{
 				if( fullPath.empty() )
@@ -160,25 +128,6 @@ namespace frl
 				if( ! isExistLeaf( handle ) )
 					FRL_THROW_S_CLASS( NotExistTag );
 				return (*(handleHash.find( handle ))).second;
-			}
-
-			frl::Bool AddressSpace::isBrowseRoot()
-			{
-				return curPos == rootTag;
-			}
-
-			void AddressSpace::browseBranches( std::vector< String > &branches )
-			{
-				if( branches.size() )
-					branches.erase( branches.begin(), branches.end() );
-				curPos->browseBranches( branches );
-			}
-
-			void AddressSpace::browseLeafs( std::vector< String > &leafs, DWORD accessFilter )
-			{
-				if( leafs.size() )
-					leafs.erase( leafs.begin(), leafs.end() );
-				curPos->browseLeafs( leafs, accessFilter );
 			}
 
 			frl::Bool AddressSpace::isExistBranch( const String &name )
@@ -209,11 +158,6 @@ namespace frl
 				return True;
 			}
 
-			String AddressSpace::getCurPosPath()
-			{
-				return curPos->getID();
-			}
-
 			Tag* AddressSpace::getTag( const String &fullPath )
 			{
 				if( isExistLeaf( fullPath ) )
@@ -238,6 +182,27 @@ namespace frl
 				if( it != handleHash.end() )
 					return True;
 				return False;
+			}
+
+			Tag* AddressSpace::getRootBranch()
+			{
+				return rootTag;
+			}
+
+			void AddressSpace::getAllLeafs( std::vector< String > &namesList, DWORD accessFilter )
+			{
+				if ( namesList.size() )
+					namesList.clear();
+				for(	std::map< String, Tag* >::iterator it = nameLeafHash.begin();
+						it != nameLeafHash.end(); ++it )
+				{
+					if( accessFilter != 0 )
+					{
+						if( ( accessFilter & (*it).second->getAccessRights() ) == 0 )
+							continue;
+					}
+					namesList.push_back( (*it).first );
+				}
 			}
 		} // namespace address_space
 		address_space::AddressSpace opcAddressSpace;

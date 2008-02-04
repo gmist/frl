@@ -2,15 +2,16 @@
 #define frl_opc_connection_point_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include "frl_types.h"
 #include <OCIdl.h>
+#include "frl_types.h"
+#include "opc\frl_opc_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
 		class ConnectionPointContainer;
-		class ConnectionPoint : public IConnectionPoint
+		class ConnectionPoint : public IConnectionPoint, public ComAllocator
 		{
 		private:
 			volatile LONG refCount;

@@ -14,6 +14,7 @@
 #include "opc/frl_opc_async_request.h"
 #include "frl_lock.h"
 #include "frl_non_copyable.h"
+#include "opc/frl_opc_com_allocator.h"
 
 namespace frl
 {
@@ -25,7 +26,8 @@ namespace frl
 			public SyncIO< Group >,
 			public AsyncIO2< Group >,
 			public ConnectionPointContainer,
-			private NonCopyable
+			private NonCopyable,
+			public ComAllocator
 		{
 		friend class GroupStateMgt< Group >;
 		friend class ItemMgt< Group >;

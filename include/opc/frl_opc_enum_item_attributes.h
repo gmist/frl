@@ -8,12 +8,13 @@
 #include "opc/frl_opc_group_item.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_util.h"
+#include "opc/frl_opc_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class EnumOPCItemAttributes : public IEnumOPCItemAttributes
+		class EnumOPCItemAttributes : public IEnumOPCItemAttributes, public ComAllocator
 		{
 		private:
 			std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array
@@ -40,7 +41,6 @@ namespace frl
 						CoTaskMemFree( itemList[i] );
 					}
 				}
-				itemList.erase(itemList.begin(), itemList.end() );
 			}
 
 			// the IUnknown Functions

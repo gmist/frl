@@ -44,6 +44,8 @@ namespace frl
 				return reinterpret_cast< Type* >(CoTaskMemRealloc( oldSize * sizeof(Type), newSize * sizeof(Type) ) );
 			}
 
+			void freeMemory( void *ptr );
+
 			template< typename Type >
 			void zeroMemory( Type* ptr, size_t size )
 			{
@@ -65,7 +67,7 @@ namespace frl
 			wchar_t* duplicateString( const wchar_t *str );
 			char* duplicateString( const std::string &string );
 			wchar_t* duplicateString( const std::wstring &string );
-			void freeMemory( void *ptr );
+			
 
 			HRESULT getErrorString(  HRESULT dwError, LCID dwLocale, LPWSTR **ppString );
 			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensintive = True );

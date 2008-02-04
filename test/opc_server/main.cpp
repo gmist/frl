@@ -1,108 +1,6 @@
 #include "frl_opc.h"
-#include "frl_lock.h"
-#include "sys/frl_sys_util.h"
-#include <conio.h>
 
-frl::opc::OPCServer *g_Server = NULL;
-
-class OpcClassFactory : public IClassFactory
-{
-private:
-	frl::lock::Mutex guard;
-	int  is_out_of_proc, server_inuse;
-	LONG server_count;
-public:
-
-	OpcClassFactory(): is_out_of_proc(0), server_inuse(0), server_count(0)
-	{
-	}
-
-	~OpcClassFactory()
-	{
-	}
-
-	void serverAdd(void)
-	{
-		guard.Lock();
-		if (is_out_of_proc) CoAddRefServerProcess();
-		++server_count;
-		guard.UnLock();
-	}
-	void serverRemove(void)
-	{
-		guard.Lock();
-		if (is_out_of_proc)
-		{
-			if (0 == CoReleaseServerProcess())
-				server_inuse = 0;
-		}
-		if (0 == --server_count && server_inuse) server_inuse = 0;
-		guard.UnLock();
-	}
-
-	HRESULT CreateServer(bool create)
-	{
-		static frl::lock::Mutex guard;;
-		frl::lock::Mutex::ScopeGuard scopeGuard( guard );
-
-		if( create && g_Server == NULL) 
-		{
-			g_Server = new frl::opc::OPCServer();
-			if( g_Server )
-				g_Server->AddRef();
-			else 
-				return E_FAIL;
-		}
-		if( !create && g_Server != NULL)
-		{
-			g_Server->Release();
-			g_Server = NULL;
-		}
-		return S_OK;
-	}
-
-
-	HRESULT STDMETHODCALLTYPE CreateInstance( 
-		IUnknown *pUnkOuter,
-		REFIID riid,
-		void **ppvObject)
-	{
-		serverAdd();
-
-		if(FAILED( CreateServer( true ) ) )
-			return E_FAIL;
-
-
-		return g_Server->QueryInterface(riid, ppvObject);
-		return S_OK;
-	}
-
-	HRESULT STDMETHODCALLTYPE LockServer( 
-		BOOL fLock)
-	{
-		return S_OK;
-	}
-	
-	STDMETHODIMP_(ULONG) AddRef(void) { return 1; }
-	STDMETHODIMP_(ULONG) Release(void) { return 1; }
-
-	STDMETHODIMP QueryInterface(REFIID iid, LPVOID *ppInterface)
-	{
-		if (ppInterface == NULL)
-			return E_INVALIDARG;
-		if (iid == IID_IUnknown || iid == IID_IClassFactory)
-		{
-			*ppInterface = this;
-			AddRef();
-			return S_OK;
-		}
-		*ppInterface = NULL;
-		return E_NOINTERFACE;
-	}
-
-};
-
-int _tmain(int , _TCHAR*)
+int _tmain( int , _TCHAR* )
 {
 	using namespace frl;
 	opc::DA2Server server( opc::ServerTypes::localSever32 );
@@ -113,26 +11,7 @@ int _tmain(int , _TCHAR*)
 	server.setVersion( 0.1 );
 	server.registrerServer();
 	
-	HRESULT hResult = S_OK;
-	hResult = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-	if (FAILED(hResult))
-	{
-		MessageBoxW( NULL, L"Error on CoInitializeEx",  L"Error!", MB_OK |MB_ICONSTOP );
-		return 1;
-	}
-	
-	static OpcClassFactory factory;
-	DWORD dw;
-	hResult = ::CoRegisterClassObject( lexicalCast<frl::String,CLSID>::get(server.getCLSID()), &factory, CLSCTX_LOCAL_SERVER |
-		CLSCTX_REMOTE_SERVER |
-		CLSCTX_INPROC_SERVER,
-		REGCLS_MULTIPLEUSE, &dw );
-
-	if (FAILED(hResult))
-	{
-		MessageBoxW( NULL, L"Error on CoRegistrerClassObject",  L"Error!", MB_OK |MB_ICONSTOP );
-		return 1;
-	}
+	server.init();
 
 	frl::opc::opcAddressSpace.finalConstruct( FRL_STR("."));
 	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1" ) );
@@ -166,16 +45,6 @@ int _tmain(int , _TCHAR*)
 	tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR( "branch1.branch11.leaf111" ) );
 	tag->setCanonicalDataType( VT_BOOL );
 	tag->write( true );
-
-	factory.serverAdd();
-
-	if( factory.CreateServer(true) != S_OK )
-	{
-		MessageBoxW( NULL, L"Error on CreateServer",  L"Error!", MB_OK |MB_ICONSTOP );
-		return 1;
-	}
-		g_Server->m_ServerStatus.dwServerState = OPC_STATUS_RUNNING;
-		CoFileTimeNow(&( g_Server->m_ServerStatus.ftCurrentTime));
 
 	while(  true )
 	{

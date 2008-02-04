@@ -4,7 +4,6 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_types.h"
 #include "opc/frl_opc_server_kind.h"
-#include "opc/frl_opc_server.h"
 
 namespace frl
 {
@@ -17,6 +16,7 @@ namespace frl
 		public:
 			DA2Server( const ServerType& serverType );
 			void registrerServer();
+			Bool init();
 		};
 	} // namespace opc
 } // namespace FatRat Library

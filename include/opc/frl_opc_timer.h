@@ -5,7 +5,6 @@
 #include "thread/frl_thread.h"
 #include "frl_lock.h"
 #include <iostream>
-#include <math.h>
 
 namespace frl
 {
@@ -34,25 +33,24 @@ namespace frl
 				else
 				{
 					frl::frl_timeout tmp_time = time_ms;
-					LONGLONG llEnd   = 0;
-					LONGLONG llStart = 0;
-					LONGLONG llFreq  = 0;
-					QueryPerformanceFrequency((LARGE_INTEGER*)&llFreq);
+					LONGLONG timeStart = 0;
+					LONGLONG timeEnd   = 0;
+					LONGLONG frequency  = 0;
+					QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
+					QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
 					while( ! sem->TimedWait( tmp_time ) )
 					{
 						(*ptr.*function)();
-						QueryPerformanceCounter( (LARGE_INTEGER*)&llEnd );
-
-						if (llStart != 0)
+						
+						QueryPerformanceCounter( (LARGE_INTEGER*)&timeEnd );
+						double delay = ( ( ( double )( timeEnd - timeStart ) ) / ( (double) frequency ) ) * 1000;
+						unsigned int delta = (unsigned int)delay;
+						if ( delta > ( time_ms + 100 ) )
 						{
-							double delay = ( ( ( double )( llEnd - llStart ) ) / ( (double) llFreq ) ) * 1000;
-							DWORD delta = ( DWORD )floor( delay );
-							if( delta < time_ms )
-								tmp_time = time_ms + ( time_ms - delta );
-							else
-								tmp_time = time_ms - ( delta - time_ms );
+							tmp_time = time_ms - delta;
 						}
-						QueryPerformanceCounter( (LARGE_INTEGER*)&llStart );
+						tmp_time = time_ms;
+						QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );	
 					}
 				}
 			}	

@@ -23,7 +23,6 @@ namespace frl
 			private:
 				String delimiter;
 				Tag *rootTag;
-				Tag *curPos;
 				std::map< OPCHANDLE, Tag* > handleHash;
 				std::map< String, Tag* > nameLeafHash;
 				std::map< String, Tag* > nameBranchHash;
@@ -47,24 +46,6 @@ namespace frl
 
 				Tag* addLeaf( const String& fullPath, Bool createPath = False );
 
-				String getCurPosPath(); 
-
-				Bool isExistItem( const String &itemName );
-
-				void goToRoot();
-
-				Bool goUp();
-
-				void goDown( const String &path );
-
-				void goTo( const String &fullPath );
-
-				Bool isBrowseRoot();
-
-				void browseBranches( std::vector< String > &branches );
-
-				void browseLeafs( std::vector< String > &leafs, DWORD accessFilter = 0 );
-
 				Bool isExistBranch( const String &name );
 
 				Bool isExistLeaf( const String &name );
@@ -74,6 +55,10 @@ namespace frl
 				Bool isExistLeaf( OPCHANDLE handle );
 
 				Tag* getLeaf( OPCHANDLE handle );
+
+				Tag* getRootBranch();
+
+				void getAllLeafs( std::vector< String > &namesList, DWORD accessFilter );
 			};
 		} // namespace address_space
 		extern address_space::AddressSpace opcAddressSpace;

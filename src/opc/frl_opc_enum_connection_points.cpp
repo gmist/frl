@@ -27,10 +27,7 @@ namespace frl
 		EnumConnectionPoints::~EnumConnectionPoints()
 		{
 			for( std::vector< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
-			{
 				delete (*it);
-			}
-			points.clear();
 		}
 
 		STDMETHODIMP EnumConnectionPoints::QueryInterface( REFIID iid, LPVOID* ppInterface )

@@ -13,16 +13,6 @@ namespace frl
 			Init();
 		}
 
-		/*GroupItem::GroupItem( const GroupItem &item_ )
-		{
-			serverHandle = util::getUniqueServerHandle();
-			clientHandle = item_.clientHandle;
-			actived = item_.actived;
-			accessPath = item_.accessPath;
-			itemID = item_.itemID;
-			requestDataType = item_.requestDataType;
-		}*/
-
 		GroupItem::~GroupItem()
 		{
 
@@ -36,6 +26,7 @@ namespace frl
 			accessPath = FRL_STR("");
 			actived = False;
 			requestDataType = VT_EMPTY;
+			tagRef = NULL;
 		}
 
 		void GroupItem::Init( OPCHANDLE serverHandle_, OPCITEMDEF &itemDef )
@@ -90,18 +81,20 @@ namespace frl
 
 		const ComVariant& GroupItem::readValue()
 		{
-			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
-			cachedValue = tag->read();
-			lastChange = tag->getTimeStamp();
+			if( tagRef == NULL )
+				tagRef = opcAddressSpace.getLeaf( itemID );
+
+			cachedValue = tagRef->read();
+			lastChange = tagRef->getTimeStamp();
 			return cachedValue;
 		}
 
 		HRESULT GroupItem::writeValue( const VARIANT &newValue )
 		{
-			address_space::Tag *tag;
 			try
 			{
-				tag = opcAddressSpace.getLeaf( itemID );
+				if( tagRef == NULL )
+					tagRef = opcAddressSpace.getLeaf( itemID );
 			}
 			catch( frl::opc::address_space::NotExistTag &ex )
 			{
@@ -111,8 +104,10 @@ namespace frl
 			VARIANT tmp;
 			::VariantInit( &tmp );
 			ComVariant::variantCopy( &tmp, &newValue );
-			::VariantChangeType( &tmp, &tmp, 0, tag->getCanonicalDataType() );
-			tag->write( tmp );
+			HRESULT result = ::VariantChangeType( &tmp, &tmp, 0, tagRef->getCanonicalDataType() );
+			if( FAILED( result) )
+				return result;
+			tagRef->write( tmp );
 			return S_OK;
 		}
 
@@ -123,14 +118,18 @@ namespace frl
 
 		DWORD GroupItem::getAccessRights()
 		{
-			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
-			return tag->getAccessRights();
+			if( tagRef == NULL )
+				tagRef = opcAddressSpace.getLeaf( itemID );
+
+			return tagRef->getAccessRights();
 		}
 
 		DWORD GroupItem::getQuality()
 		{
-			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
-			return tag->getQuality();
+			if( tagRef == NULL )
+				tagRef = opcAddressSpace.getLeaf( itemID );
+
+			return tagRef->getQuality();
 		}
 
 		OPCHANDLE GroupItem::getServerHandle()
@@ -140,8 +139,10 @@ namespace frl
 
 		frl::Bool GroupItem::isChange()
 		{
-			address_space::Tag *tag = opcAddressSpace.getLeaf( itemID );
-			FILETIME tmp = tag->getTimeStamp();
+			if( tagRef == NULL )
+				tagRef = opcAddressSpace.getLeaf( itemID );
+
+			FILETIME tmp = tagRef->getTimeStamp();
 			return ( ( lastChange.dwHighDateTime != tmp.dwHighDateTime)
 						|| ( lastChange.dwLowDateTime != tmp.dwLowDateTime ) );
 		}

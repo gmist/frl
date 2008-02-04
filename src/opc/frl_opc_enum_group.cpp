@@ -20,7 +20,7 @@ namespace frl
 
 		EnumGroup::~EnumGroup()
 		{
-
+			groupList.clear();
 		}
 
 		STDMETHODIMP EnumGroup::QueryInterface( REFIID iid, LPVOID* ppInterface )

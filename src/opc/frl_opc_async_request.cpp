@@ -21,7 +21,7 @@ namespace frl
 				cancelID( private_::getUniqueCancelID() ),
 				cancelled( False ),
 				values( NULL ),
-				source( 0 )
+				source( OPC_DS_DEVICE )
 		{
 		}
 

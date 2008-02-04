@@ -4,13 +4,14 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <OCIdl.h>
 #include <vector>
+#include "opc/frl_opc_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
 		class ConnectionPoint;
-		class EnumConnectionPoints : public IEnumConnectionPoints
+		class EnumConnectionPoints : public IEnumConnectionPoints, public ComAllocator
 		{
 		private:
 		private:

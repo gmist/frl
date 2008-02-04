@@ -149,6 +149,13 @@ namespace frl
 
 				if( pT->itemList.size() == 0 )
 					return E_FAIL;
+
+				if( pT->asyncRefreshList.size() )
+				{
+					for( std::list< AsyncRequest* >::iterator it = pT->asyncRefreshList.begin(); it != pT->asyncRefreshList.end(); ++it )
+						delete (*it);
+					pT->asyncRefreshList.clear();
+				}
 				
 				std::list< OPCHANDLE > handles;
 				for( std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.begin(); it != pT->itemList.end(); ++it )

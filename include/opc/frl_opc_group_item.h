@@ -12,6 +12,11 @@ namespace frl
 {
 	namespace opc
 	{
+		namespace address_space
+		{
+			class Tag;
+		}
+
 		class GroupItem : private NonCopyable
 		{
 		private:
@@ -23,6 +28,7 @@ namespace frl
 			VARTYPE requestDataType;
 			FILETIME lastChange;
 			ComVariant cachedValue;
+			address_space::Tag *tagRef;
 		public:
 			GroupItem();
 			~GroupItem();

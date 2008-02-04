@@ -17,7 +17,7 @@ namespace frl
 			:	public IOPCBrowseServerAddressSpace
 		{
 		private:
-			frl::lock::Mutex scopeGuard;
+			frl::lock::Mutex bsaScopeGuard;
 		public:
 			HRESULT STDMETHODCALLTYPE QueryOrganization( 
 				/* [out] */ OPCNAMESPACETYPE *pNameSpaceType )
@@ -32,12 +32,13 @@ namespace frl
 				/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 				/* [string][in] */ LPCWSTR szString )
 			{
-				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
+				frl::lock::Mutex::ScopeGuard guard( bsaScopeGuard );
+				T* pT = static_cast<T*> (this);
 				switch( dwBrowseDirection )
 				{
 					case OPC_BROWSE_UP:
 					{
-						if( ! opcAddressSpace.goUp() )
+						if( ! pT->crawler.goUp() )
 							return E_FAIL;
 						return S_OK;
 					}
@@ -48,7 +49,7 @@ namespace frl
 							return E_INVALIDARG;
 						try
 						{
-							opcAddressSpace.goDown( szString );
+							pT->crawler.goDown( szString );
 						}
 						catch( ... )
 						{
@@ -61,12 +62,12 @@ namespace frl
 					{
 						if( szString == NULL || stringLength( szString ) == 0 )
 						{
-							opcAddressSpace.goToRoot();
+							pT->crawler.goToRoot();
 							return S_OK;
 						}
 						try
 						{
-							opcAddressSpace.goTo( szString );
+							pT->crawler.goTo( szString );
 						}
 						catch( ... )
 						{
@@ -97,7 +98,8 @@ namespace frl
 					return E_POINTER;
 				*ppIEnumString = NULL;
 
-				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
+				frl::lock::Mutex::ScopeGuard guard( bsaScopeGuard );
+				T* pT = static_cast<T*> (this);
 				EnumString *pEnum = new EnumString();
 				if( pEnum == NULL )
 					return E_OUTOFMEMORY;
@@ -106,15 +108,16 @@ namespace frl
 				switch( dwBrowseFilterType )
 				{
 					case OPC_LEAF:
-						opcAddressSpace.browseLeafs( items, dwAccessRightsFilter );
+						pT->crawler.browseLeafs( items, dwAccessRightsFilter );
 					break;
 
 					case OPC_BRANCH:
-						opcAddressSpace.browseBranches( items );
+						pT->crawler.browseBranches( items );
 					break;
 
 					case OPC_FLAT:
-						opcAddressSpace.browseLeafs( items, dwAccessRightsFilter );
+						// If OPC_FLAT we must returns all leafs from address space.
+						opcAddressSpace.getAllLeafs( items, dwAccessRightsFilter );
 					break;
 				}
 
@@ -151,20 +154,29 @@ namespace frl
 					return E_INVALIDARG;
 				*szItemID = NULL;
 
-				// is root item
+				frl::lock::Mutex::ScopeGuard guard( bsaScopeGuard );
+				T* pT = static_cast<T*> (this);
+
 				if( stringLength( szItemDataID ) == 0 )
 				{
-					*szItemID = szItemDataID;
+					String tmp = pT->crawler.getCurPosPath();
+					if( ! tmp.size() ) // is root item
+					{
+						*szItemID = szItemDataID;
+					}
+					else
+					{
+						*szItemID = util::duplicateString( tmp ); // return current position
+					}
 					return S_OK;
 				}
 
-				frl::lock::Mutex::ScopeGuard guard( scopeGuard );
 				address_space::Tag *tag;
-				if( opcAddressSpace.getCurPosPath().size() )
+				if( pT->crawler.getCurPosPath().size() )
 				{
-					if( ! opcAddressSpace.isExistTag( opcAddressSpace.getCurPosPath() + opcAddressSpace.getDelimiter() + szItemDataID) )
+					if( ! opcAddressSpace.isExistTag( pT->crawler.getCurPosPath() + opcAddressSpace.getDelimiter() + szItemDataID) )
 						return E_INVALIDARG;
-					tag = opcAddressSpace.getTag( opcAddressSpace.getCurPosPath() + opcAddressSpace.getDelimiter() + szItemDataID );
+					tag = opcAddressSpace.getTag( pT->crawler.getCurPosPath() + opcAddressSpace.getDelimiter() + szItemDataID );
 				}
 				else
 				{

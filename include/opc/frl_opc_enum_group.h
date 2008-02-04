@@ -6,12 +6,13 @@
 #include <objidl.h>
 #include <vector>
 #include "opc/frl_opc_group.h"
+#include "opc/frl_opc_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class EnumGroup : public  IEnumUnknown
+		class EnumGroup : public  IEnumUnknown, public ComAllocator
 		{
 		private:
 			volatile LONG refCount;

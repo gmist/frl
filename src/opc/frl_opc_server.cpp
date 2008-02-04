@@ -5,20 +5,31 @@
 #include "opc/frl_opc_server.h"
 #include "opc/frl_opc_enum_group.h"
 #include "frl_exception.h"
+#include "opc/frl_opc_server_factory.h"
 
 namespace frl
 {
 	namespace opc
 	{	
 		OPCServer::OPCServer()
+			: refCount( 0 )
 		{
-			util::zeroMemory<OPCSERVERSTATUS>( &m_ServerStatus );
-			CoFileTimeNow( &m_ServerStatus.ftStartTime );
-			m_ServerStatus.szVendorInfo = L"Serg Baburin";
-			m_ServerStatus.dwServerState = OPC_STATUS_NOCONFIG;
-			m_ServerStatus.dwBandWidth = 0xFFFFFFFF;
-			m_ServerStatus.wMajorVersion = 2;
+			util::zeroMemory<OPCSERVERSTATUS>( &serverStatus );
+			CoFileTimeNow( &serverStatus.ftStartTime );
+			serverStatus.szVendorInfo = L"Serg Baburin";
+			serverStatus.dwServerState = OPC_STATUS_NOCONFIG;
+			serverStatus.dwBandWidth = 0xFFFFFFFF;
+			serverStatus.wMajorVersion = 2;
 			registerInterface(IID_IOPCShutdown);
+			factory.LockServer( TRUE );
+			factory.usageServer();
+		}
+
+		OPCServer::~OPCServer()
+		{
+			for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+				delete (*it).second;
+			factory.LockServer( FALSE );
 		}
 
 		STDMETHODIMP OPCServer::QueryInterface( REFIID iid, LPVOID* ppInterface )
@@ -193,12 +204,12 @@ namespace frl
 
 			lock::Mutex::ScopeGuard guard( scopeGuard );
 			OPCSERVERSTATUS *stat = util::allocMemory<OPCSERVERSTATUS>();
-			memcpy( stat, &m_ServerStatus, sizeof(OPCSERVERSTATUS) );
+			memcpy( stat, &serverStatus, sizeof(OPCSERVERSTATUS) );
 			CoFileTimeNow(&( stat->ftCurrentTime));
 
 			*ppServerStatus = stat;
-			stat->szVendorInfo = util::allocMemory<WCHAR>( (wcslen(m_ServerStatus.szVendorInfo)+1) * sizeof(WCHAR) );
-			memcpy( stat->szVendorInfo, m_ServerStatus.szVendorInfo, (wcslen( m_ServerStatus.szVendorInfo) + 1) * sizeof(WCHAR) );
+			stat->szVendorInfo = util::allocMemory<WCHAR>( (wcslen(serverStatus.szVendorInfo)+1) * sizeof(WCHAR) );
+			memcpy( stat->szVendorInfo, serverStatus.szVendorInfo, (wcslen( serverStatus.szVendorInfo) + 1) * sizeof(WCHAR) );
 			stat->dwGroupCount = (DWORD) groupItemIndex.size();
 
 			return S_OK;
@@ -230,9 +241,12 @@ namespace frl
 			if( riid == IID_IEnumUnknown )
 			{
 				std::vector< Group* > unkn;
-				unkn.reserve( groupItem.size() );
-				for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
-					unkn.push_back( (*it).second );
+				if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
+				{
+					unkn.reserve( groupItem.size() );
+					for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+						unkn.push_back( (*it).second );
+				}
 
 				EnumGroup *enumGroup;
 				if( unkn.size() )
@@ -251,9 +265,12 @@ namespace frl
 			if( riid == IID_IEnumString )
 			{
 				std::vector< String > nameList;
-				nameList.reserve( groupItem.size() );
-				for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
-					nameList.push_back( (*it).second->getName() );
+				if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
+				{
+					nameList.reserve( groupItem.size() );
+					for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+						nameList.push_back( (*it).second->getName() );
+				}
 				
 				EnumString *enumString = new EnumString();
 				if( nameList.size() )
@@ -319,6 +336,19 @@ namespace frl
 			groupItemIndex.insert( std::pair< String, OPCHANDLE >( (*group)->getName(), handle ) );
 			groupItem.insert( std::pair< OPCHANDLE, Group* >( handle, (*group ) ) );
 			return S_OK;
+		}
+
+		void OPCServer::setServerState( OPCSERVERSTATE newState )
+		{
+			if( newState < OPC_STATUS_RUNNING || newState > OPC_STATUS_TEST )
+				FRL_THROW_S_CLASS( OPCServer::InvalidServerState );
+			serverStatus.dwServerState = newState;
+			CoFileTimeNow( &serverStatus.ftCurrentTime );
+		}
+
+		OPCSERVERSTATE OPCServer::getServerState()
+		{
+			return serverStatus.dwServerState;
 		}
 	} // namespace opc
 } // namespace FatRat Library

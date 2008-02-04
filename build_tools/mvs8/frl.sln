@@ -33,6 +33,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_thread", "test\test_th
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opc_psoi2", "projects\opc\psoi2\psoi2.vcproj", "{367533F8-FA54-4BD8-B018-089BA7CC6FFB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -67,6 +72,10 @@ Global
 		{5D687242-480A-4BC8-9E97-36DA2579198D}.Debug|Win32.Build.0 = Debug|Win32
 		{5D687242-480A-4BC8-9E97-36DA2579198D}.Release|Win32.ActiveCfg = Release|Win32
 		{5D687242-480A-4BC8-9E97-36DA2579198D}.Release|Win32.Build.0 = Release|Win32
+		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Debug|Win32.Build.0 = Debug|Win32
+		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Release|Win32.ActiveCfg = Release|Win32
+		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -373,7 +373,7 @@ namespace frl
 					for( size_t i = 0; i < fullStr.size(); i++ )
 					{
 						pos = str.find( fullStr[i] );
-						if( pos != String::npos )
+						if( pos != String::npos && pos != str.size() -1 )
 							return True;
 					}
 				}

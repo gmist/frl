@@ -37,7 +37,6 @@ namespace frl
 				DWORD quality;
 				FILETIME timeStamp;
 				DWORD scanRate;
-				volatile Bool isChangeFlag;
 
 				Tag();
 

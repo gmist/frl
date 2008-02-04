@@ -11,7 +11,9 @@
 #include "frl_lock.h"
 #include "opc/frl_opc_group_state_mgt.h"
 #include "opc/frl_opc_connection_point_container.h"
+#include "opc/frl_opc_com_allocator.h"
 #include "frl_non_copyable.h"
+#include "opc/address_space/frl_opc_addr_space_crawler.h"
 
 namespace frl
 {
@@ -25,23 +27,30 @@ namespace frl
 				public ItemProperties< OPCServer >,
 				public BrowseServerAddressSpace< OPCServer >,
 				public ConnectionPointContainer,
-				private NonCopyable
+				private NonCopyable,
+				public ComAllocator
 		{
 		friend GroupStateMgt<Group>;
+		friend BrowseServerAddressSpace< OPCServer >;
 
 		private:
 			std::map< OPCHANDLE, frl::opc::Group* > groupItem;
 			std::map< String, OPCHANDLE > groupItemIndex;
 			lock::Mutex scopeGuard;
 			volatile LONG refCount;
+			OPCSERVERSTATUS serverStatus;
+			address_space::AddrSpaceCrawler crawler;
 
 		public:
-			OPCSERVERSTATUS m_ServerStatus;
+			FRL_EXCEPTION_CLASS( InvalidServerState );
 
 			OPCServer();
+			~OPCServer();
 			Bool setGroupName( const String &oldName, const String &newName );
 			HRESULT cloneGroup( const String &name, const String &cloneName, Group **group );
 			HRESULT addNewGroup( Group **group );
+			void setServerState( OPCSERVERSTATE newState );
+			OPCSERVERSTATE getServerState();
 
 			// IUnknown implementation
 			STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface);
