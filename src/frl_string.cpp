@@ -23,7 +23,7 @@ namespace frl
 	// Return string length
 	size_t stringLength( const frl::String &string )
 	{
-		return static_cast<size_t> ( string.length() );
+		return string.length();
 	}
 
 	// Converting string to wstring
@@ -123,21 +123,4 @@ namespace frl
 		string = tmp;
 		return True;
 	}
-
-	String toUpper( const String &str, const std::locale &loc ) 
-	{ 
-		String result;
-		result.resize( str.length() );
-		std::transform(str.begin(), str.end(), result.begin(), private_::ToUpperF( loc ) ); 
-		return result; 
-	} 
-
-	String toLower( const String &str, const std::locale &loc ) 
-	{ 
-		String result;
-		result.resize( str.length() );
-		std::transform(str.begin(), str.end(), result.begin(), private_::ToLowerF( loc ) ); 
-		return result; 
-	}
-
 } // Fat Rat Library

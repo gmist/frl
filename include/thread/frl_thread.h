@@ -4,8 +4,8 @@
 #include "thread/frl_thread_fn.h"
 #include "frl_empty_type.h"
 #include "frl_non_copyable.h"
-#include "frl_lock.h"
-#include "event/frl_event.h"
+#include "lock/frl_mutex.h"
+#include "lock/frl_event.h"
 #include "frl_auto_value.h"
 #include "frl_exception.h"
 #include "frl_empty_type.h"
@@ -119,21 +119,21 @@ namespace frl
 			lock::Mutex scopeGuard;	
 			AutoValue< volatile Bool > isCreated;
 			AutoValue< volatile Bool > isRunning;
-			frl::event::Event startWait;
-			frl::event::Event joinWait;
+			frl::lock::Event startWait;
+			frl::lock::Event joinWait;
 			ThreadDescriptor descriptor;
 		public:
 
 			virtual ~MasterThreadBase( void )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				this->Kill();				
 			}
 
 			void Create( Bool isDetached_ = False , UInt stackSize_ = 0 )
 			{				
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if ( isCreated )
 					FRL_THROW( FRL_STR( "Thread already created." ) );
@@ -172,15 +172,15 @@ namespace frl
 
 			void Join( void )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if ( isCreated && isRunning )
 					thread::Join( descriptor );
 			}
 
-			Bool Join( frl::frl_timeout msec_ )
+			Bool Join( frl::TimeOut msec_ )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if ( isCreated && isRunning )
 					return thread::Join( descriptor, msec_ );
@@ -239,7 +239,7 @@ namespace frl
 
 			void Create( private_::FuncSelect<ResultType, ParameterType, Type >::FRL_THREAD_FUNC function_, const Type &type_in , Bool isDetached_  = False , UInt stackSize_  = 0 )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				type = &type_in;
 				function = function_;
@@ -304,7 +304,7 @@ namespace frl
 
 			void Start( ParameterType parameter_ )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
 					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
@@ -339,7 +339,7 @@ namespace frl
 
 			void Start( void )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
 					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
@@ -371,7 +371,7 @@ namespace frl
 
 			void Start( void )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
 					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
@@ -409,7 +409,7 @@ namespace frl
 
 			void Start( ParameterType parameter_ )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
 					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
@@ -492,7 +492,7 @@ namespace frl
 
 			void Start( void )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
 					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
@@ -525,7 +525,7 @@ namespace frl
 
 			void Start( void )
 			{
-				lock::Mutex::ScopeGuard guard( scopeGuard );
+				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
 					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );

@@ -7,7 +7,6 @@ namespace frl
 {
 	namespace opc
 	{
-		OPCServerFactory factory;
 
 		LONG OPCServerFactory::serverLocks = 0;
 
@@ -86,7 +85,7 @@ namespace frl
 				LONG tmp = ::InterlockedDecrement( &OPCServerFactory::serverLocks );
 				if( outProc )
 				{
-					if( CoReleaseServerProcess() ==0 )
+					if( CoReleaseServerProcess() == 0 )
 						noMoreServers = True;
 				}
 				if( tmp == 0 )

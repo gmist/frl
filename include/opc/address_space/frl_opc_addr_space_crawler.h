@@ -17,8 +17,9 @@ namespace frl
 			{
 			private:
 				Tag *curPos;
+				Tag *root;
 			public:
-				FRL_EXCEPTION_CLASS( NotInitializeAddressSpace );
+
 				AddrSpaceCrawler();
 				
 				void goToRoot();

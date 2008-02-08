@@ -6,7 +6,7 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
 #include "frl_exception.h"
-#include "opc/frl_opc_com_variant.h"
+#include "os/win32/com/frl_os_win32_com_variant.h"
 #include "frl_non_copyable.h"
 
 namespace frl
@@ -15,11 +15,6 @@ namespace frl
 	{
 		namespace address_space
 		{
-			FRL_EXCEPTION_CLASS( IsExistTag );
-			FRL_EXCEPTION_CLASS( NotExistTag );
-			FRL_EXCEPTION_CLASS( IsNotBranch );
-			FRL_EXCEPTION_CLASS ( IsNotLeaf );
-
 			class Tag : private NonCopyable
 			{
 			private:
@@ -33,7 +28,7 @@ namespace frl
 				String delimiter;
 				Tag *parent;
 				std::map< String, Tag* > tagsNameCache;
-				ComVariant value;
+				os::win32::com::Variant value;
 				DWORD quality;
 				FILETIME timeStamp;
 				DWORD scanRate;
@@ -43,6 +38,11 @@ namespace frl
 				Tag* addTag( const String &name, Bool is_Branch_ );
 
 			public:
+
+				FRL_EXCEPTION_CLASS( IsExistTag );
+				FRL_EXCEPTION_CLASS( NotExistTag );
+				FRL_EXCEPTION_CLASS( IsNotBranch );
+				FRL_EXCEPTION_CLASS ( IsNotLeaf );
 
 				Tag( Bool is_Branch_, const String &delimiter_ );
 
@@ -104,9 +104,9 @@ namespace frl
 
 				void browseLeafs( std::vector< String > &leaf, DWORD accessFilter = 0 );
 
-				const ComVariant& read();
+				const os::win32::com::Variant& read();
 
-				void write( const ComVariant &newVal );
+				void write( const os::win32::com::Variant &newVal );
 
 				void setQuality( DWORD quality_ );
 

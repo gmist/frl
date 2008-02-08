@@ -3,6 +3,7 @@
 #include "frl_lexical_cast.h"
 #include "frl_exception.h"
 #include "../dependency/vendors/opc_foundation/opcerror.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
 {
@@ -23,41 +24,6 @@ namespace frl
 				return fileTime;
 			}
 
-			Bool isValidType( VARTYPE vtType )
-			{
-				if (vtType & VT_ARRAY)
-				{
-					if (((vtType & VT_TYPEMASK) | VT_ARRAY) != vtType)
-					{
-						return False;
-					}
-				}
-
-				switch (vtType & VT_TYPEMASK)
-				{
-				case VT_EMPTY:
-				case VT_I1:
-				case VT_UI1:
-				case VT_I2:
-				case VT_UI2:
-				case VT_I4:
-				case VT_UI4:
-				case VT_I8:
-				case VT_UI8:
-				case VT_R4:
-				case VT_R8:
-				case VT_CY:
-				case VT_BOOL:
-				case VT_DATE:
-				case VT_BSTR:
-				case VT_VARIANT:
-					{
-						return True;
-					}
-				}
-				return False;
-			}
-
 			frl::String getUniqueName()
 			{
 				static unsigned long counter = 0;
@@ -73,7 +39,7 @@ namespace frl
 				if( str != NULL )
 				{
 					size_t size = strlen( str ) + 1;
-					ret = util::allocMemory< char >( size );
+					ret = os::win32::com::allocMemory< char >( size );
 					strcpy_s( ret, size, str );
 				}
 				return ret;
@@ -85,7 +51,7 @@ namespace frl
 				if( str != NULL )
 				{
 					size_t size = wcslen( str ) + 2;
-					ret = util::allocMemory< wchar_t >( size );
+					ret = os::win32::com::allocMemory< wchar_t >( size );
 					wcscpy_s( ret, size, str );
 				}
 				return ret;
@@ -97,7 +63,7 @@ namespace frl
 				if( !string.empty() )
 				{
 					size_t size = string.length() + 1;
-					ret = util::allocMemory< char >( size );
+					ret = os::win32::com::allocMemory< char >( size );
 					strcpy_s( ret, size, string.c_str() );
 				}
 				return ret;
@@ -109,7 +75,7 @@ namespace frl
 				if( !string.empty() )
 				{
 					size_t size = string.length() + 2;
-					ret = util::allocMemory< wchar_t >( size );
+					ret = os::win32::com::allocMemory< wchar_t >( size );
 					wcscpy_s( ret, size, string.c_str() );
 				}
 				return ret;
@@ -306,78 +272,205 @@ namespace frl
 				return S_OK;
 			}
 
-			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensintive )
+
+			// Based on "Alarms and Events Custom Interface Standard. Version 1.10. Final Release. OCTOBER 2, 2002"
+			Bool matchStringPattern( const String &str, const String& pattern, Bool caseSensitive )
 			{
 				if( pattern.empty() )
 					return True;
 				if( str.empty() )
 					return False;
 
-				String strIn, patternIn;
-				if( ! caseSensintive )
+				String tmpStr, tmpPattern;
+				if( ! caseSensitive )
 				{
-					strIn = lexicalCast< lexicalCastMutators::lower >::get( str );
-					patternIn = lexicalCast< lexicalCastMutators::lower >::get( pattern );
+					tmpStr = lexicalCast< lexicalCastMutators::lower >::get( str );
+					tmpPattern = lexicalCast< lexicalCastMutators::lower >::get( pattern );
+					if( tmpStr == tmpPattern )
+						return True;
 				}
 				else
 				{
-					strIn = str;
-					patternIn = pattern;
-				}
-				
-				if( patternIn.size() == 1 )
-				{
-					if( pattern == FRL_STR("*") )
+					if( str == pattern )
 						return True;
-					else
-						return str == pattern;
+
+					tmpStr = str;
+					tmpPattern = pattern;
 				}
-				
-				if( patternIn.size() > 2 && patternIn[0] == L'[' )
+
+				Char charSetSimb, stringSimb, l;
+				size_t patternPos = 0;
+				size_t sourcePos = 0;
+				while( sourcePos < tmpStr.length() && patternPos < tmpPattern.length() )
 				{
-					size_t posCloseBracket = patternIn.find( L']' );
-					if( posCloseBracket == String::npos )
-						return False; // syntax error
-
-					String bracketsStr = patternIn.substr( 1, posCloseBracket - 1 );
-					String residual = patternIn.substr( posCloseBracket + 1, patternIn.size() - 1 );
-					
-					std::vector< Char > chars;
-					for( size_t i = 0; i < bracketsStr.size(); i++ )
-						chars.push_back( bracketsStr[i] );
-
-					std::vector< String > fullStr;
-					size_t starPos = residual.find( L'*' );
-					if( starPos == String::npos )
+					stringSimb = tmpPattern[patternPos++];
+					if( patternPos > tmpPattern.length() )
 					{
-						for( size_t i = 0; i < chars.size(); i++ )
-							fullStr.push_back( chars[i] + residual );
+						return( sourcePos >= tmpStr.length() ); // if end of string true
 					}
-					else
+
+					switch( stringSimb )
 					{
-						if( starPos == residual.size() - 1 )
+					// match zero or more char.
+					case FRL_STR('*'):
 						{
-							for( size_t i = 0; i < chars.size(); i++ )
+							while( sourcePos < tmpStr.length() ) 
+							{   
+								if( matchStringPattern(	tmpStr.substr( sourcePos++, tmpStr.length() - 1 ),
+									pattern.substr( patternPos, tmpPattern.length() - 1 ),
+									caseSensitive) )
+								{
+									return True;
+								}
+							}
+							return matchStringPattern( tmpStr, tmpPattern.substr( patternPos, tmpPattern.length() - 1 ), caseSensitive);
+						}
+						break;
+
+					// match any one char
+					case FRL_STR('?'):
+						{
+							// if end of source string
+							if( sourcePos >= tmpStr.length() ) 
 							{
-								String tt;
-								tt += chars[i];
-								fullStr.push_back( tt );
+								return False;  
+							}
+							sourcePos++;
+							break;
+						}
+
+					// match char set 
+					case FRL_STR('['): 
+						{
+							charSetSimb = tmpStr[sourcePos++];;
+
+							if( sourcePos > tmpStr.length())
+								return False; // syntax
+
+							l = FRL_STR('\0'); 
+
+							// match a char if NOT in set []
+							if( tmpPattern[patternPos] == FRL_STR('!') ) 
+							{
+								++patternPos;
+
+								stringSimb = tmpPattern[patternPos++];
+
+								while( patternPos < tmpPattern.length() ) 
+								{
+									if (stringSimb == FRL_STR(']')) // if end of char set, then 
+									{
+										break; // no match found 
+									}
+
+									if (stringSimb == FRL_STR('-')) 
+									{
+										// check a range of chars? 
+										stringSimb = tmpPattern[patternPos];
+
+										// get high limit of range 
+										if (patternPos > tmpPattern.length() || stringSimb == FRL_STR(']') )
+										{
+											return False; // syntax 
+										}
+
+										if( charSetSimb >= l && charSetSimb <= stringSimb) 
+										{
+											return False; // if in range, return false
+										}
+									} 
+
+									l = stringSimb;
+
+									if (charSetSimb == stringSimb) // if char matches this element 
+									{
+										return False; // return false 
+									}
+
+									stringSimb = tmpPattern[patternPos++];
+								} 
+							}
+
+							// match if char is in set []
+							else 
+							{
+								stringSimb = tmpPattern[patternPos++];
+
+								while(patternPos < tmpPattern.length() ) 
+								{
+									if (stringSimb == FRL_STR(']')) // if end of char set, then no match found 
+									{
+										return False;
+									}
+
+									if (stringSimb == FRL_STR('-')) 
+									{   
+										// check a range of chars? 
+										stringSimb = tmpPattern[patternPos];
+
+										// get high limit of range 
+										if (patternPos > tmpPattern.length() || stringSimb == FRL_STR(']') )
+										{
+											return False; // syntax 
+										}
+
+										if (charSetSimb >= l  &&  charSetSimb <= stringSimb) 
+										{
+											break; // if in range, move on 
+										}
+									} 
+
+									l = stringSimb;
+
+									if (charSetSimb == stringSimb) // if char matches this element move on 
+									{
+										break;           
+									}
+
+									stringSimb = tmpPattern[patternPos++];
+								} 
+
+								while (patternPos < tmpPattern.length() && stringSimb != FRL_STR(']') ) // got a match in char set skip to end of set
+								{
+									stringSimb = tmpPattern[patternPos++];             
+								}
 							}
 						}
-					}
-					
-					if( fullStr.size() == 0 )
-						return False;
+						break; 
 
-					size_t pos;
-					for( size_t i = 0; i < fullStr.size(); i++ )
-					{
-						pos = str.find( fullStr[i] );
-						if( pos != String::npos && pos != str.size() -1 )
-							return True;
+					// match digit.
+					case FRL_STR('#'):
+						{
+							charSetSimb = tmpStr[sourcePos++]; 
+
+							if( charSetSimb < 48 || charSetSimb > 57 )
+							{
+								return False; // not a digit
+							}
+						}
+						break;
+
+					// match exact char.
+					default: 
+						{
+							charSetSimb = tmpStr[sourcePos++]; 
+
+							if (charSetSimb != stringSimb) // check for exact char
+							{
+								return False; // not a match
+							}
+
+							// check if end of pattern and still string data left.
+							if (patternPos >= tmpPattern.length() && sourcePos < tmpStr.length()-1)
+							{
+								return False;
+							}
+						}
+						break;
+
 					}
 				}
-				return False;
+				return True;
 			}
 		}	// namespace util
 	} // namespace opc

@@ -18,7 +18,7 @@ namespace frl
 		void IsValid( const ThreadDescriptor &descriptor );
 		void Yield_( void );
 		void Join( ThreadDescriptor &descriptor );
-		Bool Join( ThreadDescriptor &descriptor, frl_timeout msec_ );
+		Bool Join( ThreadDescriptor &descriptor, TimeOut msec_ );
 		void Kill( ThreadDescriptor &descriptor );
 		Bool IsEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl );
 		void Create( ThreadDescriptor &descriptor, FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_ = NULL, Bool isDetached_ = False, UInt stackSize_ = 0 );

@@ -1,24 +1,17 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_async_request.h"
-#include "opc/frl_opc_com_variant.h"
+#include "os/win32/com/frl_os_win32_com_variant.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		namespace private_
-		{
-			DWORD getUniqueCancelID()
-			{
-				static DWORD id = 0;
-				return ++id;
-			}
-		}
+		using namespace os::win32::com;
 
 		AsyncRequest::AsyncRequest()
 			:	id( 0 ),
-				cancelID( private_::getUniqueCancelID() ),
+				cancelID( getUniqueCancelID() ),
 				cancelled( False ),
 				values( NULL ),
 				source( OPC_DS_DEVICE )
@@ -27,7 +20,7 @@ namespace frl
 
 		AsyncRequest::AsyncRequest( std::list< OPCHANDLE > handles_ )
 			:	id( 0 ),
-				cancelID( private_::getUniqueCancelID() ),
+				cancelID( getUniqueCancelID() ),
 				cancelled( False ),
 				handles( handles_ ),
 				values( NULL ),
@@ -51,7 +44,7 @@ namespace frl
 				for( size_t i = 0; i < size; i++ )
 				{
 					::VariantInit( & values[i] );
-					ComVariant::variantCopy( &values[i], &rhv.values[i] );
+					Variant::variantCopy( &values[i], &rhv.values[i] );
 				}
 			}
 		}
@@ -81,7 +74,7 @@ namespace frl
 				for( size_t i = 0; i < size; i++ )
 				{
 					::VariantInit( & values[i] );
-					ComVariant::variantCopy( &values[i], &rhv.values[i] );
+					Variant::variantCopy( &values[i], &rhv.values[i] );
 				}
 			}
 			return *this;
@@ -126,7 +119,7 @@ namespace frl
 			for( DWORD i = 0; i < counts; i++ )
 			{
 				::VariantInit( &values[i] );
-				ComVariant::variantCopy( &values[i], &values_[i] );
+				Variant::variantCopy( &values[i], &values_[i] );
 			}
 		}
 
@@ -175,7 +168,7 @@ namespace frl
 						if( i != (*it) )
 						{
 							::VariantInit( &tmpVal[ j ] );
-							ComVariant::variantCopy( &tmpVal[ j ], &values[ i ] );
+							Variant::variantCopy( &tmpVal[ j ], &values[ i ] );
 							++j;
 						}
 					}
@@ -195,6 +188,11 @@ namespace frl
 			source = source_;
 		}
 
+		DWORD AsyncRequest::getUniqueCancelID()
+		{
+			static DWORD id = 0;
+			return ++id;
+		}
 	} // namespace opc
 } // namespace frl
 

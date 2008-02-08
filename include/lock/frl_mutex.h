@@ -4,35 +4,34 @@
 #include "lock/frl_scope_guard.h"
 #include "lock/frl_mutex_fn.h"
 #include "frl_non_copyable.h"
+#include "lock/frl_lock_mutex_i.h"
 
 namespace frl
 {
 	namespace lock
 	{
 		class Mutex
-			:	private NonCopyable
+			:	private NonCopyable, public Mutex_I
 		{
 		private:
 			MutexDescriptor mutex;
 			volatile Bool isInitialize;
 		public:
-
-			typedef frl::lock::ScopeGuard< Mutex > ScopeGuard;
 			
-			// Конструктор
+			// Constructor
 			Mutex( void );
 
-			// Деструктор
-			~Mutex( void );
+			// Destructor
+			virtual ~Mutex( void );
 
-			// Захват мьютекса
-			void Lock( void );
+			// lock mutex
+			virtual void Lock( void );
 
-			// Попытка захвата мьютекса
-			Bool TryLock( void );
+			// non block try lock mutex
+			virtual Bool TryLock( void );
 
-			// Освобождение мьютекса
-			void UnLock( void );
+			// unlock mutex
+			virtual void UnLock( void );
 		}; // class Mutex
 	} // namespace lock
 } // namespace FatRat Library

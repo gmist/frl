@@ -13,8 +13,11 @@ namespace frl
 			:	public ServerKind
 		{
 		private:
+			Bool isInit;
+			DWORD objectId;
 		public:
 			DA2Server( const ServerType& serverType );
+			~DA2Server();
 			void registrerServer();
 			Bool init();
 		};

@@ -4,6 +4,8 @@
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_address_space.h"
 
+using namespace frl::opc::address_space;
+
 namespace frl
 {
 	namespace opc
@@ -79,7 +81,7 @@ namespace frl
 			return requestDataType;
 		}
 
-		const ComVariant& GroupItem::readValue()
+		const os::win32::com::Variant& GroupItem::readValue()
 		{
 			if( tagRef == NULL )
 				tagRef = opcAddressSpace.getLeaf( itemID );
@@ -96,14 +98,14 @@ namespace frl
 				if( tagRef == NULL )
 					tagRef = opcAddressSpace.getLeaf( itemID );
 			}
-			catch( frl::opc::address_space::NotExistTag &ex )
+			catch( Tag::NotExistTag &ex )
 			{
 				ex.~NotExistTag();
 				return OPC_E_INVALIDHANDLE;
 			}
 			VARIANT tmp;
 			::VariantInit( &tmp );
-			ComVariant::variantCopy( &tmp, &newValue );
+			os::win32::com::Variant::variantCopy( &tmp, &newValue );
 			HRESULT result = ::VariantChangeType( &tmp, &tmp, 0, tagRef->getCanonicalDataType() );
 			if( FAILED( result) )
 				return result;
@@ -147,19 +149,19 @@ namespace frl
 						|| ( lastChange.dwLowDateTime != tmp.dwLowDateTime ) );
 		}
 
-		GroupItem* GroupItem::cloneFrom( const GroupItem &rhv )
+		GroupItem* GroupItem::clone()
 		{
 			GroupItem *grItem= new GroupItem();
 			grItem->serverHandle = util::getUniqueServerHandle();
-			grItem->clientHandle = rhv.clientHandle;
-			grItem->actived = rhv.actived;
-			grItem->accessPath = rhv.accessPath;
-			grItem->itemID = rhv.itemID;
-			grItem->requestDataType = rhv.requestDataType;
+			grItem->clientHandle = clientHandle;
+			grItem->actived = actived;
+			grItem->accessPath = accessPath;
+			grItem->itemID = itemID;
+			grItem->requestDataType = requestDataType;
 			return grItem;
 		}
 
-		const ComVariant& GroupItem::getCachedValue()
+		const os::win32::com::Variant& GroupItem::getCachedValue()
 		{
 			return cachedValue;
 		}

@@ -33,61 +33,61 @@ namespace frl
 				if( dwCount == 0 ) 
 					return E_INVALIDARG;
 
-				*ppAddResults = util::allocMemory<OPCITEMRESULT>( dwCount );
+				*ppAddResults = os::win32::com::allocMemory<OPCITEMRESULT>( dwCount );
 				if( *ppAddResults == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory<OPCITEMRESULT>( *ppAddResults, dwCount );
+				os::win32::com::zeroMemory<OPCITEMRESULT>( *ppAddResults, dwCount );
 
-				*ppErrors = util::allocMemory<HRESULT>( dwCount );
+				*ppErrors = os::win32::com::allocMemory<HRESULT>( dwCount );
 				if( *ppErrors == NULL ) 
 				{ 
 					CoTaskMemFree(*ppAddResults);
 					return E_OUTOFMEMORY;
 				}
-				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
+				os::win32::com::zeroMemory<HRESULT>( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
-				for (DWORD ii = 0; ii < dwCount; ii++)
+				lock::ScopeGuard guard( pT->groupGuard );
+				for (DWORD i = 0; i < dwCount; i++)
 				{
-					if (pItemArray[ii].szItemID == NULL || wcslen(pItemArray[ii].szItemID) == 0)
+					if (pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0)
 					{
-						(*ppErrors)[ii] = OPC_E_INVALIDITEMID;
+						(*ppErrors)[i] = OPC_E_INVALIDITEMID;
 						res = S_FALSE;
 						continue;
 					}
 
-					if( ! opcAddressSpace.isExistLeaf( pItemArray[ii].szItemID ) )
+					if( ! opcAddressSpace.isExistLeaf( pItemArray[i].szItemID ) )
 					{
-						(*ppErrors)[ii] = OPC_E_UNKNOWNITEMID;
+						(*ppErrors)[i] = OPC_E_UNKNOWNITEMID;
 						res = S_FALSE;
 						continue;
 					}
 
-					if( ! util::isValidType( pItemArray[ii].vtRequestedDataType ) )
+					if( ! os::win32::com::isValidType( pItemArray[i].vtRequestedDataType ) )
 					{
-						(*ppErrors)[ii] = OPC_E_BADTYPE;
+						(*ppErrors)[i] = OPC_E_BADTYPE;
 						res = S_FALSE;
 						continue;
 					}
 
-					if( pT->itemList.find( pItemArray[ii].hClient) != pT->itemList.end() )
+					if( pT->itemList.find( pItemArray[i].hClient) != pT->itemList.end() )
 					{
-						(*ppErrors)[ii] = E_FAIL;
+						(*ppErrors)[i] = E_FAIL;
 						res = S_FALSE;
 						continue;
 					}
 
 					GroupItem *item = new GroupItem();
 					OPCHANDLE serverHandle = util::getUniqueServerHandle();
-					item->Init( serverHandle, pItemArray[ii] );
-					(*ppAddResults)[ii].hServer = serverHandle;
+					item->Init( serverHandle, pItemArray[i] );
+					(*ppAddResults)[i].hServer = serverHandle;
 
-					address_space::Tag *tag = opcAddressSpace.getTag( pItemArray[ii].szItemID );
-					(*ppAddResults)[ii].vtCanonicalDataType = tag->getCanonicalDataType();
-					(*ppAddResults)[ii].dwAccessRights = tag->getAccessRights();
-					(*ppAddResults)[ii].dwBlobSize = 0;
-					(*ppAddResults)[ii].pBlob = NULL;
+					address_space::Tag *tag = opcAddressSpace.getTag( pItemArray[i].szItemID );
+					(*ppAddResults)[i].vtCanonicalDataType = tag->getCanonicalDataType();
+					(*ppAddResults)[i].dwAccessRights = tag->getAccessRights();
+					(*ppAddResults)[i].dwBlobSize = 0;
+					(*ppAddResults)[i].pBlob = NULL;
 
 					pT->itemList.insert( std::pair< OPCHANDLE, GroupItem* > ( serverHandle, item ));
 				}
@@ -112,21 +112,21 @@ namespace frl
 				if( dwCount == 0 )
 					return E_INVALIDARG;
 				
-				*ppValidationResults = util::allocMemory< OPCITEMRESULT >( dwCount );
+				*ppValidationResults = os::win32::com::allocMemory< OPCITEMRESULT >( dwCount );
 				if( *ppValidationResults == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< OPCITEMRESULT >( *ppValidationResults, dwCount );
+				os::win32::com::zeroMemory< OPCITEMRESULT >( *ppValidationResults, dwCount );
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL )
 				{
 					CoTaskMemFree( *ppValidationResults );
 					return E_OUTOFMEMORY;
 				}
-				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				/// check exist of the specified tags
 				for( DWORD i=0; i<dwCount; i++ )
 				{
@@ -145,7 +145,7 @@ namespace frl
 					}
 
 					// validate data type.
-					if (! util::isValidType(pItemArray[i].vtRequestedDataType ) )
+					if (! os::win32::com::isValidType(pItemArray[i].vtRequestedDataType ) )
 					{
 						(*ppErrors)[i] = OPC_E_BADTYPE;
 						res = S_FALSE;
@@ -177,15 +177,15 @@ namespace frl
 				if( dwCount == 0 )
 					return E_INVALIDARG;
 
-				*ppErrors = util::allocMemory<HRESULT>( dwCount );
+				*ppErrors = os::win32::com::allocMemory<HRESULT>( dwCount );
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
+				os::win32::com::zeroMemory<HRESULT>( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
 				std::map< OPCHANDLE, GroupItem* >::iterator it;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
-				for( DWORD i=0; i<dwCount; i++)
+				lock::ScopeGuard guard( pT->groupGuard );
+				for( DWORD i=0; i<dwCount; i++ )
 				{
 					it = pT->itemList.find( phServer[i] );
 					if( it == pT->itemList.end() ) 
@@ -264,25 +264,25 @@ namespace frl
 				if( dwCount == 0 )
 					return E_INVALIDARG;
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL ) 
 					return E_OUTOFMEMORY;
-				util::zeroMemory<HRESULT>( *ppErrors, dwCount );
+				os::win32::com::zeroMemory<HRESULT>( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
 				std::map< OPCHANDLE, GroupItem* >::iterator it;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
-				for (DWORD ii = 0; ii < dwCount; ii++)
+				lock::ScopeGuard guard( pT->groupGuard );
+				for( DWORD i = 0; i < dwCount; i++ )
 				{
-					it = pT->itemList.find( phServer[ii] );
+					it = pT->itemList.find( phServer[i] );
 					if ( it == pT->itemList.end() )
 					{
-						(*ppErrors)[ii] = OPC_E_INVALIDHANDLE;
+						(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 						res = S_FALSE;
 						continue;
 					}
 					(*it).second->isActived( ( bActive == VARIANT_TRUE ) || ( bActive == TRUE ) );
-					(*ppErrors)[ii] = S_OK;
+					(*ppErrors)[i] = S_OK;
 				}
 				return res;
 			}
@@ -302,14 +302,14 @@ namespace frl
 
 				if( dwCount == 0 )
 					return E_INVALIDARG;
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
 				std::map< OPCHANDLE, GroupItem* >::iterator it;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++ )
 				{
 					it = pT->itemList.find( phServer[i] );
@@ -341,14 +341,14 @@ namespace frl
 				if( dwCount == 0 )
 					return E_INVALIDARG;
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT res = S_OK;
 				std::map< OPCHANDLE, GroupItem* >::iterator it;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i=0; i<dwCount; i++ )
 				{
 					it = pT->itemList.find( phServer[i] );
@@ -358,7 +358,7 @@ namespace frl
 						res = S_FALSE;
 						continue;
 					}
-					if( ! util::isValidType( pRequestedDatatypes[i] ) )
+					if( ! os::win32::com::isValidType( pRequestedDatatypes[i] ) )
 					{
 						(*ppErrors)[i] = OPC_E_BADTYPE;
 						res = S_FALSE;
@@ -376,7 +376,7 @@ namespace frl
 				T* pT = static_cast<T*> (this);
 				if( pT->deleted )
 					return E_FAIL;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				if (ppUnk == NULL)
 					return E_INVALIDARG;
 
@@ -386,7 +386,7 @@ namespace frl
 					if (temp == NULL)
 						return (E_OUTOFMEMORY);
 					std::map< OPCHANDLE, GroupItem* >::iterator it;
-					lock::Mutex::ScopeGuard guard( pT->groupGuard );
+					lock::ScopeGuard guard( pT->groupGuard );
 					for( it = pT->itemList.begin(); it != pT->itemList.end(); ++it )
 					{
 						OPCHANDLE h = it->first;

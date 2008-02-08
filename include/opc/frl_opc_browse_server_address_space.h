@@ -32,7 +32,7 @@ namespace frl
 				/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 				/* [string][in] */ LPCWSTR szString )
 			{
-				frl::lock::Mutex::ScopeGuard guard( bsaScopeGuard );
+				frl::lock::ScopeGuard guard( bsaScopeGuard );
 				T* pT = static_cast<T*> (this);
 				switch( dwBrowseDirection )
 				{
@@ -98,7 +98,7 @@ namespace frl
 					return E_POINTER;
 				*ppIEnumString = NULL;
 
-				frl::lock::Mutex::ScopeGuard guard( bsaScopeGuard );
+				frl::lock::ScopeGuard guard( bsaScopeGuard );
 				T* pT = static_cast<T*> (this);
 				EnumString *pEnum = new EnumString();
 				if( pEnum == NULL )
@@ -154,7 +154,7 @@ namespace frl
 					return E_INVALIDARG;
 				*szItemID = NULL;
 
-				frl::lock::Mutex::ScopeGuard guard( bsaScopeGuard );
+				frl::lock::ScopeGuard guard( bsaScopeGuard );
 				T* pT = static_cast<T*> (this);
 
 				if( stringLength( szItemDataID ) == 0 )

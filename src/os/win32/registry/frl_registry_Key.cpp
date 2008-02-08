@@ -3,13 +3,12 @@
 #if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 
 #include "frl_exception.h"
-#include "io/win32/registry/frl_registry_Key.h"
-#include "io/win32/registry/frl_registry_RootKeys.h"
-#include "frl_exception.h"
+#include "os/win32/registry/frl_registry_Key.h"
+#include "os/win32/registry/frl_registry_RootKeys.h"
 
 namespace frl
 {
-	namespace io
+	namespace os
 	{
 		namespace win32
 		{
@@ -473,13 +472,13 @@ namespace frl
 					return value;
 				}				
 
-				const frl::io::win32::registry::RootKey& Key::getRootKey()
+				const frl::os::win32::registry::RootKey& Key::getRootKey()
 				{
 					return rootKey;
 				}
 			} // namespace registry
 		} // namespace win32
-	} // namespace io
+	} // namespace os
 } // frl
 
 #endif /* FRL_PLATFORM_WIN32 */

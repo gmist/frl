@@ -36,13 +36,13 @@ namespace frl
 				if( ! pT->isConnected( IID_IOPCDataCallback ) )
 					return CONNECT_E_NOCONNECTION;
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
-				util::zeroMemory< HRESULT >( *ppErrors );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors );
 
 				HRESULT result = S_OK;
 				std::list<OPCHANDLE> handles;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
 					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
@@ -62,6 +62,7 @@ namespace frl
 					*pdwCancelID = request->getCancelID();
 					request->setTransactionID( dwTransactionID );
 					pT->asyncReadList.push_back( request );
+					pT->readEvent.Signal();
 				}
 
 				return result;
@@ -91,13 +92,13 @@ namespace frl
 				if( ! pT->isConnected( IID_IOPCDataCallback ) )
 					return CONNECT_E_NOCONNECTION;
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
-				util::zeroMemory< HRESULT >( *ppErrors );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors );
 
 				HRESULT result = S_OK;
 				std::list< OPCHANDLE > handles;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
 					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
@@ -118,6 +119,7 @@ namespace frl
 					*pdwCancelID = request->getCancelID();
 					request->setTransactionID( dwTransactionID );
 					pT->asyncWriteList.push_back( request );
+					pT->writeEvent.Signal();
 				}
 				return result;
 			}
@@ -139,7 +141,7 @@ namespace frl
 
 				*pdwCancelID = NULL;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 
 				if( ! pT->isConnected( IID_IOPCDataCallback ) )
 					return CONNECT_E_NOCONNECTION;
@@ -172,6 +174,7 @@ namespace frl
 				request->setTransactionID( dwTransactionID );
 				request->setSource( dwSource );
 				pT->asyncRefreshList.push_back( request );
+				pT->refreshEvent.Signal();
 				return S_OK;
 			}
 
@@ -187,7 +190,7 @@ namespace frl
 
 				Bool isExistRead = False;
 				std::list< AsyncRequest* >::iterator it;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( it = pT->asyncReadList.begin(); it != pT->asyncReadList.end(); ++it )
 				{
 					if( (*it)->getCancelID() == dwCancelID )
@@ -234,7 +237,7 @@ namespace frl
 				if( pT->deleted )
 					return E_FAIL;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 
 				if( ! pT->isConnected( IID_IOPCDataCallback ) )
 					return CONNECT_E_NOCONNECTION;
@@ -256,7 +259,7 @@ namespace frl
 				if( pbEnable == NULL )
 					return E_INVALIDARG;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 
 				if( ! pT->isConnected( IID_IOPCDataCallback ) )
 					return CONNECT_E_NOCONNECTION;

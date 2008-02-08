@@ -4,6 +4,8 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
 
+using namespace frl::opc::address_space;
+
 namespace frl
 {
 	namespace opc
@@ -34,22 +36,22 @@ namespace frl
 				if (dwCount == 0)
 					return E_INVALIDARG;
 
-				*ppItemValues = util::allocMemory< OPCITEMSTATE >( dwCount );
+				*ppItemValues = os::win32::com::allocMemory< OPCITEMSTATE >( dwCount );
 				if( ppItemValues == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< OPCITEMSTATE >( *ppItemValues, dwCount );
+				os::win32::com::zeroMemory< OPCITEMSTATE >( *ppItemValues, dwCount );
 
-				*ppErrors =  util::allocMemory< HRESULT >( dwCount );
+				*ppErrors =  os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( ppErrors == NULL )
 				{
-					util::freeMemory( ppItemValues );
+					os::win32::com::freeMemory( ppItemValues );
 					return E_OUTOFMEMORY;
 				}
-				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT result = S_OK;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
 					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
@@ -74,7 +76,7 @@ namespace frl
 						else
 							( *ppErrors )[i] = ( (*it).second->readValue() ).copyTo( (*ppItemValues)[i].vDataValue );
 					}
-					catch( frl::opc::address_space::NotExistTag &ex )
+					catch( Tag::NotExistTag &ex )
 					{
 						ex.~NotExistTag();
 						( *ppErrors )[i] = OPC_E_INVALIDHANDLE;
@@ -116,13 +118,13 @@ namespace frl
 				if (dwCount == 0)
 					return E_INVALIDARG;
 
-				*ppErrors =  util::allocMemory< HRESULT >( dwCount );
+				*ppErrors =  os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( ppErrors == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< HRESULT >( *ppErrors );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors );
 
 				HRESULT result = S_OK;
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				for( DWORD i = 0; i < dwCount; i++ )
 				{
 					std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );

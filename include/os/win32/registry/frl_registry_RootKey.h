@@ -10,7 +10,7 @@
 
 namespace frl
 {
-	namespace io
+	namespace os
 	{
 		namespace win32
 		{
@@ -37,7 +37,7 @@ namespace frl
 				}; // RootKey
 			} // namespace registry
 		} // namespace win32
-	} // namespace io
+	} // namespace os
 } // frl
 
 #endif // #if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )

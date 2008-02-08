@@ -14,7 +14,11 @@ namespace frl
 		OPCServer::OPCServer()
 			: refCount( 0 )
 		{
-			util::zeroMemory<OPCSERVERSTATUS>( &serverStatus );
+			// call opcAddressSpace.finalConstruct first !
+			if( ! opcAddressSpace.isInit() )
+				FRL_THROW_S_CLASS( address_space::AddressSpace::NotFinalConstruct );
+
+			os::win32::com::zeroMemory<OPCSERVERSTATUS>( &serverStatus );
 			CoFileTimeNow( &serverStatus.ftStartTime );
 			serverStatus.szVendorInfo = L"Serg Baburin";
 			serverStatus.dwServerState = OPC_STATUS_NOCONFIG;
@@ -90,7 +94,17 @@ namespace frl
 			return tmp;
 		}
 
-		HRESULT STDMETHODCALLTYPE OPCServer::AddGroup( /* [string][in] */ LPCWSTR szName, /* [in] */ BOOL bActive, /* [in] */ DWORD dwRequestedUpdateRate, /* [in] */ OPCHANDLE hClientGroup, /* [in][unique] */ LONG *pTimeBias, /* [in][unique] */ FLOAT *pPercentDeadband, /* [in] */ DWORD dwLCID, /* [out] */ OPCHANDLE *phServerGroup, /* [out] */ DWORD *pRevisedUpdateRate, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+		HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName, 
+																							/* [in] */ BOOL bActive,
+																							/* [in] */ DWORD dwRequestedUpdateRate,
+																							/* [in] */ OPCHANDLE hClientGroup,
+																							/* [in][unique] */ LONG *pTimeBias,
+																							/* [in][unique] */ FLOAT *pPercentDeadband,
+																							/* [in] */ DWORD dwLCID,
+																							/* [out] */ OPCHANDLE *phServerGroup,
+																							/* [out] */ DWORD *pRevisedUpdateRate,
+																							/* [in] */ REFIID riid,
+																							/* [iid_is][out] */ LPUNKNOWN *ppUnk )
 		{
 			if (phServerGroup == NULL || pRevisedUpdateRate == NULL || ppUnk == NULL)
 				return E_INVALIDARG;
@@ -99,7 +113,7 @@ namespace frl
 			*pRevisedUpdateRate = 0;
 			*ppUnk = NULL;
 
-			lock::Mutex::ScopeGuard guard( scopeGuard );
+			lock::ScopeGuard guard( scopeGuard );
 			if( groupItemIndex.find( szName ) != groupItemIndex.end() )
 				return OPC_E_DUPLICATENAME;
 			if( pPercentDeadband )
@@ -175,7 +189,7 @@ namespace frl
 			if( szName == NULL || String(szName).empty() )
 				return E_INVALIDARG;
 			
-			lock::Mutex::ScopeGuard guard( scopeGuard );
+			lock::ScopeGuard guard( scopeGuard );
 
 			std::map< String, OPCHANDLE >::iterator it = groupItemIndex.find( szName );
 			if(it == groupItemIndex.end() )
@@ -202,13 +216,13 @@ namespace frl
 			if(ppServerStatus == NULL)
 				return E_INVALIDARG;
 
-			lock::Mutex::ScopeGuard guard( scopeGuard );
-			OPCSERVERSTATUS *stat = util::allocMemory<OPCSERVERSTATUS>();
+			lock::ScopeGuard guard( scopeGuard );
+			OPCSERVERSTATUS *stat = os::win32::com::allocMemory<OPCSERVERSTATUS>();
 			memcpy( stat, &serverStatus, sizeof(OPCSERVERSTATUS) );
 			CoFileTimeNow(&( stat->ftCurrentTime));
 
 			*ppServerStatus = stat;
-			stat->szVendorInfo = util::allocMemory<WCHAR>( (wcslen(serverStatus.szVendorInfo)+1) * sizeof(WCHAR) );
+			stat->szVendorInfo = os::win32::com::allocMemory<WCHAR>( (wcslen(serverStatus.szVendorInfo)+1) * sizeof(WCHAR) );
 			memcpy( stat->szVendorInfo, serverStatus.szVendorInfo, (wcslen( serverStatus.szVendorInfo) + 1) * sizeof(WCHAR) );
 			stat->dwGroupCount = (DWORD) groupItemIndex.size();
 
@@ -217,7 +231,7 @@ namespace frl
 
 		HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
 		{
-			lock::Mutex::ScopeGuard guard( scopeGuard );
+			lock::ScopeGuard guard( scopeGuard );
 
 			std::map< OPCHANDLE, Group*>::iterator it = groupItem.find( hServerGroup );
 			if( it == groupItem.end() )
@@ -236,7 +250,7 @@ namespace frl
 
 		HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 		{
-			lock::Mutex::ScopeGuard guard( scopeGuard );
+			lock::ScopeGuard guard( scopeGuard );
 
 			if( riid == IID_IEnumUnknown )
 			{
@@ -287,7 +301,7 @@ namespace frl
 
 		frl::Bool OPCServer::setGroupName( const String &oldName, const String &newName )
 		{
-			lock::Mutex::ScopeGuard guard( scopeGuard );
+			lock::ScopeGuard guard( scopeGuard );
 			std::map< String, OPCHANDLE >::iterator it = groupItemIndex.find( oldName );
 			if( it == groupItemIndex.end() )
 				return False;
@@ -302,7 +316,7 @@ namespace frl
 			if ( ppClone == NULL )
 				return E_INVALIDARG;
 
-			lock::Mutex::ScopeGuard guard( scopeGuard );
+			lock::ScopeGuard guard( scopeGuard );
 
 			std::map< String, OPCHANDLE >::iterator itInd = groupItemIndex.find( cloneName );
 			if( itInd != groupItemIndex.end() )
@@ -316,7 +330,7 @@ namespace frl
 			if( it == groupItem.end() )
 				return E_INVALIDARG;
 
-			*ppClone = Group::cloneFrom( *((*it).second) );
+			*ppClone = (*it).second->clone();
 			if ( ppClone == NULL )
 				return E_OUTOFMEMORY;
 			((IOPCItemMgt*)(*ppClone))->AddRef();

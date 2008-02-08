@@ -21,11 +21,10 @@ class Psoi2Device
 private:
 	DA2Server *server;
 	Psoi2Channel channels[20];
-	
+	void initializeAddressSpace();
 public:
 	Psoi2Device();
 	~Psoi2Device();
-	frl::Bool init();
 	void setValue( int channelNum, float value );
 	void setThresholdExceeding( int channelNum, int isThresholdExceeding );
 	void setType( int channelNum, int type );

@@ -6,7 +6,7 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
 #include "frl_non_copyable.h"
-#include "opc/frl_opc_com_variant.h"
+#include "os/win32/com/frl_os_win32_com_variant.h"
 
 namespace frl
 {
@@ -27,7 +27,7 @@ namespace frl
 			String itemID;
 			VARTYPE requestDataType;
 			FILETIME lastChange;
-			ComVariant cachedValue;
+			os::win32::com::Variant cachedValue;
 			address_space::Tag *tagRef;
 		public:
 			GroupItem();
@@ -42,15 +42,15 @@ namespace frl
 			OPCHANDLE getClientHandle();
 			const String& getItemID();
 			const String& getAccessPath();
-			const ComVariant& readValue();
+			const os::win32::com::Variant& readValue();
 			HRESULT writeValue( const VARIANT &newValue );
 			const FILETIME& getTimeStamp();
 			DWORD getAccessRights();
 			DWORD getQuality();
 			OPCHANDLE getServerHandle();
 			Bool isChange();
-			static GroupItem* cloneFrom( const GroupItem &rhv );
-			const ComVariant& getCachedValue();
+			GroupItem* clone();
+			const os::win32::com::Variant& getCachedValue();
 		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library

@@ -2,11 +2,11 @@
 
 #if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 
-#include "io/win32/registry/frl_registry_RootKey.h"
+#include "os/win32/registry/frl_registry_RootKey.h"
 
 namespace frl
 {	
-	namespace io
+	namespace os
 	{
 		namespace win32
 		{
@@ -109,7 +109,7 @@ namespace frl
 				}
 			} // namespace registry
 		} // namespace win32
-	} // namespace io
+	} // namespace os
 } // frl
 
 #endif /* FRL_PLATFORM_WIN32 */

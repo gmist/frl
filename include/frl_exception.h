@@ -5,7 +5,6 @@
 #include "frl_platform.h"
 #include "frl_config.h"
 #include "frl_types.h"
-#include "frl_lock.h"
 #include "frl_string.h"
 #include "frl_non_copyable.h"
 #include "frl_auto_value.h"

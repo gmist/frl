@@ -1,8 +1,9 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include <iostream>
 #include "opc/frl_opc_group.h"
 #include "opc/frl_opc_util.h"
+
+using namespace frl::opc::address_space;
 
 namespace frl
 {
@@ -106,6 +107,22 @@ namespace frl
 
 		Group::~Group()
 		{
+			groupGuard.Lock();
+
+			timerUpdate.tryStop();
+
+			timerRead.tryStop();
+			readEvent.Signal();
+			timerRead.stop();
+
+			timerRefresh.tryStop();
+			refreshEvent.Signal();
+			timerRefresh.stop();
+
+			timerWrite.tryStop();
+			writeEvent.Signal();
+			timerWrite.stop();
+		
 			for( std::list< AsyncRequest* >::iterator it = asyncReadList.begin(); it != asyncReadList.end(); ++it )
 				delete (*it);
 
@@ -124,6 +141,7 @@ namespace frl
 					delete item;
 				}
 			}
+			groupGuard.UnLock();
 		}
 
 		void Group::Init()
@@ -190,6 +208,11 @@ namespace frl
 
 		void Group::onReadTimer()
 		{
+			readEvent.Wait();
+
+			if ( timerRead.isStop() )
+				return;
+
 			if( ! asyncReadList.size() )
 				return;
 
@@ -199,7 +222,7 @@ namespace frl
 			if( FAILED( hResult ) )
 				return;
 
-			lock::Mutex::ScopeGuard guard( groupGuard );
+			lock::ScopeGuard guard( groupGuard );
 			for( std::list< AsyncRequest* >::iterator it = asyncReadList.begin(), remIt; it != asyncReadList.end(); it = remIt )
 			{
 				remIt = it;
@@ -221,6 +244,11 @@ namespace frl
 
 		void Group::onRefreshTimer()
 		{
+			refreshEvent.Wait();
+
+			if( timerRefresh.isStop() )
+				return;
+
 			if( ! asyncRefreshList.size() )
 				return;
 
@@ -230,7 +258,7 @@ namespace frl
 			if( FAILED( hResult ) )
 				return;
 
-			lock::Mutex::ScopeGuard guard( groupGuard );
+			lock::ScopeGuard guard( groupGuard );
 			for( std::list< AsyncRequest* >::iterator it = asyncRefreshList.begin(), remIt; it != asyncRefreshList.end(); it = remIt )
 			{
 				remIt = it;
@@ -252,6 +280,11 @@ namespace frl
 
 		void Group::onWriteTimer()
 		{
+			writeEvent.Wait();
+
+			if( timerWrite.isStop() )
+				return;
+
 			if( ! asyncWriteList.size() )
 				return;
 
@@ -261,7 +294,7 @@ namespace frl
 			if( FAILED( hResult ) )
 				return;
 
-			lock::Mutex::ScopeGuard guard( groupGuard );
+			lock::ScopeGuard guard( groupGuard );
 			for( std::list< AsyncRequest* >::iterator it = asyncWriteList.begin(), remIt; it != asyncWriteList.end(); it = remIt )
 			{
 				remIt = it;
@@ -283,6 +316,9 @@ namespace frl
 
 		void Group::onUpdateTimer()
 		{
+			if( timerUpdate.isStop() )
+				return;
+
 			IOPCDataCallback* ipCallback = NULL;
 			HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
 
@@ -290,7 +326,7 @@ namespace frl
 				return;
 
 			std::list< OPCHANDLE > handles;
-			lock::Mutex::ScopeGuard guard( groupGuard );
+			lock::ScopeGuard guard( groupGuard );
 			for( std::map< OPCHANDLE, GroupItem*>::iterator it = itemList.begin(); it != itemList.end(); ++it )
 			{
 				if( actived && (*it).second->isActived() && (*it).second->isChange() )
@@ -319,39 +355,39 @@ namespace frl
 			FILETIME *pTimeStamp = NULL;
 			HRESULT *pErrors = NULL;
 
-			pHandles = util::allocMemory< OPCHANDLE >( counts );
+			pHandles = os::win32::com::allocMemory< OPCHANDLE >( counts );
 			if( pHandles == NULL )
 				return;
 
-			pValue = util::allocMemory< VARIANT >( counts );
+			pValue = os::win32::com::allocMemory< VARIANT >( counts );
 			if( pValue == NULL )
 			{
-				util::freeMemory( pHandles );
+				os::win32::com::freeMemory( pHandles );
 				return;
 			}
 
-			pQuality = util::allocMemory< WORD >( counts );
+			pQuality = os::win32::com::allocMemory< WORD >( counts );
 			if( pQuality == NULL )
 			{
-				util::freeMemory( pHandles );
-				util::freeMemory( pValue );
+				os::win32::com::freeMemory( pHandles );
+				os::win32::com::freeMemory( pValue );
 			}
 
-			pTimeStamp = util::allocMemory< FILETIME >( counts );
+			pTimeStamp = os::win32::com::allocMemory< FILETIME >( counts );
 			if( pTimeStamp == NULL )
 			{
-				util::freeMemory( pHandles );
-				util::freeMemory( pValue );
-				util::freeMemory( pQuality );
+				os::win32::com::freeMemory( pHandles );
+				os::win32::com::freeMemory( pValue );
+				os::win32::com::freeMemory( pQuality );
 			}
 
-			pErrors = util::allocMemory< HRESULT >( counts );
+			pErrors = os::win32::com::allocMemory< HRESULT >( counts );
 			if( pErrors == NULL )
 			{
-				util::freeMemory( pHandles );
-				util::freeMemory( pValue );
-				util::freeMemory( pQuality );
-				util::freeMemory( pTimeStamp );
+				os::win32::com::freeMemory( pHandles );
+				os::win32::com::freeMemory( pValue );
+				os::win32::com::freeMemory( pQuality );
+				os::win32::com::freeMemory( pTimeStamp );
 			}
 
 			HRESULT masterError = S_OK;
@@ -373,7 +409,7 @@ namespace frl
 				{
 					pErrors[i] = ((*iter).second->readValue()).copyTo( pValue[i] );
 				}
-				catch( frl::opc::address_space::NotExistTag &ex )
+				catch( Tag::NotExistTag &ex )
 				{
 					ex.~NotExistTag();
 					pErrors[i] = OPC_E_INVALIDHANDLE;
@@ -411,39 +447,39 @@ namespace frl
 			FILETIME *pTimeStamp = NULL;
 			HRESULT *pErrors = NULL;
 
-			pHandles = util::allocMemory< OPCHANDLE >( counts );
+			pHandles = os::win32::com::allocMemory< OPCHANDLE >( counts );
 			if( pHandles == NULL )
 				return;
 
-			pValue = util::allocMemory< VARIANT >( counts );
+			pValue = os::win32::com::allocMemory< VARIANT >( counts );
 			if( pValue == NULL )
 			{
-				util::freeMemory( pHandles );
+				os::win32::com::freeMemory( pHandles );
 				return;
 			}
 
-			pQuality = util::allocMemory< WORD >( counts );
+			pQuality = os::win32::com::allocMemory< WORD >( counts );
 			if( pQuality == NULL )
 			{
-				util::freeMemory( pHandles );
-				util::freeMemory( pValue );
+				os::win32::com::freeMemory( pHandles );
+				os::win32::com::freeMemory( pValue );
 			}
 
-			pTimeStamp = util::allocMemory< FILETIME >( counts );
+			pTimeStamp = os::win32::com::allocMemory< FILETIME >( counts );
 			if( pTimeStamp == NULL )
 			{
-				util::freeMemory( pHandles );
-				util::freeMemory( pValue );
-				util::freeMemory( pQuality );
+				os::win32::com::freeMemory( pHandles );
+				os::win32::com::freeMemory( pValue );
+				os::win32::com::freeMemory( pQuality );
 			}
 
-			pErrors = util::allocMemory< HRESULT >( counts );
+			pErrors = os::win32::com::allocMemory< HRESULT >( counts );
 			if( pErrors == NULL )
 			{
-				util::freeMemory( pHandles );
-				util::freeMemory( pValue );
-				util::freeMemory( pQuality );
-				util::freeMemory( pTimeStamp );
+				os::win32::com::freeMemory( pHandles );
+				os::win32::com::freeMemory( pValue );
+				os::win32::com::freeMemory( pQuality );
+				os::win32::com::freeMemory( pTimeStamp );
 			}
 
 			const std::list< OPCHANDLE >  *handles = &request->getHandles();
@@ -464,7 +500,7 @@ namespace frl
 					else
 						pErrors[i] = ((*iter).second->readValue()).copyTo( pValue[i] );
 				}
-				catch( frl::opc::address_space::NotExistTag &ex )
+				catch( Tag::NotExistTag &ex )
 				{
 					ex.~NotExistTag();
 					pErrors[i] = OPC_E_INVALIDHANDLE;
@@ -498,14 +534,14 @@ namespace frl
 			OPCHANDLE *pHandles = NULL;
 			HRESULT *pErrors = NULL;
 
-			pHandles = util::allocMemory< OPCHANDLE >( counts );
+			pHandles = os::win32::com::allocMemory< OPCHANDLE >( counts );
 			if( pHandles == NULL )
 				return;
 
-			pErrors = util::allocMemory< HRESULT >( counts );
+			pErrors = os::win32::com::allocMemory< HRESULT >( counts );
 			if( pErrors == NULL )
 			{
-				util::freeMemory( pHandles );
+				os::win32::com::freeMemory( pHandles );
 				return;
 			}
 
@@ -555,39 +591,34 @@ namespace frl
 															pErrors );
 		}
 
-		Group* Group::cloneFrom( const Group &group )
+		Group* Group::clone()
 		{
 			Group *newGroup = new Group();
 			newGroup->registerInterface(IID_IOPCDataCallback);
-			newGroup->name = group.name;
-			newGroup->actived = False;
-			newGroup->clsid = group.clsid;
-			newGroup->deadband = group.deadband;
-			newGroup->enabled = group.enabled;
-			newGroup->keepAlive = group.keepAlive;
-			newGroup->lastUpdate = group.lastUpdate;
-			newGroup->localeID = group.localeID;
-			newGroup->server = group.server;
-			newGroup->serverHandle = util::getUniqueServerHandle();
-			newGroup->tickOffset = group.tickOffset;
-			newGroup->timeBias = group.timeBias;
-			newGroup->updateRate = group.updateRate;
-			newGroup->clientHandle = group.clientHandle;
-			newGroup->deleted = group.deleted;
 
-			for( std::map<OPCHANDLE, GroupItem*>::const_iterator it = group.itemList.begin(); it != group.itemList.end(); ++it )
+			lock::ScopeGuard guard( groupGuard );
+
+			newGroup->name = name;
+			newGroup->actived = False;
+			newGroup->clsid = clsid;
+			newGroup->deadband = deadband;
+			newGroup->enabled = enabled;
+			newGroup->keepAlive = keepAlive;
+			newGroup->lastUpdate = lastUpdate;
+			newGroup->localeID = localeID;
+			newGroup->server = server;
+			newGroup->tickOffset = tickOffset;
+			newGroup->timeBias = timeBias;
+			newGroup->updateRate = updateRate;
+			newGroup->clientHandle = clientHandle;
+			newGroup->deleted = deleted;
+
+			for( std::map<OPCHANDLE, GroupItem*>::const_iterator it = itemList.begin(); it != itemList.end(); ++it )
 			{
-				GroupItem *item = GroupItem::cloneFrom( *(*it).second );
+				GroupItem *item = (*it).second->clone();
 				newGroup->itemList.insert( std::pair< OPCHANDLE, GroupItem*> ( item->getServerHandle(), item ) );
 			}
-
-			newGroup->timerRead.setTimer( 1 );
-			newGroup->timerWrite.setTimer( 1 );
-			newGroup->timerRefresh.setTimer( 1 );
 			newGroup->timerUpdate.setTimer( newGroup->updateRate );
-			newGroup->timerRead.start();
-			newGroup->timerWrite.start();
-			newGroup->timerRefresh.start();
 			return newGroup;
 		}
 	} //namespace opc

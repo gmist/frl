@@ -10,6 +10,16 @@ namespace frl
 		DA2Server::DA2Server( const ServerType& serverType )
 			:	ServerKind( serverType )
 		{
+			isInit = False;
+		}
+
+		DA2Server::~DA2Server()
+		{
+			if ( isInit )
+			{
+				CoRevokeClassObject( objectId );
+				CoUninitialize();
+			}
 		}
 
 		void DA2Server::registrerServer()
@@ -24,23 +34,25 @@ namespace frl
 			if (FAILED(hResult))
 			{
 				MessageBoxW( NULL, L"Error on CoInitializeEx",  L"Error!", MB_OK |MB_ICONSTOP );
+				isInit = False;
 				return frl::False;
 			}
 
 			factory.isOutProc( True );
 
-			DWORD dw;
 			hResult = ::CoRegisterClassObject( lexicalCast<frl::String,CLSID>::get( getCLSID() ), &factory, CLSCTX_LOCAL_SERVER |
 				CLSCTX_REMOTE_SERVER |
 				CLSCTX_INPROC_SERVER,
-				REGCLS_MULTIPLEUSE, &dw );
+				REGCLS_MULTIPLEUSE, &objectId );
 
 			if( FAILED(hResult) )
 			{
 				MessageBoxW( NULL, L"Error on CoRegistrerClassObject",  L"Error!", MB_OK |MB_ICONSTOP );
+				CoUninitialize();
+				isInit = False;
 				return False;
-			}
-
+			}			
+			isInit = True;
 			return True;
 		}
 	} // namespace opc

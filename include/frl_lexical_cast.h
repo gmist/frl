@@ -4,7 +4,9 @@
 #include "stream_std/frl_sstream.h"
 #include "stream_std/frl_ostream.h"
 #include "frl_empty_type.h"
-#include "frl_string.h"
+#include <algorithm>
+#include <functional>
+#include <locale>
 
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
@@ -98,10 +100,40 @@ namespace frl
 
 		struct lower
 		{
+			struct ToLowerF : public std::unary_function< Char, Char >
+			{
+			public:
+				ToLowerF( const std::locale& Loc )
+					:	m_Loc( Loc ) 
+				{
+				}
+
+				Char operator ()( Char Ch ) const
+				{
+					return std::tolower( Ch, m_Loc );
+				}
+			private:
+				const std::locale& m_Loc;
+			};
 		};
 
 		struct upper
 		{
+			struct ToUpperF : public std::unary_function< Char, Char >
+			{
+			public:
+				ToUpperF( const std::locale& Loc )
+					:	m_Loc( Loc ) 
+				{
+				}
+
+				Char operator ()( Char Ch ) const
+				{
+					return std::toupper( Ch, m_Loc );
+				}
+			private:
+				const std::locale& m_Loc;
+			};
 		};
 	}
 
@@ -110,7 +142,11 @@ namespace frl
 	{
 		static frl::String get( const String &from )
 		{
-			return frl::toLower( from );
+			static const std::locale &loc = std::locale();
+			String result;
+			result.resize( from.length() );
+			std::transform( from.begin(), from.end(), result.begin(), lexicalCastMutators::lower::ToLowerF( loc ) ); 
+			return result; 
 		}
 	};
 
@@ -119,7 +155,11 @@ namespace frl
 	{
 		static frl::String get( const String &from )
 		{
-			return frl::toUpper( from );
+			static const std::locale &loc = std::locale();
+			String result;
+			result.resize( from.length() );
+			std::transform( from.begin(), from.end(), result.begin(), lexicalCastMutators::upper::ToUpperF( loc ) ); 
+			return result;
 		}
 	};
 

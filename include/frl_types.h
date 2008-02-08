@@ -63,11 +63,11 @@ namespace frl
 	const frl::Bool False = false;
 
 	#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-	typedef unsigned long frl_timeout;
+	typedef unsigned long TimeOut;
 	#endif // __linux__
 
 	#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-	typedef DWORD frl_timeout;
+	typedef DWORD TimeOut;
 	#endif // WIN32
 
 

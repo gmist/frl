@@ -40,23 +40,17 @@ namespace frl
 			
 			// Blocked wait not zero value the semaphore
 			// in the course of a set time out
-			#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-				frl::Bool TimedWait( DWORD time_ );
-			#endif
-			#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-				frl::Bool TimedWait( unsigned long time_ );
-			#endif
+			frl::Bool TimedWait( TimeOut time_ );
 
 			// Reinitialize the semaphore
 			void ReInit( frl::Long value_ );
 
 		};	// class Semaphore
 
-		class SemaphoreMutex
+		class SemaphoreMutex : public Mutex_I
 		{
 			Semaphore sem;
-		public:
-			typedef frl::lock::ScopeGuard< SemaphoreMutex > ScopeGuard;
+		public:			
 
 			// Конструктор
 			SemaphoreMutex( void )
@@ -70,20 +64,20 @@ namespace frl
 			}
 
 			// Захват мьютекса
-			void Lock( void )
+			virtual void Lock( void )
 			{
 				sem.Wait();
 				sem.ReInit( 1 );
 			}
 
 			// Попытка захвата мьютекса
-			Bool TryLock( void )
+			virtual Bool TryLock( void )
 			{
 				return sem.TryWait();
 			}
 
 			// Освобождение мьютекса
-			void UnLock( void )
+			virtual void UnLock( void )
 			{
 				sem.Post();
 			}

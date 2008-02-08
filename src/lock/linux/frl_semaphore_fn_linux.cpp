@@ -65,7 +65,7 @@ namespace frl
 				FRL_THROW( "Semaphore try-wait error." );
 		}
 
-		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, frl::frl_timeout time_ )
+		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, frl::TimeOut time_ )
 		{
 			FRL_EXCEPT_GUARD();
 			SemaphoreIsValid( semaphore );

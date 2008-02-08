@@ -14,7 +14,7 @@
 #include "opc/frl_opc_async_request.h"
 #include "frl_lock.h"
 #include "frl_non_copyable.h"
-#include "opc/frl_opc_com_allocator.h"
+#include "os/win32/com//frl_os_win32_com_allocator.h"
 
 namespace frl
 {
@@ -27,7 +27,7 @@ namespace frl
 			public AsyncIO2< Group >,
 			public ConnectionPointContainer,
 			private NonCopyable,
-			public ComAllocator
+			public os::win32::com::Allocator
 		{
 		friend class GroupStateMgt< Group >;
 		friend class ItemMgt< Group >;
@@ -63,6 +63,10 @@ namespace frl
 			Timer< Group > timerWrite;
 			Timer< Group > timerRefresh;
 			Timer< Group > timerUpdate;
+
+			lock::Event readEvent;
+			lock::Event writeEvent;
+			lock::Event refreshEvent;
 		protected:
 			REFCLSID GetCLSID();
 		public:
@@ -93,7 +97,7 @@ namespace frl
 			void doAsyncRead( IOPCDataCallback** callBack, const AsyncRequest *request );
 			void doAsyncRefresh( IOPCDataCallback** callBack, const AsyncRequest *request );
 			void doAsyncWrite( IOPCDataCallback** callBack, const AsyncRequest *request );
-			static Group* cloneFrom( const Group &group );
+			Group* clone();
 		}; // class Group
 	} // namespace opc
 } // namespace FatRat Library

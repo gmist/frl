@@ -6,7 +6,7 @@
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_util.h"
-#include "opc/frl_opc_com_variant.h"
+#include "os/win32/com/frl_os_win32_com_variant.h"
 
 namespace frl
 {
@@ -51,27 +51,27 @@ namespace frl
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 				*pdwCount = 6;
 
-				*ppPropertyIDs = util::allocMemory<DWORD>( *pdwCount );
+				*ppPropertyIDs = os::win32::com::allocMemory<DWORD>( *pdwCount );
 				if( *ppPropertyIDs == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory<DWORD>( *ppPropertyIDs, *pdwCount );
+				os::win32::com::zeroMemory<DWORD>( *ppPropertyIDs, *pdwCount );
 
-				*ppDescriptions = util::allocMemory< LPWSTR >( *pdwCount );
+				*ppDescriptions = os::win32::com::allocMemory< LPWSTR >( *pdwCount );
 				if( *ppDescriptions == NULL )
 				{
-					util::freeMemory( *ppPropertyIDs );
+					os::win32::com::freeMemory( *ppPropertyIDs );
 					return E_OUTOFMEMORY;
 				}
-				util::zeroMemory< LPWSTR >( *ppDescriptions, *pdwCount );
+				os::win32::com::zeroMemory< LPWSTR >( *ppDescriptions, *pdwCount );
 
-				*ppvtDataTypes = util::allocMemory< VARTYPE >( *pdwCount );
+				*ppvtDataTypes = os::win32::com::allocMemory< VARTYPE >( *pdwCount );
 				if( *ppvtDataTypes == NULL )
 				{
-					util::freeMemory( *ppPropertyIDs );
-					util::freeMemory( *ppDescriptions );
+					os::win32::com::freeMemory( *ppPropertyIDs );
+					os::win32::com::freeMemory( *ppDescriptions );
 					return E_OUTOFMEMORY;
 				}
-				util::zeroMemory< VARTYPE >( *ppvtDataTypes, *pdwCount );
+				os::win32::com::zeroMemory< VARTYPE >( *ppvtDataTypes, *pdwCount );
 
 				// Data type
 				(*ppPropertyIDs)[0] = OPC_PROPERTY_DATATYPE;
@@ -130,15 +130,15 @@ namespace frl
 				if( ! opcAddressSpace.isExistLeaf( szItemID ) )
 					return OPC_E_UNKNOWNITEMID;
 
-				*ppvData = util::allocMemory< VARIANT >( dwCount );
+				*ppvData = os::win32::com::allocMemory< VARIANT >( dwCount );
 				if( *ppvData == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< VARIANT >( *ppvData, dwCount );
+				os::win32::com::zeroMemory< VARIANT >( *ppvData, dwCount );
 				
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( *ppErrors == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 
@@ -151,43 +151,43 @@ namespace frl
 
 						case OPC_PROPERTY_DATATYPE:
 						{
-							ComVariant retVal = (short)item->getCanonicalDataType();
-							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+							os::win32::com::Variant retVal = (short)item->getCanonicalDataType();
+							os::win32::com::Variant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
 						
 						case OPC_PROPERTY_VALUE:
 						{
-							ComVariant retVal = item->read();
-							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+							os::win32::com::Variant retVal = item->read();
+							os::win32::com::Variant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
 
 						case OPC_PROPERTY_QUALITY:
 						{
-							ComVariant retVal = (short)item->getQuality();
-							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+							os::win32::com::Variant retVal = (short)item->getQuality();
+							os::win32::com::Variant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
 						
 						case OPC_PROPERTY_TIMESTAMP:
 						{
-							ComVariant retVal = item->getTimeStamp();
-							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+							os::win32::com::Variant retVal = item->getTimeStamp();
+							os::win32::com::Variant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
 
 						case OPC_PROPERTY_ACCESS_RIGHTS:
 						{
-							ComVariant retVal = (long)item->getAccessRights();
-							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+							os::win32::com::Variant retVal = (long)item->getAccessRights();
+							os::win32::com::Variant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
 
 						case OPC_PROPERTY_SCAN_RATE:
 						{
-							ComVariant retVal = (float)item->getScanRate();
-							ComVariant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
+							os::win32::com::Variant retVal = (float)item->getScanRate();
+							os::win32::com::Variant::variantCopy( &(*ppvData)[i], retVal.getPtr() );
 						}
 						break;
 
@@ -226,15 +226,15 @@ namespace frl
 				
 				address_space::Tag *item = opcAddressSpace.getTag( szItemID );
 
-				*ppszNewItemIDs = util::allocMemory< LPWSTR >( dwCount );
+				*ppszNewItemIDs = os::win32::com::allocMemory< LPWSTR >( dwCount );
 				if( ppszNewItemIDs == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< LPWSTR>( *ppszNewItemIDs, dwCount );
+				os::win32::com::zeroMemory< LPWSTR>( *ppszNewItemIDs, dwCount );
 
-				*ppErrors = util::allocMemory< HRESULT >( dwCount );
+				*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 				if( ppErrors == NULL )
 					return E_OUTOFMEMORY;
-				util::zeroMemory< HRESULT >( *ppErrors, dwCount );
+				os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 				HRESULT ret = S_OK;
 				for( DWORD i = 0; i < dwCount; i++ )

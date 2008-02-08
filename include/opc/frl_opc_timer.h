@@ -3,8 +3,8 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "thread/frl_thread.h"
-#include "frl_lock.h"
-#include <iostream>
+#include "lock/frl_event.h"
+
 
 namespace frl
 {
@@ -14,42 +14,50 @@ namespace frl
 		class TimerProxy
 		{
 		protected:
-			frl::frl_timeout time_ms;
-			lock::Semaphore *sem;
+			frl::TimeOut time_ms;
+			lock::Event stopEvent;
 			typedef void ( T::*THREAD_FUNC ) ( void );
 			T *ptr;
 			THREAD_FUNC function;
+			volatile Bool stopIt;
 
 		public:
 			void func( void )
 			{
-				if( time_ms < 100 )
+				if( time_ms < 50 )
 				{
-					while( ! sem->TimedWait( time_ms ) )
+					while( ! stopIt )
 					{
 						(*ptr.*function)();
 					}
 				}
 				else
 				{
-					frl::frl_timeout tmp_time = time_ms;
+					frl::TimeOut tmp_time = time_ms;
 					LONGLONG timeStart = 0;
 					LONGLONG timeEnd   = 0;
 					LONGLONG frequency  = 0;
 					QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
 					QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
-					while( ! sem->TimedWait( tmp_time ) )
+					while( ! stopEvent.TimedWait( tmp_time ) )
 					{
+						if( stopIt )
+							return;
+
 						(*ptr.*function)();
-						
+
 						QueryPerformanceCounter( (LARGE_INTEGER*)&timeEnd );
 						double delay = ( ( ( double )( timeEnd - timeStart ) ) / ( (double) frequency ) ) * 1000;
 						unsigned int delta = (unsigned int)delay;
-						if ( delta > ( time_ms + 100 ) )
+						if( delta > ( time_ms + 100 ) )
+							tmp_time = time_ms - (delta - time_ms);
+						else		
 						{
-							tmp_time = time_ms - delta;
+							if( delta > 100 && delta < time_ms )
+								tmp_time = time_ms - ( time_ms -delta );
+							else
+								tmp_time = time_ms;
 						}
-						tmp_time = time_ms;
 						QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );	
 					}
 				}
@@ -69,14 +77,12 @@ namespace frl
 				ptr = ptr_;
 				function = function_;
 				time_ms = 100;
-				sem = new lock::Semaphore();
-				sem->Init( 0 );
+				stopIt = True;
 			}
 
 			~Timer()
 			{
 				stop();
-				delete sem;
 			}
 
 			void setTimer( int time_ )
@@ -93,15 +99,15 @@ namespace frl
 			{
 				if( ! process.IsRunning() )
 				{
-					sem->ReInit( 0 );
 					process.Create( &TimerProxy<T>::func, *this );
+					stopIt = False;
 					process.Start();
 				}
 				else
 				{
 					stop();
-					sem->ReInit( 0 );
 					process.Create( &TimerProxy<T>::func, *this );
+					stopIt = False;
 					process.Start();
 				}
 			}
@@ -110,11 +116,25 @@ namespace frl
 			{
 				if( process.IsRunning() )
 				{
-					sem->Post();
+					stopIt = True;
+					stopEvent.Signal();
 					process.Join();
 				}
 			}
 
+			Bool isStop()
+			{
+				return stopIt;
+			}
+
+			void tryStop()
+			{
+				if( process.IsRunning() )
+				{
+					stopIt = True;
+					stopEvent.Signal();
+				}
+			}
 		};
 	} // namespace opc
 } // namespace FatRat Library

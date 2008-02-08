@@ -4,14 +4,14 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include "../dependency/vendors/opc_foundation/opcda.h"
+#include "lock/frl_mutex.h"
 #include "opc/frl_opc_common.h"
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
 #include "opc/frl_opc_item_mgt.h"
-#include "frl_lock.h"
 #include "opc/frl_opc_group_state_mgt.h"
 #include "opc/frl_opc_connection_point_container.h"
-#include "opc/frl_opc_com_allocator.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "frl_non_copyable.h"
 #include "opc/address_space/frl_opc_addr_space_crawler.h"
 
@@ -28,7 +28,7 @@ namespace frl
 				public BrowseServerAddressSpace< OPCServer >,
 				public ConnectionPointContainer,
 				private NonCopyable,
-				public ComAllocator
+				public os::win32::com::Allocator
 		{
 		friend GroupStateMgt<Group>;
 		friend BrowseServerAddressSpace< OPCServer >;

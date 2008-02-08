@@ -64,7 +64,7 @@ namespace frl
 					pT->deadband = *pPercentDeadband;
 				}
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 				pT->timerUpdate.stop();
 
 				// set update rate
@@ -117,15 +117,36 @@ namespace frl
 								AsyncRequest *request = new AsyncRequest( handles );
 								request->setTransactionID( 0 );
 								pT->asyncRefreshList.push_back( request );
+								pT->refreshEvent.Signal();
 							}
 						}
 						pT->timerUpdate.start();
 					}
 					else
 					{
-						pT->asyncReadList.clear();
-						pT->asyncRefreshList.clear();
-						pT->asyncWriteList.clear();
+						if( ! pT->asyncRefreshList.empty() )
+						{
+							if( ! pT->asyncRefreshList.empty() )
+							{
+								for( std::list< AsyncRequest* >::iterator it = pT->asyncRefreshList.begin(); it != pT->asyncRefreshList.end(); ++it )
+									delete (*it);
+								pT->asyncRefreshList.clear();
+							}
+
+							if( ! pT->asyncReadList.empty() )
+							{
+								for( std::list< AsyncRequest* >::iterator it = pT->asyncReadList.begin(); it != pT->asyncReadList.end(); ++it )
+									delete (*it);
+								pT->asyncReadList.clear();
+							}
+
+							if( ! pT->asyncWriteList.empty() )
+							{
+								for( std::list< AsyncRequest* >::iterator it = pT->asyncWriteList.begin(); it != pT->asyncWriteList.end(); ++it )
+									delete (*it);
+								pT->asyncWriteList.clear();
+							}
+						}
 					}
 				}
 				return hResult;
@@ -173,7 +194,7 @@ namespace frl
 
 				Group* group = NULL;
 
-				lock::Mutex::ScopeGuard guard( pT->groupGuard );
+				lock::ScopeGuard guard( pT->groupGuard );
 
 				HRESULT result = pT->server->cloneGroup( pT->name, szName, &group );
 				if( FAILED( result ) )

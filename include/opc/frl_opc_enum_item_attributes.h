@@ -8,13 +8,13 @@
 #include "opc/frl_opc_group_item.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_util.h"
-#include "opc/frl_opc_com_allocator.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class EnumOPCItemAttributes : public IEnumOPCItemAttributes, public ComAllocator
+		class EnumOPCItemAttributes : public IEnumOPCItemAttributes, public os::win32::com::Allocator
 		{
 		private:
 			std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array
@@ -33,10 +33,10 @@ namespace frl
 					if( itemList[i] != NULL )
 					{
 						if( itemList[i]->szItemID != NULL )
-							util::freeMemory( itemList[i]->szItemID );
+							os::win32::com::freeMemory( itemList[i]->szItemID );
 						
 						if( itemList[i]->szAccessPath != NULL )
-							util::freeMemory( itemList[i]->szAccessPath );
+							os::win32::com::freeMemory( itemList[i]->szAccessPath );
 
 						CoTaskMemFree( itemList[i] );
 					}

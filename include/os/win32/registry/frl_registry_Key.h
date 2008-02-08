@@ -8,12 +8,12 @@
 #include <Windows.h>
 #include "frl_string.h"
 #include "frl_non_copyable.h"
-#include "io/win32/registry/frl_registry_RootKey.h"
-#include "io/win32/registry/frl_registry_RootKeys.h"
+#include "os/win32/registry/frl_registry_RootKey.h"
+#include "os/win32/registry/frl_registry_RootKeys.h"
 
 namespace frl
 {
-	namespace io
+	namespace os
 	{
 		namespace win32
 		{

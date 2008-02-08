@@ -3,16 +3,7 @@
 int _tmain( int , _TCHAR* )
 {
 	using namespace frl;
-	opc::DA2Server server( opc::ServerTypes::localSever32 );
-	server.setCLSID( FRL_STR("{251D3C74-535C-4ea4-A0FE-5FF3921DF3BB}") );
-	server.setVendor( FRL_STR("Serg Baburin") );
-	server.setDriverName( FRL_STR("SERVER_TEST") );
-	server.setDescription( FRL_STR("This first testing OPC server from Serg Baburin."));
-	server.setVersion( 0.1 );
-	server.registrerServer();
 	
-	server.init();
-
 	frl::opc::opcAddressSpace.finalConstruct( FRL_STR("."));
 	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch1" ) );
 	frl::opc::opcAddressSpace.addBranch( FRL_STR( "branch2" ) );
@@ -45,6 +36,15 @@ int _tmain( int , _TCHAR* )
 	tag = frl::opc::opcAddressSpace.getLeaf( FRL_STR( "branch1.branch11.leaf111" ) );
 	tag->setCanonicalDataType( VT_BOOL );
 	tag->write( true );
+
+	opc::DA2Server server( opc::ServerTypes::localSever32 );
+	server.setCLSID( FRL_STR("{251D3C74-535C-4ea4-A0FE-5FF3921DF3BB}") );
+	server.setVendor( FRL_STR("Serg Baburin") );
+	server.setDriverName( FRL_STR("SERVER_TEST") );
+	server.setDescription( FRL_STR("Test OPC server from Serg Baburin"));
+	server.setVersion( 0.1 );
+	server.registrerServer();
+	server.init();
 
 	while(  true )
 	{

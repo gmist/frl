@@ -12,11 +12,6 @@ namespace frl
 {
 	namespace opc
 	{
-		namespace private_
-		{
-			inline DWORD getUniqueCancelID();
-		}
-
 		class AsyncRequest
 		{
 		private:
@@ -45,6 +40,7 @@ namespace frl
 			void removeHandles( OPCHANDLE handle );
 			DWORD getSource() const;
 			void setSource( DWORD source_ );
+			static DWORD getUniqueCancelID();
 		}; // class AsyncRequest
 	} // namespace opc
 } // namespace frl

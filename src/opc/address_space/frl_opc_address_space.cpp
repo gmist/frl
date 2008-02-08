@@ -8,7 +8,7 @@ namespace frl
 	{
 		namespace address_space
 		{
-			AddressSpace::AddressSpace()
+			AddressSpace::AddressSpace() : rootTag( NULL ), init( False )
 			{
 				rootTag = NULL;
 			}
@@ -30,6 +30,7 @@ namespace frl
 				else
 					delimiter = delimiter_;
 				rootTag = new Tag( True, delimiter );
+				init = True;
 			}
 
 			void AddressSpace::addBranch( const String &fullPath, Bool createPath /*= False */ )
@@ -63,10 +64,8 @@ namespace frl
 					return rootTag;
 				std::map< String, Tag*>::iterator it = nameBranchHash.find( fullPath );
 				if( it == nameBranchHash.end() )
-				{
-					FRL_THROW_S_CLASS( NotExistTag );
-				}
-				return (*(it) ).second;				
+					FRL_THROW_S_CLASS( Tag::NotExistTag );
+				return (*it).second;				
 			}
 
 			Tag* AddressSpace::addLeaf( const String &fullPath, Bool createPath )
@@ -83,7 +82,7 @@ namespace frl
 				if( pos == String::npos )
 				{
 					if ( rootTag->isExistTag( fullPath ) )
-						FRL_THROW_S_CLASS( IsExistTag );
+						FRL_THROW_S_CLASS( Tag::IsExistTag );
 					rootTag->addLeaf( fullPath );
 					Tag *added = rootTag->getLeaf( fullPath );
 					OPCHANDLE handle = added->getServerHandle();
@@ -102,11 +101,11 @@ namespace frl
 					nameLeafHash.insert( std::pair< String, Tag*>( fullPath, added ) );
 					return added;
 				}
-				catch( NotExistTag &ex )
+				catch( Tag::NotExistTag &ex )
 				{
 					ex.~NotExistTag();
 					if( ! createPath )
-						FRL_THROW_S_CLASS( NotExistTag );
+						FRL_THROW_S_CLASS( Tag::NotExistTag );
 				}
 				return NULL;
 			}
@@ -117,17 +116,16 @@ namespace frl
 					FRL_THROW_S_CLASS( InvalidLeafName );
 				std::map< String, Tag*>::iterator it = nameLeafHash.find( fullPath );
 				if( it == nameLeafHash.end() )
-				{
-					FRL_THROW_S_CLASS( NotExistTag );
-				}
-				return (*(it) ).second;
+					FRL_THROW_S_CLASS( Tag::NotExistTag );
+				return (*it).second;
 			}
 
 			Tag* AddressSpace::getLeaf( OPCHANDLE handle )
 			{
-				if( ! isExistLeaf( handle ) )
-					FRL_THROW_S_CLASS( NotExistTag );
-				return (*(handleHash.find( handle ))).second;
+				std::map< OPCHANDLE, Tag* >::iterator it = handleHash.find( handle );
+				if( it == handleHash.end() )
+					FRL_THROW_S_CLASS( Tag::NotExistTag );
+				return (*it).second;
 			}
 
 			frl::Bool AddressSpace::isExistBranch( const String &name )
@@ -160,11 +158,15 @@ namespace frl
 
 			Tag* AddressSpace::getTag( const String &fullPath )
 			{
-				if( isExistLeaf( fullPath ) )
+				try
+				{
 					return getLeaf( fullPath );
-				if( isExistBranch( fullPath) )
-					return getBranch( fullPath );
-				FRL_THROW_S_CLASS( NotExistTag );
+				}
+				catch( Tag::NotExistTag &ex )
+				{
+					ex.~NotExistTag();
+				}
+				return getBranch( fullPath );
 			}
 
 			Bool AddressSpace::isExistTag( const String &fullPath )
@@ -203,6 +205,11 @@ namespace frl
 					}
 					namesList.push_back( (*it).first );
 				}
+			}
+
+			frl::Bool AddressSpace::isInit()
+			{
+				return init;
 			}
 		} // namespace address_space
 		address_space::AddressSpace opcAddressSpace;

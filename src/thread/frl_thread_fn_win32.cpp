@@ -40,7 +40,7 @@ namespace frl
 			}
 		}
 
-		Bool Join( ThreadDescriptor &descriptor , frl_timeout msec_ )
+		Bool Join( ThreadDescriptor &descriptor , TimeOut msec_ )
 		{
 			FRL_EXCEPT_GUARD();
 			IsValid( descriptor );

@@ -1,7 +1,7 @@
 #include "opc/frl_opc_server_kind.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_lexical_cast.h"
-#include "io/win32/registry/frl_registry_Key.h"
+#include "os/win32/registry/frl_registry_Key.h"
 
 namespace frl
 {
@@ -93,7 +93,7 @@ namespace frl
 			if( clsid.empty() || driverName.empty() || vendor.empty() || version.empty() )
 				FRL_THROW( FRL_STR( "Invalid server attributes" ) );
 			const String vendDrvVers = vendor+FRL_STR(".") + driverName + FRL_STR(".") + version;
-			frl::io::win32::registry::Key key( vendDrvVers, frl::io::win32::registry::RootKeys::classesRoot );
+			frl::os::win32::registry::Key key( vendDrvVers, frl::os::win32::registry::RootKeys::classesRoot );
 			key.create();
 			key.setStringValue( description );
 			key.reinit( vendDrvVers + FRL_STR("\\CLSID"), key.getRootKey() );
@@ -126,7 +126,7 @@ namespace frl
 			if( clsid.empty() || driverName.empty() || vendor.empty() || version.empty() )
 				FRL_THROW( FRL_STR( "Invalid server attributes" ) );
 			const String vendDrvVers = vendor+FRL_STR(".") + driverName + FRL_STR(".") + version;
-			frl::io::win32::registry::Key key( vendDrvVers, frl::io::win32::registry::RootKeys::classesRoot );
+			frl::os::win32::registry::Key key( vendDrvVers, frl::os::win32::registry::RootKeys::classesRoot );
 			key.deleteKey( True );
 			key.reinit( FRL_STR("CLSID\\") + clsid, key.getRootKey() );
 			key.deleteKey( True );

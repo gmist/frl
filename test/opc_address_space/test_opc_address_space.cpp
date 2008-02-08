@@ -56,7 +56,7 @@ frl::Bool createSubBranchInNotExistBranch()
 		addressSpace.finalConstruct( FRL_STR(".") );
 		addressSpace.addBranch( FRL_STR("brach1.branch11") );
 	}
-	catch( frl::opc::address_space::NotExistTag &ex )
+	catch( Tag::NotExistTag &ex )
 	{
 		ex.~NotExistTag();
 		return True;
@@ -120,7 +120,7 @@ frl::Bool createLeafInNotExistBranch()
 		addressSpace.finalConstruct( FRL_STR(".") );
 		addressSpace.addLeaf( FRL_STR( "branch1.leaf1" ) );
 	}
-	catch( frl::opc::address_space::NotExistTag &ex )
+	catch( Tag::NotExistTag &ex )
 	{
 		ex.~NotExistTag();
 		return True;
@@ -167,7 +167,7 @@ frl::Bool doubleCreateBranch()
 		addressSpace.addBranch( branchName );
 		addressSpace.addBranch( branchName );
 	}
-	catch( frl::opc::address_space::IsExistTag &ex )
+	catch( Tag::IsExistTag &ex )
 	{
 		ex.~IsExistTag();
 		return True;
@@ -192,7 +192,7 @@ frl::Bool doubleCreateSubBranch()
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 	}
-	catch( frl::opc::address_space::IsExistTag &ex )
+	catch( Tag::IsExistTag &ex )
 	{
 		ex.~IsExistTag();
 		return True;
@@ -215,7 +215,7 @@ frl::Bool createInvalidNameBranch1()
 		addressSpace.addBranch( branchName );
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 	}
-	catch( frl::opc::address_space::InvalidBranchName &ex )
+	catch( frl::opc::address_space::AddressSpace::InvalidBranchName &ex )
 	{
 		ex.~InvalidBranchName();
 		return True;
@@ -239,7 +239,7 @@ frl::Bool createInvalidNameBranch2()
 		addressSpace.addBranch( branchName );
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 	}
-	catch( frl::opc::address_space::InvalidBranchName &ex )
+	catch( frl::opc::address_space::AddressSpace::InvalidBranchName &ex )
 	{
 		ex.~InvalidBranchName();
 		return True;
@@ -261,7 +261,7 @@ frl::Bool createDoubleLeaf()
 		addressSpace.addLeaf( FRL_STR( "leaf1" ) );
 		addressSpace.addLeaf( FRL_STR( "leaf1" ) );
 	}
-	catch( frl::opc::address_space::IsExistTag &ex )
+	catch( Tag::IsExistTag &ex )
 	{
 		ex.~IsExistTag();
 		return True;

@@ -24,7 +24,7 @@ namespace frl
 			
 			~ThreadListBase( void )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				for( std::list< Thread< ResultType, ParameterType >* >::iterator iter = threadList.begin(); iter != threadList.end(); ++ iter )
 					delete *iter;
@@ -32,7 +32,7 @@ namespace frl
 
 			void Create( const Thread< ResultType, ParameterType > *thread_, Bool isDetached_ = False, UInt stackSize_ =0 )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				std::list< Thread< ResultType, ParameterType >* >::iterator iter = std::find( threadList.begin(), threadList.end(), thread_ );
 				if( iter == threadList.end() )
@@ -42,7 +42,7 @@ namespace frl
 
 			void Start( const Thread< ResultType, ParameterType > *thread_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				std::list< Thread< ResultType, ParameterType >* >::iterator iter = std::find( threadList.begin(), threadList.end(), thread_ );
 				if( iter == threadList.end() )
@@ -52,7 +52,7 @@ namespace frl
 
 			void StartAll( void )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();				
 				for( std::list< Thread< ResultType, ParameterType >* >::iterator iter = threadList.begin(); iter != threadList.end(); ++ iter )
 					(*iter)->Start();
@@ -60,7 +60,7 @@ namespace frl
 
 			void Remove(  Thread< ResultType, ParameterType > *thread_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				std::list< Thread< ResultType, ParameterType >* >::iterator iter = std::find( threadList.begin(), threadList.end(), thread_ );
 				if( iter == threadList.end() )
@@ -71,7 +71,7 @@ namespace frl
 
 			void Join( const Thread< ResultType, ParameterType > *thread_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				std::list< Thread< ResultType, ParameterType >* >::iterator iter = std::find( threadList.begin(), threadList.end(), thread_ );
 				if( iter == threadList.end() )
@@ -80,9 +80,9 @@ namespace frl
 				Remove( *iter );
 			}
 
-			Bool Join( const Thread< ResultType, ParameterType > *thread_, frl_timeout msec_ )
+			Bool Join( const Thread< ResultType, ParameterType > *thread_, TimeOut msec_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				std::list< Thread< ResultType, ParameterType >* >::iterator iter = std::find( threadList.begin(), threadList.end(), thread_ );
 				if( iter == threadList.end() )
@@ -92,7 +92,7 @@ namespace frl
 
 			void JoinAll( void )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();			
 				for( std::list< Thread< ResultType, ParameterType >* >::iterator iter = threadList.begin(); iter != threadList.end(); ++iter )
 				{
@@ -115,7 +115,7 @@ namespace frl
 			typedef ResultType ( *FRL_THREAD_FUNC ) ( ParameterType parameter_ );
 			const Thread< ResultType, ParameterType >* AddNew( FRL_THREAD_FUNC function_, ParameterType parameter_  )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );	
+				frl::lock::ScopeGuard scopeGuard( mutex );	
 				FRL_EXCEPT_GUARD();
 				Thread< ResultType, ParameterType > *thread = new Thread< ResultType, ParameterType >( function_, parameter_ );
 				threadList.push_back( thread );
@@ -134,7 +134,7 @@ namespace frl
 			typedef ResultType ( *FRL_THREAD_FUNC ) ( void );
 			const Thread< ResultType, void >* AddNew( FRL_THREAD_FUNC function_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				Thread< ResultType, void > *thread = new Thread< ResultType, void >( function_ );				
 				threadList.push_back( thread );
@@ -153,7 +153,7 @@ namespace frl
 			typedef void ( *FRL_THREAD_FUNC ) ( ParameterType parameter_ );
 			const Thread< void, ParameterType >* AddNew( FRL_THREAD_FUNC function_, ParameterType parameter_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				Thread< void, ParameterType > *thread = new Thread< void, ParameterType >( function_, parameter_ );				
 				threadList.push_back( thread );
@@ -172,7 +172,7 @@ namespace frl
 			typedef void ( *FRL_THREAD_FUNC ) ( void );
 			const Thread< void, void >* AddNew( FRL_THREAD_FUNC function_ )
 			{
-				frl::lock::Mutex::ScopeGuard scopeGuard( mutex );
+				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();
 				Thread< void, void > *thread = new Thread< void, void >( function_ );				
 				threadList.push_back( thread );

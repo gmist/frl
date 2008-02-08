@@ -67,7 +67,6 @@ int main( int argc, char *argv[] )
 
 	// OPC server initialize
 	Psoi2Device psoi2;
-	psoi2.init();
 
 	Sleep( 2000 ); // Wait for connections
 

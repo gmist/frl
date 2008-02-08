@@ -12,9 +12,10 @@ Psoi2Device::Psoi2Device()
 	server->setCLSID( FRL_STR("{77841F96-2135-4293-8BEF-A288AAD2DBBC}") );
 	server->setVendor( FRL_STR("Serg Baburin") );
 	server->setDriverName( FRL_STR("PSOI2 device") );
-	server->setDescription( FRL_STR("This OPC server for PSOI2 device from Serg Baburin."));
+	server->setDescription( FRL_STR("OPC server for PSOI2 device from Serg Baburin"));
 	server->setVersion( 0.1 );
 	server->registrerServer();
+	initializeAddressSpace();
 	server->init();
 }
 
@@ -23,7 +24,7 @@ Psoi2Device::~Psoi2Device()
 	delete server;
 }
 
-frl::Bool Psoi2Device::init()
+void Psoi2Device::initializeAddressSpace()
 {
 	using namespace frl;
 	using namespace frl::opc;
@@ -135,8 +136,6 @@ frl::Bool Psoi2Device::init()
 		channels[i].goodPPC->setCanonicalDataType( VT_UI4 );
 		channels[i].goodPPC->write( 0 );
 	}
-
-	return True;
 }
 
 void Psoi2Device::setValue( int channelNum, float value )

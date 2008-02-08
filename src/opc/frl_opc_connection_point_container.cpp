@@ -39,7 +39,7 @@ namespace frl
 			if( ppCP == NULL )
 				return E_POINTER;
 
-			lock::Mutex::ScopeGuard guard( cpGuard );
+			lock::ScopeGuard guard( cpGuard );
 			std::vector< ConnectionPoint* >::iterator it;
 			for( it = points.begin(); it != points.end(); ++it )
 			{
@@ -52,7 +52,7 @@ namespace frl
 
 		frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 		{
-			lock::Mutex::ScopeGuard guard( cpGuard );
+			lock::ScopeGuard guard( cpGuard );
 			for( std::vector< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
 			{
 				if( (*it)->getInterface() == interface_ )
@@ -63,7 +63,7 @@ namespace frl
 
 		void ConnectionPointContainer::registerInterface( const IID& interface_ )
 		{
-			lock::Mutex::ScopeGuard guard( cpGuard );
+			lock::ScopeGuard guard( cpGuard );
 			ConnectionPoint* addedPoint = new ConnectionPoint( interface_, this );
 			addedPoint->AddRef();
 			points.push_back( addedPoint );
@@ -71,7 +71,7 @@ namespace frl
 
 		void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 		{
-			lock::Mutex::ScopeGuard guard( cpGuard );
+			lock::ScopeGuard guard( cpGuard );
 			for( std::vector< ConnectionPoint* >::iterator it = points.begin(), remIt; it != points.end(); it = remIt )
 			{
 				remIt = it;
@@ -88,7 +88,7 @@ namespace frl
 
 		HRESULT ConnectionPointContainer::getCallback( const IID& interface_, IUnknown** callBack_ )
 		{
-			lock::Mutex::ScopeGuard guard( cpGuard );
+			lock::ScopeGuard guard( cpGuard );
 			for( std::vector< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
 			{
 				if( (*it)->getInterface() == interface_ )

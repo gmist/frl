@@ -11,19 +11,17 @@ namespace frl
 		{
 			AddrSpaceCrawler::AddrSpaceCrawler()
 			{
-				curPos = opcAddressSpace.getRootBranch();
+				root = curPos = opcAddressSpace.getRootBranch();				
 			}
 
 			void AddrSpaceCrawler::goToRoot()
 			{
-				curPos = opcAddressSpace.getBranch( FRL_STR("") );
-				if ( curPos == NULL )
-					FRL_THROW_S_CLASS( AddrSpaceCrawler::NotInitializeAddressSpace );
+				curPos = root;
 			}
 
 			frl::Bool AddrSpaceCrawler::goUp()
 			{
-				if( curPos == opcAddressSpace.getBranch( FRL_STR("") ) )
+				if( curPos == root )
 					return False;
 				curPos = curPos->getParent();
 				return True;

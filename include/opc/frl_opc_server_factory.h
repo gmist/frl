@@ -4,13 +4,13 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Unknwn.h>
 #include "frl_types.h"
-#include "opc/frl_opc_com_allocator.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class OPCServerFactory : public IClassFactory, public ComAllocator
+		class OPCServerFactory : public IClassFactory, public os::win32::com::Allocator
 		{
 		private:
 			volatile LONG refCount;
@@ -40,7 +40,8 @@ namespace frl
 			void usageServer();
 			Bool isServerInUse();
 		};
-		extern OPCServerFactory factory;
+
+		static OPCServerFactory factory;
 	} // namespace opc
 } // namespace frl
 

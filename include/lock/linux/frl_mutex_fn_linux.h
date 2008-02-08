@@ -14,5 +14,4 @@ namespace frl
 
 #endif /* FRL_PLATFORM_LINUX */
 
-
 #endif /* FRL_MUTEX_FN_LINUX_H_ */

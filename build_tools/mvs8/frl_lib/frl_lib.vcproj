@@ -166,6 +166,10 @@
 				Name="lock"
 				>
 				<File
+					RelativePath="..\..\..\src\lock\frl_event.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\lock\frl_mutex.cpp"
 					>
 				</File>
@@ -207,30 +211,6 @@
 				</Filter>
 			</Filter>
 			<Filter
-				Name="io"
-				>
-				<Filter
-					Name="win32"
-					>
-					<Filter
-						Name="registry"
-						>
-						<File
-							RelativePath="..\..\..\src\io\win32\registry\frl_registry_Key.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\src\io\win32\registry\frl_registry_RootKey.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\src\io\win32\registry\frl_registry_RootKeys.cpp"
-							>
-						</File>
-					</Filter>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="console_std"
 				>
 				<File
@@ -243,14 +223,6 @@
 				>
 				<File
 					RelativePath="..\..\..\src\opc\frl_opc_async_request.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_com_allocator.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_com_variant.cpp"
 					>
 				</File>
 				<File
@@ -351,12 +323,40 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="event"
+				Name="os"
 				>
-				<File
-					RelativePath="..\..\..\src\event\frl_event.cpp"
+				<Filter
+					Name="win32"
 					>
-				</File>
+					<Filter
+						Name="registry"
+						>
+						<File
+							RelativePath="..\..\..\src\os\win32\registry\frl_registry_Key.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\src\os\win32\registry\frl_registry_RootKey.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\src\os\win32\registry\frl_registry_RootKeys.cpp"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="com"
+						>
+						<File
+							RelativePath="..\..\..\src\os\win32\com\frl_os_win32_com_allocator.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\src\os\win32\com\frl_os_win32_com_variant.cpp"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter
@@ -443,6 +443,14 @@
 			<Filter
 				Name="lock"
 				>
+				<File
+					RelativePath="..\..\..\include\lock\frl_event.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\lock\frl_lock_mutex_i.h"
+					>
+				</File>
 				<File
 					RelativePath="..\..\..\include\lock\frl_mutex.h"
 					>
@@ -561,30 +569,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="io"
-				>
-				<Filter
-					Name="win32"
-					>
-					<Filter
-						Name="registry"
-						>
-						<File
-							RelativePath="..\..\..\include\io\win32\registry\frl_registry_Key.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\include\io\win32\registry\frl_registry_RootKey.h"
-							>
-						</File>
-						<File
-							RelativePath="..\..\..\include\io\win32\registry\frl_registry_RootKeys.h"
-							>
-						</File>
-					</Filter>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="bind"
 				>
 				<File
@@ -621,14 +605,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_browse_server_address_space.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_com_allocator.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_com_variant.h"
 					>
 				</File>
 				<File
@@ -757,12 +733,40 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="event"
+				Name="os"
 				>
-				<File
-					RelativePath="..\..\..\include\event\frl_event.h"
+				<Filter
+					Name="win32"
 					>
-				</File>
+					<Filter
+						Name="com"
+						>
+						<File
+							RelativePath="..\..\..\include\os\win32\com\frl_os_win32_com_allocator.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\os\win32\com\frl_os_win32_com_variant.h"
+							>
+						</File>
+					</Filter>
+					<Filter
+						Name="registry"
+						>
+						<File
+							RelativePath="..\..\..\include\os\win32\registry\frl_registry_Key.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\os\win32\registry\frl_registry_RootKey.h"
+							>
+						</File>
+						<File
+							RelativePath="..\..\..\include\os\win32\registry\frl_registry_RootKeys.h"
+							>
+						</File>
+					</Filter>
+				</Filter>
 			</Filter>
 		</Filter>
 		<Filter

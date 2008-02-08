@@ -5,13 +5,13 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
 #include <vector>
-#include "opc/frl_opc_com_allocator.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class EnumString : public IEnumString, public ComAllocator
+		class EnumString : public IEnumString, public os::win32::com::Allocator
 		{
 		public:
 			EnumString(); // Constructor

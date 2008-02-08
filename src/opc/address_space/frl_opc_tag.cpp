@@ -250,14 +250,14 @@ namespace frl
 				}
 			}
 
-			const ComVariant& Tag::read()
+			const os::win32::com::Variant& Tag::read()
 			{
 				return value;
 			}
 
-			void Tag::write( const ComVariant &newVal )
+			void Tag::write( const os::win32::com::Variant &newVal )
 			{
-				if( ComVariant::isEqual( value, newVal ) )
+				if( os::win32::com::Variant::isEqual( value, newVal ) )
 					return;
 				value = newVal;
 				SYSTEMTIME SystemTime;

@@ -14,20 +14,22 @@ namespace frl
 	{
 		namespace address_space
 		{
-			FRL_EXCEPTION_CLASS( NotFinalConstruct );
-			FRL_EXCEPTION_CLASS( InvalidBranchName );
-			FRL_EXCEPTION_CLASS( InvalidLeafName );
-
 			class AddressSpace : private NonCopyable
 			{
 			private:
 				String delimiter;
 				Tag *rootTag;
+				Bool init;
 				std::map< OPCHANDLE, Tag* > handleHash;
 				std::map< String, Tag* > nameLeafHash;
 				std::map< String, Tag* > nameBranchHash;
 
 			public:
+
+				FRL_EXCEPTION_CLASS( NotFinalConstruct );
+				FRL_EXCEPTION_CLASS( InvalidBranchName );
+				FRL_EXCEPTION_CLASS( InvalidLeafName );
+
 				AddressSpace();
 
 				~AddressSpace();
@@ -59,6 +61,8 @@ namespace frl
 				Tag* getRootBranch();
 
 				void getAllLeafs( std::vector< String > &namesList, DWORD accessFilter );
+
+				Bool isInit();
 			};
 		} // namespace address_space
 		extern address_space::AddressSpace opcAddressSpace;
