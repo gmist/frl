@@ -105,19 +105,10 @@ namespace frl
 					{
 						if( ! oldState )
 						{
-							std::list< OPCHANDLE > handles;
 							for( std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.begin(); it != pT->itemList.end(); ++it )
 							{
 								if( (*it).second->isActived() )
-									handles.push_back( (*it).first );
-							}
-
-							if( handles.size() != 0 )
-							{
-								AsyncRequest *request = new AsyncRequest( handles );
-								request->setTransactionID( 0 );
-								pT->asyncRefreshList.push_back( request );
-								pT->refreshEvent.Signal();
+									(*it).second->resetTimeStamp();
 							}
 						}
 						pT->timerUpdate.start();
@@ -126,26 +117,23 @@ namespace frl
 					{
 						if( ! pT->asyncRefreshList.empty() )
 						{
-							if( ! pT->asyncRefreshList.empty() )
-							{
-								for( std::list< AsyncRequest* >::iterator it = pT->asyncRefreshList.begin(); it != pT->asyncRefreshList.end(); ++it )
-									delete (*it);
-								pT->asyncRefreshList.clear();
-							}
+							for( std::list< AsyncRequest* >::iterator it = pT->asyncRefreshList.begin(); it != pT->asyncRefreshList.end(); ++it )
+								delete (*it);
+							pT->asyncRefreshList.clear();
+						}
 
-							if( ! pT->asyncReadList.empty() )
-							{
-								for( std::list< AsyncRequest* >::iterator it = pT->asyncReadList.begin(); it != pT->asyncReadList.end(); ++it )
-									delete (*it);
-								pT->asyncReadList.clear();
-							}
+						if( ! pT->asyncReadList.empty() )
+						{
+							for( std::list< AsyncRequest* >::iterator it = pT->asyncReadList.begin(); it != pT->asyncReadList.end(); ++it )
+								delete (*it);
+							pT->asyncReadList.clear();
+						}
 
-							if( ! pT->asyncWriteList.empty() )
-							{
-								for( std::list< AsyncRequest* >::iterator it = pT->asyncWriteList.begin(); it != pT->asyncWriteList.end(); ++it )
-									delete (*it);
-								pT->asyncWriteList.clear();
-							}
+						if( ! pT->asyncWriteList.empty() )
+						{
+							for( std::list< AsyncRequest* >::iterator it = pT->asyncWriteList.begin(); it != pT->asyncWriteList.end(); ++it )
+								delete (*it);
+							pT->asyncWriteList.clear();
 						}
 					}
 				}
@@ -162,20 +150,9 @@ namespace frl
 				if( szName == NULL || wcslen( szName ) == 0 )
 					return E_INVALIDARG;
 
-				pT->server->scopeGuard.Lock();
-
-				std::map< String, OPCHANDLE >::iterator it =  pT->server->groupItemIndex.find( szName );
-				if( it != pT->server->groupItemIndex.end() )
-				{
-					pT->server->scopeGuard.UnLock();
-					return OPC_E_DUPLICATENAME;
-				}
-
-				pT->server->scopeGuard.UnLock();
-
-				Bool res = pT->server->setGroupName( pT->name, szName);
-				if( ! res )
-					return E_INVALIDARG;
+				HRESULT res = pT->server->setGroupName( pT->name, szName);
+				if( FAILED( res ) )
+					return res;
 				pT->name = szName;
 				return S_OK;
 			}

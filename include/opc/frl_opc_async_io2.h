@@ -62,7 +62,7 @@ namespace frl
 					*pdwCancelID = request->getCancelID();
 					request->setTransactionID( dwTransactionID );
 					pT->asyncReadList.push_back( request );
-					pT->readEvent.Signal();
+					pT->readEvent.signal();
 				}
 
 				return result;
@@ -119,7 +119,7 @@ namespace frl
 					*pdwCancelID = request->getCancelID();
 					request->setTransactionID( dwTransactionID );
 					pT->asyncWriteList.push_back( request );
-					pT->writeEvent.Signal();
+					pT->writeEvent.signal();
 				}
 				return result;
 			}
@@ -174,7 +174,7 @@ namespace frl
 				request->setTransactionID( dwTransactionID );
 				request->setSource( dwSource );
 				pT->asyncRefreshList.push_back( request );
-				pT->refreshEvent.Signal();
+				pT->refreshEvent.signal();
 				return S_OK;
 			}
 

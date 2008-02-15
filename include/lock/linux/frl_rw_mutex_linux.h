@@ -18,8 +18,8 @@ namespace frl
 		public:
 			RWMutex( bool many_writers = false );
 			virtual ~RWMutex();
-			bool Lock( void );
-			bool UnLock( void );
+			bool lock( void );
+			bool unLock( void );
 		}; // class RWMutex
 	} // namespace lock
 } // namespace FatRat Library

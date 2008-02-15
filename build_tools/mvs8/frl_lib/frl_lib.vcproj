@@ -358,6 +358,22 @@
 					</Filter>
 				</Filter>
 			</Filter>
+			<Filter
+				Name="io"
+				>
+				<Filter
+					Name="fs"
+					>
+					<File
+						RelativePath="..\..\..\src\io\fs\frl_fs_fn_linux.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\io\fs\frl_fs_fn_win32.cpp"
+						>
+					</File>
+				</Filter>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="include"
@@ -766,6 +782,18 @@
 							>
 						</File>
 					</Filter>
+				</Filter>
+			</Filter>
+			<Filter
+				Name="io"
+				>
+				<Filter
+					Name="fs"
+					>
+					<File
+						RelativePath="..\..\..\include\io\fs\frl_fs_fn.h"
+						>
+					</File>
 				</Filter>
 			</Filter>
 		</Filter>

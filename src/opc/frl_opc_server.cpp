@@ -164,7 +164,7 @@ namespace frl
 			}
 
 			newGroup->setServerPtr( this );
-			groupItemIndex.insert( std::pair< String, OPCHANDLE >( groupName, newGroup->getServerHandle() ) );
+			groupItemIndex.insert( std::pair< String, Group* >( groupName, newGroup ) );
 			groupItem.insert( std::pair< OPCHANDLE, Group* >(newGroup->getServerHandle(), newGroup ) );
 			if(phServerGroup)
 				*phServerGroup = newGroup->getServerHandle();
@@ -191,16 +191,11 @@ namespace frl
 			
 			lock::ScopeGuard guard( scopeGuard );
 
-			std::map< String, OPCHANDLE >::iterator it = groupItemIndex.find( szName );
+			std::map< String, frl::opc::Group* >::iterator it = groupItemIndex.find( szName );
 			if(it == groupItemIndex.end() )
 				return E_INVALIDARG;
 
-			OPCHANDLE handle = (*it).second;
-			std::map< OPCHANDLE, Group*>::iterator it1 = groupItem.find( handle );
-			if( it1 == groupItem.end())
-				return E_FAIL;
-
-			Group *grpItem = (*it1).second;
+			Group *grpItem = (*it).second;
 
 			HRESULT hr = grpItem->QueryInterface( riid, (void**)ppUnk );
 			if( FAILED(hr) || *ppUnk == NULL) 
@@ -299,16 +294,22 @@ namespace frl
 			return E_NOINTERFACE;
 		}
 
-		frl::Bool OPCServer::setGroupName( const String &oldName, const String &newName )
+		HRESULT OPCServer::setGroupName( const String &oldName, const String &newName )
 		{
 			lock::ScopeGuard guard( scopeGuard );
-			std::map< String, OPCHANDLE >::iterator it = groupItemIndex.find( oldName );
+
+			std::map< String, Group* >::iterator it =  groupItemIndex.find( newName );
+			if( it != groupItemIndex.end() )
+				return OPC_E_DUPLICATENAME;
+
+			it = groupItemIndex.find( oldName );
 			if( it == groupItemIndex.end() )
-				return False;
-			OPCHANDLE tmpHandle = (*it).second;
+				return E_INVALIDARG;
+
+			Group *tmpGroup = (*it).second;
 			groupItemIndex.erase( it );
-			groupItemIndex.insert( std::pair< String, OPCHANDLE>( newName, tmpHandle) );
-			return True;
+			groupItemIndex.insert( std::pair< String, Group* >( newName, tmpGroup) );
+			return S_OK;
 		}
 
 		HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Group **ppClone )
@@ -318,16 +319,12 @@ namespace frl
 
 			lock::ScopeGuard guard( scopeGuard );
 
-			std::map< String, OPCHANDLE >::iterator itInd = groupItemIndex.find( cloneName );
-			if( itInd != groupItemIndex.end() )
+			std::map< String, Group* >::iterator it = groupItemIndex.find( cloneName );
+			if( it != groupItemIndex.end() )
 				return OPC_E_DUPLICATENAME;
 			
-			itInd = groupItemIndex.find( name );
-			if( itInd == groupItemIndex.end() )
-				return E_INVALIDARG;
-
-			std::map< OPCHANDLE, Group* >::iterator it = groupItem.find( (*itInd).second );
-			if( it == groupItem.end() )
+			it = groupItemIndex.find( name );
+			if( it == groupItemIndex.end() )
 				return E_INVALIDARG;
 
 			*ppClone = (*it).second->clone();
@@ -346,9 +343,8 @@ namespace frl
 			if( (*group)->getName().empty() )
 				(*group)->setName( util::getUniqueName() );
 
-			OPCHANDLE handle = (*group)->getServerHandle();
-			groupItemIndex.insert( std::pair< String, OPCHANDLE >( (*group)->getName(), handle ) );
-			groupItem.insert( std::pair< OPCHANDLE, Group* >( handle, (*group ) ) );
+			groupItemIndex.insert( std::pair< String, Group* >( (*group)->getName(), (*group) ) );
+			groupItem.insert( std::pair< OPCHANDLE, Group* >( (*group)->getServerHandle(), (*group ) ) );
 			return S_OK;
 		}
 
@@ -363,7 +359,7 @@ namespace frl
 		OPCSERVERSTATE OPCServer::getServerState()
 		{
 			return serverStatus.dwServerState;
-		}
+		}	
 	} // namespace opc
 } // namespace FatRat Library
 #endif // FRL_PLATFORM_WIN32

@@ -29,6 +29,7 @@ namespace frl
 			actived = False;
 			requestDataType = VT_EMPTY;
 			tagRef = NULL;
+			resetTimeStamp();
 		}
 
 		void GroupItem::Init( OPCHANDLE serverHandle_, OPCITEMDEF &itemDef )
@@ -51,6 +52,7 @@ namespace frl
 		{
 			return actived;
 		}
+
 		void GroupItem::setClientHandle( OPCHANDLE handle )
 		{
 			clientHandle = handle;
@@ -164,6 +166,12 @@ namespace frl
 		const os::win32::com::Variant& GroupItem::getCachedValue()
 		{
 			return cachedValue;
+		}
+
+		void GroupItem::resetTimeStamp()
+		{
+			lastChange.dwLowDateTime = 0;
+			lastChange.dwHighDateTime = 0;
 		}
 	} // namespace opc
 } // namespace FatRat Library

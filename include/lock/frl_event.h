@@ -25,9 +25,9 @@ namespace frl
 			FRL_EXCEPTION_CLASS( InitializeError );
 			Event( void );
 			~Event( void );
-			void Signal( void );
-			void Wait( void );
-			Bool TimedWait( TimeOut time_ );
+			void signal( void );
+			void wait( void );
+			Bool timedWait( TimeOut time_ );
 		};
 	}// namespace lock
 } // Fat Rat library

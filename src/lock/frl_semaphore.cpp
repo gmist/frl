@@ -12,49 +12,49 @@ namespace frl
 		Semaphore::~Semaphore( void )
 		{
 			ScopeGuard scopeGuard( mutex );
-			SemaphoreDestroy( semaphore);
+			semaphoreDestroy( semaphore);
 		}
 
-		void Semaphore::Init( frl::Long value_ )
+		void Semaphore::init( frl::Long value_ )
 		{
 			ScopeGuard scopeGuard( mutex );		
-			SemaphoreInit( semaphore, value_ );
+			semaphoreInit( semaphore, value_ );
 		}
 		
-		frl::Long Semaphore::GetValue( void )
+		frl::Long Semaphore::getValue( void )
 		{
-			return SemaphoreGetValue( semaphore );
+			return semaphoreGetValue( semaphore );
 		}
 
-		void Semaphore::Post( void )
+		void Semaphore::post( void )
 		{
 			ScopeGuard scopeGuard( mutex );
-			SemaphorePost( semaphore );
+			semaphorePost( semaphore );
 		}
 		
-		void Semaphore::Wait( void )
+		void Semaphore::wait( void )
 		{
 			ScopeGuard scopeGuard( wait_mutex );
-			SemaphoreWait( semaphore );
+			semaphoreWait( semaphore );
 		}
 		
-		frl::Bool Semaphore::TimedWait( TimeOut time_ )
+		frl::Bool Semaphore::timedWait( TimeOut time_ )
 		{
 			ScopeGuard scopeGuard( wait_mutex );			
-			return SemaphoreTimedWait( semaphore, time_ );
+			return semaphoreTimedWait( semaphore, time_ );
 		}
 
-		frl::Bool Semaphore::TryWait( void )
+		frl::Bool Semaphore::tryWait( void )
 		{	
 			ScopeGuard scopeGuard( wait_mutex );
-			return SemaphoreTryWait( semaphore );
+			return semaphoreTryWait( semaphore );
 		}
 
-		void Semaphore::ReInit( frl::Long value_ )
+		void Semaphore::reInit( frl::Long value_ )
 		{
 			ScopeGuard scopeGuard( mutex );
-			SemaphoreDestroy( semaphore);
-			SemaphoreInit( semaphore, value_ );
+			semaphoreDestroy( semaphore);
+			semaphoreInit( semaphore, value_ );
 		}
 
 	} // namespace lock

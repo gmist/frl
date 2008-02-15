@@ -15,13 +15,13 @@ namespace frl
 {
 	namespace thread
 	{
-		void IsValid( const ThreadDescriptor &descriptor );
-		void Yield_( void );
-		void Join( ThreadDescriptor &descriptor );
-		Bool Join( ThreadDescriptor &descriptor, TimeOut msec_ );
-		void Kill( ThreadDescriptor &descriptor );
-		Bool IsEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl );
-		void Create( ThreadDescriptor &descriptor, FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_ = NULL, Bool isDetached_ = False, UInt stackSize_ = 0 );
+		void isValid( const ThreadDescriptor &descriptor );
+		void yield( void );
+		void join( ThreadDescriptor &descriptor );
+		Bool join( ThreadDescriptor &descriptor, TimeOut msec_ );
+		void kill( ThreadDescriptor &descriptor );
+		Bool isEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl );
+		void create( ThreadDescriptor &descriptor, FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_ = NULL, Bool isDetached_ = False, UInt stackSize_ = 0 );
 	}
 }
 

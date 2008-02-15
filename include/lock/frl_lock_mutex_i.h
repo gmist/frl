@@ -10,13 +10,13 @@ namespace frl
 		public:
 
 			// lock mutex
-			virtual void Lock( void ) = 0;
+			virtual void lock( void ) = 0;
 
 			// non block try lock mutex
-			virtual Bool TryLock( void ) = 0;
+			virtual Bool tryLock( void ) = 0;
 
 			// unlock mutex
-			virtual void UnLock( void ) = 0;
+			virtual void unLock( void ) = 0;
 		};
 	}
 } // namespace FatRat Library

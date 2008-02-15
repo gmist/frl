@@ -26,13 +26,13 @@ namespace frl
 			}
 
 			// Lock the mutex
-			virtual void Lock( void ) { }
+			virtual void lock( void ) { }
 
 			// Not blocked lock the mutex
-			virtual Bool TryLock() { return True; }
+			virtual Bool tryLock() { return True; }
 
 			// Unlock the mutex
-			virtual void Unlock( void ) { }
+			virtual void unlock( void ) { }
 
 		}; // class NullMutex
 	}	// namespace lock

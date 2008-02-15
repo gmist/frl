@@ -8,8 +8,6 @@
 #include "opc/frl_opc_common.h"
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
-#include "opc/frl_opc_item_mgt.h"
-#include "opc/frl_opc_group_state_mgt.h"
 #include "opc/frl_opc_connection_point_container.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "frl_non_copyable.h"
@@ -20,7 +18,7 @@ namespace frl
 	namespace opc
 	{
 		class Group;
-		template < class T>  class  GroupStateMgt;
+
 		class OPCServer
 			:	public OPCCommon,
 				public IOPCServer,
@@ -30,12 +28,11 @@ namespace frl
 				private NonCopyable,
 				public os::win32::com::Allocator
 		{
-		friend GroupStateMgt<Group>;
-		friend BrowseServerAddressSpace< OPCServer >;
+		friend class BrowseServerAddressSpace< OPCServer >;
 
 		private:
 			std::map< OPCHANDLE, frl::opc::Group* > groupItem;
-			std::map< String, OPCHANDLE > groupItemIndex;
+			std::map< String, frl::opc::Group* > groupItemIndex;
 			lock::Mutex scopeGuard;
 			volatile LONG refCount;
 			OPCSERVERSTATUS serverStatus;
@@ -46,7 +43,7 @@ namespace frl
 
 			OPCServer();
 			~OPCServer();
-			Bool setGroupName( const String &oldName, const String &newName );
+			HRESULT setGroupName( const String &oldName, const String &newName );
 			HRESULT cloneGroup( const String &name, const String &cloneName, Group **group );
 			HRESULT addNewGroup( Group **group );
 			void setServerState( OPCSERVERSTATE newState );

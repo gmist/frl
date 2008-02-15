@@ -24,26 +24,26 @@ namespace frl
 			~Semaphore( void );
 
 			// Initialize the semaphore
-			void Init( frl::Long value_ );
+			void init( frl::Long value_ );
 
 			// Get current value the semaphore
-			frl::Long GetValue( void );
+			frl::Long getValue( void );
 
 			// Increment value the semaphore
-			void Post( void );
+			void post( void );
 			
 			// Not blocked wait not zero value the semaphore
-			frl::Bool TryWait( void );
+			frl::Bool tryWait( void );
 
 			// Blocked wait not zero value the semaphore
-			void Wait( void );
+			void wait( void );
 			
 			// Blocked wait not zero value the semaphore
 			// in the course of a set time out
-			frl::Bool TimedWait( TimeOut time_ );
+			frl::Bool timedWait( TimeOut time_ );
 
 			// Reinitialize the semaphore
-			void ReInit( frl::Long value_ );
+			void reInit( frl::Long value_ );
 
 		};	// class Semaphore
 
@@ -55,7 +55,7 @@ namespace frl
 			// Конструктор
 			SemaphoreMutex( void )
 			{
-				sem.Init( 1 );
+				sem.init( 1 );
 			}
 
 			// Деструктор
@@ -64,22 +64,22 @@ namespace frl
 			}
 
 			// Захват мьютекса
-			virtual void Lock( void )
+			virtual void lock( void )
 			{
-				sem.Wait();
-				sem.ReInit( 1 );
+				sem.wait();
+				sem.reInit( 1 );
 			}
 
 			// Попытка захвата мьютекса
-			virtual Bool TryLock( void )
+			virtual Bool tryLock( void )
 			{
-				return sem.TryWait();
+				return sem.tryWait();
 			}
 
 			// Освобождение мьютекса
-			virtual void UnLock( void )
+			virtual void unLock( void )
 			{
-				sem.Post();
+				sem.post();
 			}
 		};
 	} // namespace lock

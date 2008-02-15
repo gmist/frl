@@ -6,30 +6,30 @@ namespace frl
 {
 	namespace lock
 	{
-		void MutexInit( MutexDescriptor &mutex )
+		void mutexInit( MutexDescriptor &mutex )
 		{
 			if( pthread_mutex_init( &mutex, NULL ) != 0 )
 				FRL_THROW( "Error mutex initialize." );
 		}
 
-		void MutexDestroy( MutexDescriptor &mutex )
+		void mutexDestroy( MutexDescriptor &mutex )
 		{
 			pthread_mutex_destroy( &mutex ); //FIXME
 		}
 
-		void MutexLock( MutexDescriptor &mutex )
+		void mutexLock( MutexDescriptor &mutex )
 		{
 			if( pthread_mutex_lock( &mutex ) != 0 )
 				FRL_THROW( "Error mutex locking." );
 		}
 
-		void MutexUnlock( MutexDescriptor &mutex )
+		void mutexUnlock( MutexDescriptor &mutex )
 		{
 			if( pthread_mutex_unlock( &mutex ) != 0 )
 				FRL_THROW( "Error mutex unlocking." );
 		}
 
-		Bool MutexTryLock( MutexDescriptor &mutex )
+		Bool mutexTryLock( MutexDescriptor &mutex )
 		{
 			return False; // FIXME
 		}

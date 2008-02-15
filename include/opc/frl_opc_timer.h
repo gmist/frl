@@ -39,7 +39,7 @@ namespace frl
 					LONGLONG frequency  = 0;
 					QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
 					QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
-					while( ! stopEvent.TimedWait( tmp_time ) )
+					while( ! stopEvent.timedWait( tmp_time ) )
 					{
 						if( stopIt )
 							return;
@@ -88,7 +88,7 @@ namespace frl
 			void setTimer( int time_ )
 			{
 				time_ms = time_;
-				if( process.IsRunning() )
+				if( process.isRunning() )
 				{
 					stop();
 					start();
@@ -97,28 +97,28 @@ namespace frl
 
 			void start()
 			{
-				if( ! process.IsRunning() )
+				if( ! process.isRunning() )
 				{
-					process.Create( &TimerProxy<T>::func, *this );
+					process.create( &TimerProxy<T>::func, *this );
 					stopIt = False;
-					process.Start();
+					process.start();
 				}
 				else
 				{
 					stop();
-					process.Create( &TimerProxy<T>::func, *this );
+					process.create( &TimerProxy<T>::func, *this );
 					stopIt = False;
-					process.Start();
+					process.start();
 				}
 			}
 
 			void stop()
 			{
-				if( process.IsRunning() )
+				if( process.isRunning() )
 				{
 					stopIt = True;
-					stopEvent.Signal();
-					process.Join();
+					stopEvent.signal();
+					process.join();
 				}
 			}
 
@@ -129,10 +129,10 @@ namespace frl
 
 			void tryStop()
 			{
-				if( process.IsRunning() )
+				if( process.isRunning() )
 				{
 					stopIt = True;
-					stopEvent.Signal();
+					stopEvent.signal();
 				}
 			}
 		};

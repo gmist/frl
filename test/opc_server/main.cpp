@@ -1,3 +1,4 @@
+#include <tchar.h>
 #include "frl_opc.h"
 
 int _tmain( int , _TCHAR* )

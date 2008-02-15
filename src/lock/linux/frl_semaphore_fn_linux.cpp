@@ -7,7 +7,7 @@ namespace frl
 {
 	namespace lock
 	{
-		void SemaphoreInit( SemaphoreDescriptor &semaphore, Long value_ )
+		void semaphoreInit( SemaphoreDescriptor &semaphore, Long value_ )
 		{
 			FRL_EXCEPT_GUARD();
 			if ( semaphore.isInitialize )
@@ -17,58 +17,58 @@ namespace frl
 				FRL_THROW( "Semaphore initialize error." );
 		}
 
-		void SemaphoreIsValid( SemaphoreDescriptor &semaphore )
+		void semaphoreIsValid( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD();
 			if ( ! semaphore.isInitialize)
 				FRL_THROW( "Semaphore not valid. Maybe semaphore not initialize." );
 		}
 
-		void SemaphoreDestroy( SemaphoreDescriptor &semaphore )
+		void semaphoreDestroy( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD();
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			if( sem_destroy( &semaphore.semaphore ) != 0 )
 				FRL_THROW( "Semaphore destroy error." );
 			semaphore.isInitialize = False;
 		}
 
-		Long SemaphoreGetValue( SemaphoreDescriptor &semaphore )
+		Long semaphoreGetValue( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD();
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			frl::Long value = -1;
 			sem_getvalue( &semaphore.semaphore ,reinterpret_cast<int*>( &value ) );
 			return value;
 		}
 
-		void SemaphorePost( SemaphoreDescriptor &semaphore )
+		void semaphorePost( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD();
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			if( sem_post( &semaphore ) != 0 )
 				FRL_THROW("Semaphore posting error." );
 		}
 
-		void SemaphoreWait( SemaphoreDescriptor &semaphore )
+		void semaphoreWait( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD();
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			sem_wait( &semaphore.semaphore ); // FIXME return value
 		}
 
-		Bool SemaphoreTryWait( SemaphoreDescriptor &semaphore )
+		Bool semaphoreTryWait( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD();
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			if( sem_trywait( &semaphore ) != 0 )
 				FRL_THROW( "Semaphore try-wait error." );
 		}
 
-		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, frl::TimeOut time_ )
+		Bool semaphoreTimedWait( SemaphoreDescriptor &semaphore, frl::TimeOut time_ )
 		{
 			FRL_EXCEPT_GUARD();
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			timespec ts;
 			timeval cur_time_val;
 			gettimeofday( &cur_time_val, NULL );

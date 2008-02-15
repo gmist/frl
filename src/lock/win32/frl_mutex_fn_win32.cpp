@@ -9,27 +9,27 @@ namespace frl
 {
 	namespace lock
 	{
-		void MutexInit( MutexDescriptor &mutex )
+		void mutexInit( MutexDescriptor &mutex )
 		{
 			::InitializeCriticalSection( &mutex );
 		}
 
-		void MutexDestroy( MutexDescriptor &mutex )
+		void mutexDestroy( MutexDescriptor &mutex )
 		{
 			::DeleteCriticalSection( &mutex );
 		}
 
-		void MutexLock( MutexDescriptor &mutex )
+		void mutexLock( MutexDescriptor &mutex )
 		{
 			::EnterCriticalSection( &mutex );
 		}
 
-		void MutexUnlock( MutexDescriptor &mutex )
+		void mutexUnlock( MutexDescriptor &mutex )
 		{
 			::LeaveCriticalSection( &mutex );	
 		}
 
-		Bool MutexTryLock( MutexDescriptor &mutex )
+		Bool mutexTryLock( MutexDescriptor &mutex )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
 			#if(_WIN32_WINNT >= 0x0400)

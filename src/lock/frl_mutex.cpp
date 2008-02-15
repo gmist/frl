@@ -8,7 +8,7 @@ namespace frl
 	{
 		Mutex::Mutex( void )
 		{
-			MutexInit( mutex );
+			mutexInit( mutex );
 			isInitialize = True;
 		}
 
@@ -16,30 +16,30 @@ namespace frl
 		{
 			if ( isInitialize )
 			{
-				MutexDestroy( mutex );
+				mutexDestroy( mutex );
 				isInitialize = False;
 			}
 		}
 
-		void Mutex::Lock( void )
+		void Mutex::lock( void )
 		{
 			if( !isInitialize )
 				FRL_THROW( FRL_STR( "Mutex not initialize." ) );
-			MutexLock( mutex );
+			mutexLock( mutex );
 		}
 
-		void Mutex::UnLock( void )
+		void Mutex::unLock( void )
 		{
 			if( !isInitialize )
 				FRL_THROW( FRL_STR( "Mutex not initialize." ) );
-			MutexUnlock( mutex );
+			mutexUnlock( mutex );
 		}
 
-		Bool Mutex::TryLock( void )
+		Bool Mutex::tryLock( void )
 		{
 			if( !isInitialize )
 				FRL_THROW( FRL_STR( "Mutex not initialize." ) );
-			return MutexTryLock( mutex );
+			return mutexTryLock( mutex );
 		}
 	} // namespace lock
 } // Fat Rat Library

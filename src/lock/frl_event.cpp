@@ -16,7 +16,7 @@ namespace frl
 					FRL_THROW_S_CLASS( Event::InitializeError );
 			#endif
 			#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-				semaphore.Init( 0 );
+				semaphore.init( 0 );
 			#endif
 		}
 
@@ -27,27 +27,27 @@ namespace frl
 			#endif
 		}
 
-		void Event::Signal( void )
+		void Event::signal( void )
 		{
 			#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 				SetEvent( handle );
 			#endif
 			#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-				semaphore.Post();
+				semaphore.post();
 			#endif
 		}
 
-		void Event::Wait( void )
+		void Event::wait( void )
 		{
 			#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 				WaitForSingleObject( handle, INFINITE );
 			#endif
 			#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-				semaphore.Wait();
+				semaphore.wait();
 			#endif
 		}
 
-		Bool Event::TimedWait( frl::TimeOut time_ )
+		Bool Event::timedWait( frl::TimeOut time_ )
 		{
 			#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 				DWORD result = WaitForSingleObject( handle, time_ );
@@ -56,7 +56,7 @@ namespace frl
 				return True; // WAIT_OBJECT_0
 			#endif
 			#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-				return semaphore.TimedWait( time_ );
+				return semaphore.timedWait( time_ );
 			#endif
 		}
 

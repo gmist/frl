@@ -94,6 +94,37 @@ namespace frl
 		# endif // FRL_PLATFORM_WIN32
 	} // namespace tread
 
+	namespace io
+	{
+		// Definitions types variables for works with file system
+		namespace fs
+		{
+			#if ( FRL_PLATFORM ==  FRL_PLATFORM_LINUX )
+				typedef frl::Int FileDerscriptor;	// File handle
+				typedef frl::Long FileOffset;		// File offset (position)
+				typedef size_t FileRWCount; // Number read-write simbols in read-write operations
+
+				const Descriptor InvalidFileDescriptor = -1;	// Invalid file handle
+				const Offset InvalidFileOffset = -1;		// Invalid file offset (position)
+				const RWCount InvalidFileRWCount = 0; // Invalid read-write number
+			#endif // FRL_PLATFORM_LINUX
+
+			#if ( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
+				typedef HANDLE FileDescriptor;	// File handle
+				typedef Long FileOffset;
+				typedef DWORD FileRWCount;
+
+				const FileDescriptor InvalidFileDescriptor = INVALID_HANDLE_VALUE;
+				const FileOffset InvalidFileOffset = -1;
+				const FileRWCount InvalidFileRWCount = -1;
+			#endif // FRL_PLATFORM_WIN32
+		}	// namespace fs
+	} // namespace io
+
+	namespace time
+	{
+		typedef frl::Long Time;
+	} // namespace time
 
 } // Fat Rat Library
 

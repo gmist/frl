@@ -152,10 +152,7 @@ namespace frl
 					(*ppErrors)[i] = (*it).second->writeValue( pItemValues[i] );
 
 					if( FAILED( (*ppErrors)[i] ) )
-					{
 						result = S_FALSE;
-						continue;
-					}
 				}
 				return result;
 			};

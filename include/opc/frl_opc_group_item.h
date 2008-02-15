@@ -51,6 +51,7 @@ namespace frl
 			Bool isChange();
 			GroupItem* clone();
 			const os::win32::com::Variant& getCachedValue();
+			void resetTimeStamp();
 		}; // GroupItem
 	} // namespace opc
 } // namespace FatRat Library

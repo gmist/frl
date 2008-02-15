@@ -32,21 +32,14 @@ namespace frl
 			};
 		#endif
 
-		void SemaphoreInit( SemaphoreDescriptor &semaphore, Long value = 0 );
-		void SemaphoreDestroy( SemaphoreDescriptor &semaphore );
-		Long SemaphoreGetValue( SemaphoreDescriptor &semaphore );
-		void SemaphorePost( SemaphoreDescriptor &semaphore );
-		void SemaphoreWait( SemaphoreDescriptor &semaphore );
-		void SemaphoreIsValid( SemaphoreDescriptor &semaphore );
-		Bool SemaphoreTryWait( SemaphoreDescriptor &semaphore );
-
-		#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, DWORD time_ );
-		#endif
-
-		#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, unsigned long time_ );
-		#endif
+		void semaphoreInit( SemaphoreDescriptor &semaphore, Long value = 0 );
+		void semaphoreDestroy( SemaphoreDescriptor &semaphore );
+		Long semaphoreGetValue( SemaphoreDescriptor &semaphore );
+		void semaphorePost( SemaphoreDescriptor &semaphore );
+		void semaphoreWait( SemaphoreDescriptor &semaphore );
+		void semaphoreIsValid( SemaphoreDescriptor &semaphore );
+		Bool semaphoreTryWait( SemaphoreDescriptor &semaphore );
+		Bool semaphoreTimedWait( SemaphoreDescriptor &semaphore, TimeOut time_ );
 	}
 
 }// Fat Rat Library

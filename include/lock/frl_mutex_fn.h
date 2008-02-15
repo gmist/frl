@@ -9,11 +9,11 @@ namespace frl
 {
 	namespace lock
 	{
-		void MutexInit( MutexDescriptor &mutex );
-		void MutexDestroy( MutexDescriptor &mutex );
-		void MutexLock( MutexDescriptor &mutex );
-		void MutexUnlock( MutexDescriptor &mutex );
-		Bool MutexTryLock( MutexDescriptor &mutex );
+		void mutexInit( MutexDescriptor &mutex );
+		void mutexDestroy( MutexDescriptor &mutex );
+		void mutexLock( MutexDescriptor &mutex );
+		void mutexUnlock( MutexDescriptor &mutex );
+		Bool mutexTryLock( MutexDescriptor &mutex );
 	} // namespace lock
 } // namespace FatRat Library
 

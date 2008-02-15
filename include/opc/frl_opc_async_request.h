@@ -7,12 +7,13 @@
 #include "..\dependency\vendors\opc_foundation\opcda.h"
 #include "frl_types.h"
 #include "frl_exception.h"
+#include "frl_non_copyable.h"
 
 namespace frl
 {
 	namespace opc
 	{
-		class AsyncRequest
+		class AsyncRequest : private NonCopyable
 		{
 		private:
 			DWORD id;
@@ -25,9 +26,7 @@ namespace frl
 			FRL_EXCEPTION_CLASS( InvalidParameter );
 			AsyncRequest();
 			AsyncRequest( std::list< OPCHANDLE > handles_ );
-			AsyncRequest( const AsyncRequest &rhv );
 			~AsyncRequest();
-			AsyncRequest& operator = ( const AsyncRequest &rhv );
 			void setTransactionID( DWORD id_ );
 			DWORD getTransactionID() const;
 			DWORD getCancelID();

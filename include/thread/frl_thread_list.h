@@ -55,7 +55,7 @@ namespace frl
 				frl::lock::ScopeGuard scopeGuard( mutex );
 				FRL_EXCEPT_GUARD();				
 				for( std::list< Thread< ResultType, ParameterType >* >::iterator iter = threadList.begin(); iter != threadList.end(); ++ iter )
-					(*iter)->Start();
+					(*iter)->start();
 			}
 
 			void Remove(  Thread< ResultType, ParameterType > *thread_ )
@@ -87,7 +87,7 @@ namespace frl
 				std::list< Thread< ResultType, ParameterType >* >::iterator iter = std::find( threadList.begin(), threadList.end(), thread_ );
 				if( iter == threadList.end() )
 					FRL_THROW( FRL_STR( "Joinable thread not found in thread list." ) );
-				return (*iter)->Join( msec_ );
+				return (*iter)->join( msec_ );
 			}
 
 			void JoinAll( void )

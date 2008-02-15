@@ -79,7 +79,7 @@ class Exception
 			const char *what() const throw();
 
 			// Return string with full description( error code, description error, function name ... ) of exception.
-			String GetFullDescription(void) const;
+			String getFullDescription(void) const;
 
 			// Return string with only description of exception.
 			const String& GetDescription( void ) const throw() { return description; }
@@ -94,10 +94,10 @@ class Exception
 			static Exception* GetLastException(void) throw() { return last; }
 
 			// Pushed a function on the stack.
-			static void PushFunction( const String& strFuncName ) throw();
+			static void pushFunction( const String& strFuncName ) throw();
 			
 			// Pops a function from the stack.
-			static void PopFunction() throw();
+			static void popFunction() throw();
 			
 			// Class for automatically push/pop the function name for unwinding stack.
 			class ExceptionGuard
@@ -106,11 +106,11 @@ class Exception
 			public:
 				ExceptionGuard(const String& funcName) throw()
 				{
-					Exception::PushFunction(funcName);
+					Exception::pushFunction(funcName);
 				}
 				~ExceptionGuard() throw()
 				{
-					Exception::PopFunction();
+					Exception::popFunction();
 				}
 			};
 		};

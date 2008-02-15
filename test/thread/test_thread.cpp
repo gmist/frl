@@ -36,11 +36,11 @@ bool test_ThreadCreate( void )
 	try
 	{
 		frl::thread::Thread< void, void > test_thread;
-		test_thread.Create( NullThreadFunc, true );	
+		test_thread.create( NullThreadFunc, true );	
 	}
 	catch ( const frl::Exception *e)
 	{
-		frl::console_std::Out << e->GetFullDescription();
+		frl::console_std::Out << e->getFullDescription();
 		throw e;
 		return false;
 	}
@@ -53,14 +53,14 @@ bool  test_ThreadJoin( void )
 	try
 	{
 		frl::thread::Thread<void, void> test_thread;
-		test_thread.Create( ThreadFunc );
+		test_thread.create( ThreadFunc );
 		global_i = 5;
-		test_thread.Start();
-		test_thread.Join();
+		test_thread.start();
+		test_thread.join();
 	}
 	catch ( frl::Exception& e)
 	{
-		frl::console_std::Out << e.GetFullDescription();
+		frl::console_std::Out << e.getFullDescription();
 		throw e;
 		return false;
 	}
@@ -78,17 +78,17 @@ bool test_ThreadKill( void )
 	{
 		frl::thread::Thread<void, void> test_thread;
 		global_i = 10;
-		test_thread.Create( LongTimeThread );
-		test_thread.Start();
-		test_thread.Kill();
-		test_thread.Join();
-		if( global_i == 10010 || test_thread.Self() != frl::thread::InvalidThreadDescriptor )
+		test_thread.create( LongTimeThread );
+		test_thread.start();
+		test_thread.kill();
+		test_thread.join();
+		if( global_i == 10010 || test_thread.self() != frl::thread::InvalidThreadDescriptor )
 			return false;
 		return true;
 	}
 	catch ( frl::Exception& e)
 	{
-		frl::console_std::Out << e.GetFullDescription();
+		frl::console_std::Out << e.getFullDescription();
 		throw e;
 		return false;
 	}
@@ -101,13 +101,13 @@ bool test_ThreadEqual( void )
 	{
 		frl::thread::Thread< void, void > testThread_1;
 		frl::thread::Thread< void, void > testThread_2;
-		testThread_1.Create( NullThreadFunc );
-		testThread_2.Create( NullThreadFunc );	
+		testThread_1.create( NullThreadFunc );
+		testThread_2.create( NullThreadFunc );	
 		return ( testThread_1 == testThread_1 ) && ( testThread_1 != testThread_2 );
 	}
 	catch ( frl::Exception& e)
 	{
-		frl::console_std::Out << e.GetFullDescription();
+		frl::console_std::Out << e.getFullDescription();
 		throw e;
 		return false;
 	}
@@ -133,9 +133,9 @@ frl::Bool testClassVoidVoid()
 	
 		X x;
 		frl::thread::Thread< void, void, X > thread1;
-		thread1.Create( &X::aa, x );
-		thread1.Start();
-		thread1.Join();
+		thread1.create( &X::aa, x );
+		thread1.start();
+		thread1.join();
 		if( g_value == 1L )
 		{
 			return frl::True;
@@ -164,10 +164,10 @@ frl::Bool testClassLongVoid()
 		};
 		X x;
 		frl::thread::Thread< frl::Long, void, X > thread1;
-		thread1.Create( &X::aa, x );
-		thread1.Start();
-		thread1.Join();
-		frl::Long res = thread1.GetWorkResult();
+		thread1.create( &X::aa, x );
+		thread1.start();
+		thread1.join();
+		frl::Long res = thread1.getWorkResult();
 		if( res == 12345L )
 		{
 			return frl::True;
@@ -195,9 +195,9 @@ frl::Bool testClassVoidLong()
 		};
 		X x;
 		frl::thread::Thread< void, frl::Long, X > thread1;
-		thread1.Create( &X::aa, x );
-		thread1.Start( 12345L );
-		thread1.Join();
+		thread1.create( &X::aa, x );
+		thread1.start( 12345L );
+		thread1.join();
 		if( g_value == 12345L )
 		{
 			return frl::True;
@@ -231,7 +231,7 @@ int main( int argc, char *argv[] )
 	}
 	catch ( frl::Exception& e)
 	{
-		frl::console_std::Out << e.GetFullDescription();
+		frl::console_std::Out << e.getFullDescription();
 		exit(0);
 	}
 	catch ( ... )

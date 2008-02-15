@@ -7,50 +7,50 @@ namespace frl
 {
 	namespace thread
 	{
-		void IsValid( const ThreadDescriptor &descriptor )
+		void isValid( const ThreadDescriptor &descriptor )
 		{
 			FRL_EXCEPT_GUARD();
 			if( descriptor == 0 )
 				FRL_THROW("Thread descriptor not valid.");
 		}
 
-		void Yield_( void )
+		void yield( void )
 		{
 			::pthread_yield();
 		}
 
-		void Join( ThreadDescriptor &descriptor )
+		void join( ThreadDescriptor &descriptor )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( descriptor );
+			isValid( descriptor );
 			pthread_join( descriptor, NULL ); // FIXME
 		}
 
-		Bool Join( ThreadDescriptor &descriptor, TimeOut msec_ )
+		Bool join( ThreadDescriptor &descriptor, TimeOut msec_ )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( descriptor );
+			isValid( descriptor );
 			pthread_join( descriptor, msec_ ); // FIXME
 		}
 
-		void Kill( ThreadDescriptor &descriptor )
+		void kill( ThreadDescriptor &descriptor )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( descriptor );
+			isValid( descriptor );
 			pthread_cancel( id ); // FIXME
 			descriptor = 0;
 		}
 
-		Bool IsEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl )
+		Bool isEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( rvl );
-			IsValid( lvl );
+			isValid( rvl );
+			isValid( lvl );
 			return ::pthread_equal( id, r_val.id ) !=0;
 		}
 
 		// TODO: «‡ÏÂÌËÚ¸ void* parameter_ Ì‡ template class< T >
-		ThreadDescriptor Create( FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_ = NULL, Bool isDetached_ = False, UInt stackSize_ = 0 )
+		ThreadDescriptor create( FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_ = NULL, Bool isDetached_ = False, UInt stackSize_ = 0 )
 		{
 			FRL_EXCEPT_GUARD();
 			pthread_attr_t attribute;
@@ -60,7 +60,7 @@ namespace frl
 				if ( pthread_attr_setstacksize( &attribute, stackSize_ ) !=0 )
 				{
 					pthread_attr_destroy( &attribute );
-					FRL_THROW( "Create thread error. Do not set stack size." );
+					FRL_THROW( "Òreate thread error. Do not set stack size." );
 				}
 				
 				if( isDetached_ )
@@ -68,7 +68,7 @@ namespace frl
 					if( pthread_attr_setdetachstate( &attribute, PTHREAD_CREATE_DETACHED ) !=0 )
 					{
 						pthread_attr_destroy( &attribute );
-						FRL_THROW( "Create thread error. Do not set detached attribute." );
+						FRL_THROW( "Òreate thread error. Do not set detached attribute." );
 					}
 				}
 
@@ -78,7 +78,7 @@ namespace frl
 				if( pthread_create( &id, &attribute, startRoutine, parameter_ ) !=0 )
 				{
 					pthread_attr_destroy( &attribute );
-					FRL_THROW( "Create thread error." );
+					FRL_THROW( "Òreate thread error." );
 				}
 				pthread_attr_destroy( &attribute );
 				return id;

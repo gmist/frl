@@ -38,6 +38,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opc_psoi2", "projects\opc\p
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_fs_fn", "test\test_fs_fn\test_fs_fn.vcproj", "{A10406EF-B1C8-422C-9C44-802C230D4ADB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -76,6 +81,10 @@ Global
 		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Debug|Win32.Build.0 = Debug|Win32
 		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Release|Win32.ActiveCfg = Release|Win32
 		{367533F8-FA54-4BD8-B018-089BA7CC6FFB}.Release|Win32.Build.0 = Release|Win32
+		{A10406EF-B1C8-422C-9C44-802C230D4ADB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A10406EF-B1C8-422C-9C44-802C230D4ADB}.Debug|Win32.Build.0 = Debug|Win32
+		{A10406EF-B1C8-422C-9C44-802C230D4ADB}.Release|Win32.ActiveCfg = Release|Win32
+		{A10406EF-B1C8-422C-9C44-802C230D4ADB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -20,13 +20,13 @@ namespace frl
 			ScopeGuard( Mutex_I &locked_value_ )
 				:	locked_value( &locked_value_ )
 			{
-				locked_value->Lock();
+				locked_value->lock();
 			}
 
 			// Destructor
 			~ScopeGuard( void )
 			{
-				locked_value->UnLock();
+				locked_value->unLock();
 			}
 		}; // class ScopeGuard
 	} // namespace lock

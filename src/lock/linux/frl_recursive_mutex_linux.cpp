@@ -34,7 +34,7 @@ namespace frl
 				}
 			}
 
-			bool RecursiveMutex::Lock( void )
+			bool RecursiveMutex::lock( void )
 			{
 				if( !isInitialize )
 					return false;
@@ -48,7 +48,7 @@ namespace frl
 				return true;
 			}
 
-			bool RecursiveMutex::UnLock( void )
+			bool RecursiveMutex::unLock( void )
 			{
 				if( !isInitialize )
 					return false;

@@ -69,11 +69,11 @@ namespace frl
 	const char*	Exception::what() const throw()
 	{			
 		Exception *This = const_cast<Exception*>( this );
-		This->whatDescription = multiByteCompatibility( GetFullDescription() ).c_str();
+		This->whatDescription = multiByteCompatibility( getFullDescription() ).c_str();
 		return whatDescription.c_str();
 	} 
 
-	String Exception::GetFullDescription(void) const
+	String Exception::getFullDescription(void) const
 	{
 		frl::stream_std::StringStream desc;
 
@@ -106,7 +106,7 @@ namespace frl
 	}
 
 	//-----------------------------------------------------------------------
-	void Exception::PushFunction( const String& strFuncName ) throw()
+	void Exception::pushFunction( const String& strFuncName ) throw()
 	{
 		if( msStackDepth < FRL_CALL_STACK_DEPTH )
 			msFunctionStack[ msStackDepth ] = strFuncName;
@@ -114,7 +114,7 @@ namespace frl
 	}
 
 	//-----------------------------------------------------------------------
-	void Exception::PopFunction() throw()
+	void Exception::popFunction() throw()
 	{
 		msStackDepth--;
 	}

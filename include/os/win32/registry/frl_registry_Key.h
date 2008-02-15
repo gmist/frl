@@ -2,10 +2,9 @@
 #define FRL_OS_WINDOWS_REGISTRY_KEY_H
 
 #include "frl_platform.h"
-
 #if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-
 #include <Windows.h>
+#include <vector>
 #include "frl_string.h"
 #include "frl_non_copyable.h"
 #include "os/win32/registry/frl_registry_RootKey.h"

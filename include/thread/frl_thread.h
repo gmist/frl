@@ -27,7 +27,7 @@ namespace frl
 			{
 				typedef void ( Type::*FRL_THREAD_FUNC ) ( void );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					( (Type*)( thread->type )->*thread->function )();
 				}
@@ -38,7 +38,7 @@ namespace frl
 			{
 				typedef ResultType ( Type::*FRL_THREAD_FUNC ) ( void );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					thread->result.value = ( ( Type* )( thread->type )->*thread->function )();
 				}
@@ -49,7 +49,7 @@ namespace frl
 			{
 				typedef void ( Type::*FRL_THREAD_FUNC ) ( ParameterType );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					( ( Type* )( thread->type )->*thread->function )( thread->parameter.value );
 				}
@@ -60,7 +60,7 @@ namespace frl
 			{
 				typedef ResultType ( *FRL_THREAD_FUNC ) ( ParameterType parameter_ );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					thread->result.value = thread->function( thread->parameter.value );
 				}
@@ -71,7 +71,7 @@ namespace frl
 			{
 				typedef typename ResultType ( *FRL_THREAD_FUNC ) ( void );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					thread->result.value = thread->function();
 				}
@@ -82,7 +82,7 @@ namespace frl
 			{
 				typedef void ( *FRL_THREAD_FUNC ) ( ParameterType parameter_ );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					thread->function( thread->parameter.value );
 				}
@@ -93,7 +93,7 @@ namespace frl
 			{
 				typedef void ( *FRL_THREAD_FUNC ) ( void );
 				template< class ThreadType >
-				void Run( ThreadType *thread )
+				void run( ThreadType *thread )
 				{
 					thread->function();
 				}
@@ -117,8 +117,8 @@ namespace frl
 		{
 		protected:
 			lock::Mutex scopeGuard;	
-			AutoValue< volatile Bool > isCreated;
-			AutoValue< volatile Bool > isRunning;
+			AutoValue< volatile Bool > created;
+			AutoValue< volatile Bool > running;
 			frl::lock::Event startWait;
 			frl::lock::Event joinWait;
 			ThreadDescriptor descriptor;
@@ -128,66 +128,66 @@ namespace frl
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				this->Kill();				
+				this->kill();				
 			}
 
-			void Create( Bool isDetached_ = False , UInt stackSize_ = 0 )
+			void create( Bool isDetached_ = False , UInt stackSize_ = 0 )
 			{				
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				if ( isCreated )
+				if ( created )
 					FRL_THROW( FRL_STR( "Thread already created." ) );
 				T* pT = static_cast<T*> (this);
 				if( pT->function == NULL )
 					FRL_THROW( FRL_STR( "Pointer to threading function == NULL." ) );
-				thread::Create( descriptor, pT->RunThread, pT, isDetached_, stackSize_ );
-				isCreated = True;
+				thread::create( descriptor, pT->runThread, pT, isDetached_, stackSize_ );
+				created = True;
 				if ( isDetached_ )
 				{
 					// FIXME
 				}
 			}
 
-			Bool IsRunning( void )
+			Bool isRunning( void )
 			{
-				return isRunning;
+				return running;
 			}
 
-			void Kill( void )
+			void kill( void )
 			{
 				FRL_EXCEPT_GUARD();
-				if ( isCreated || isRunning )
+				if ( created || running )
 				{
-					startWait.Signal();
-					thread::Kill( descriptor );	
+					startWait.signal();
+					thread::kill( descriptor );	
 				}
 				descriptor = InvalidThreadDescriptor;
-				isCreated = isRunning = frl::False;
+				created = running = frl::False;
 			}
 
-			void Yield_( void )
+			void yield( void )
 			{
-				thread::Yield_();
+				thread::yield();
 			}
 
-			void Join( void )
-			{
-				lock::ScopeGuard guard( scopeGuard );
-				FRL_EXCEPT_GUARD();
-				if ( isCreated && isRunning )
-					thread::Join( descriptor );
-			}
-
-			Bool Join( frl::TimeOut msec_ )
+			void join( void )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				if ( isCreated && isRunning )
-					return thread::Join( descriptor, msec_ );
+				if ( created && running )
+					thread::join( descriptor );
+			}
+
+			Bool join( frl::TimeOut msec_ )
+			{
+				lock::ScopeGuard guard( scopeGuard );
+				FRL_EXCEPT_GUARD();
+				if ( created && running )
+					return thread::join( descriptor, msec_ );
 				return False;
 			}		
 
-			ThreadDescriptor Self( void )
+			ThreadDescriptor self( void )
 			{
 				return descriptor;
 			}
@@ -197,7 +197,7 @@ namespace frl
 				FRL_EXCEPT_GUARD();
 				if( this == &rvl )
 					return True;
-				return thread::IsEqual( this->descriptor, rvl.descriptor );
+				return thread::isEqual( this->descriptor, rvl.descriptor );
 			}
 
 			Bool operator != ( const MasterThreadBase &rvl ) throw()
@@ -222,28 +222,28 @@ namespace frl
 			private_::FuncSelect< ResultType, ParameterType, Type >::FRL_THREAD_FUNC function;
 
 			#if defined WIN32
-				static DWORD WINAPI RunThread( void* parameter_ ) throw()
+				static DWORD WINAPI runThread( void* parameter_ ) throw()
 				{
 					try
 					{
 						Thread< ResultType, ParameterType, Type > *thread = reinterpret_cast< Thread< ResultType, ParameterType, Type >* >( parameter_ );				
-						thread->startWait.Wait();
-						thread->FuncSelect::Run< Thread< ResultType, ParameterType, Type > > ( thread );
-						thread->isRunning = False;
-						thread->isCreated = False;
+						thread->startWait.wait();
+						thread->FuncSelect::run< Thread< ResultType, ParameterType, Type > > ( thread );
+						thread->running = False;
+						thread->created = False;
 					}
 					catch ( ... ) {}
 					return 0;
 				}
 			#endif // WIN32
 
-			void Create( private_::FuncSelect<ResultType, ParameterType, Type >::FRL_THREAD_FUNC function_, const Type &type_in , Bool isDetached_  = False , UInt stackSize_  = 0 )
+			void create( private_::FuncSelect<ResultType, ParameterType, Type >::FRL_THREAD_FUNC function_, const Type &type_in , Bool isDetached_  = False , UInt stackSize_  = 0 )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				type = &type_in;
 				function = function_;
-				MasterThreadBase::Create( isDetached_, stackSize_ );
+				MasterThreadBase::create( isDetached_, stackSize_ );
 			}
 		};
 
@@ -261,26 +261,26 @@ namespace frl
 			private_::FuncSelect< ResultType, ParameterType >::FRL_THREAD_FUNC function;
 
 			#if defined WIN32
-				static DWORD WINAPI RunThread( void* parameter_ ) throw()
+				static DWORD WINAPI runThread( void* parameter_ ) throw()
 				{
 					try
 					{
 						Thread< ResultType, ParameterType > *thread = reinterpret_cast< Thread< ResultType, ParameterType >* >( parameter_ );				
-						thread->startWait.Wait();
-						thread->FuncSelect::Run< Thread< ResultType, ParameterType > > ( thread );
-						thread->isRunning = False;
-						thread->isCreated = False;
+						thread->startWait.wait();
+						thread->FuncSelect::run< Thread< ResultType, ParameterType > > ( thread );
+						thread->running = False;
+						thread->created = False;
 					}
 					catch ( ... ) {}
 					return 0;
 				}
 			#endif // WIN32
 
-			void Create( private_::FuncSelect<ResultType, ParameterType >::FRL_THREAD_FUNC function_, Bool isDetached_  = False , UInt stackSize_  = 0 )
+			void create( private_::FuncSelect<ResultType, ParameterType >::FRL_THREAD_FUNC function_, Bool isDetached_  = False , UInt stackSize_  = 0 )
 			{
 				FRL_EXCEPT_GUARD();
 				function = function_;
-				MasterThreadBase::Create( isDetached_, stackSize_ );
+				MasterThreadBase::create( isDetached_, stackSize_ );
 			}
 		};
 
@@ -302,22 +302,22 @@ namespace frl
 				type = type_;
 			}
 
-			void Start( ParameterType parameter_ )
+			void start( ParameterType parameter_ )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
-					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
+					FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
 				if ( isRunning )
 					FRL_THROW( FRL_STR( "Thread already created and running." ) );
 				parameter.value = parameter_;
 				isRunning = True;
-				startWait.Signal();
+				startWait.signal();
 			}
 
 			virtual ~Thread( void ) {}
 
-			ResultType GetWorkResult( void ) { return result.value; }
+			ResultType getWorkResult( void ) { return result.value; }
 		};
 
 		template< class Type >
@@ -337,16 +337,16 @@ namespace frl
 				type = type_;
 			}
 
-			void Start( void )
+			void start( void )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				if( ! isCreated )
-					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
-				if ( isRunning )
+				if( ! created )
+					FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
+				if ( running )
 					FRL_THROW( FRL_STR( "Thread already created and running." ) );
-				isRunning = True;
-				startWait.Signal();
+				running = True;
+				startWait.signal();
 			}
 
 			virtual ~Thread( void ) {}
@@ -369,21 +369,21 @@ namespace frl
 				type = type_;
 			}
 
-			void Start( void )
+			void start( void )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				if( ! isCreated )
-					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
-				if ( isRunning )
+				if( ! created )
+					FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
+				if ( running )
 					FRL_THROW( FRL_STR( "Thread already created and running." ) );
-				isRunning = True;
-				startWait.Signal();
+				running = True;
+				startWait.signal();
 			}
 
 			virtual ~Thread( void ) {}
 
-			ResultType GetWorkResult( void )
+			ResultType getWorkResult( void )
 			{
 				return result.value;
 			}
@@ -407,17 +407,17 @@ namespace frl
 				type = type_;
 			}
 
-			void Start( ParameterType parameter_ )
+			void start( ParameterType parameter_ )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				if( ! isCreated )
-					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
-				if ( isRunning )
+				if( ! created )
+					FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
+				if ( running )
 					FRL_THROW( FRL_STR( "Thread already created and running." ) );
 				parameter.value = parameter_;
-				isRunning = True;
-				startWait.Signal();
+				running = True;
+				startWait.signal();
 			}
 			virtual ~Thread( void ) {}
 		};
@@ -443,7 +443,7 @@ namespace frl
 
 			virtual ~Thread( void ) {}
 		
-			ResultType GetWorkResult( void ) { return result.value; }
+			ResultType getWorkResult( void ) { return result.value; }
 
 		}; // Thread< ResultType, ParametrType >
 
@@ -467,7 +467,7 @@ namespace frl
 
 			virtual ~Thread( void ) {}
 
-			void GetWorkResult( void ) { }
+			void getWorkResult( void ) { }
 
 		}; // class Thread< void, ParameterType >
 
@@ -490,19 +490,19 @@ namespace frl
 
 			virtual ~Thread( void ) {}
 
-			void Start( void )
+			void start( void )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
 				if( ! isCreated )
-					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
+					FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
 				if ( isRunning )
 					FRL_THROW( FRL_STR( "Thread already created and running." ) );
 				isRunning = True;
-				startWait.Signal();
+				startWait.signal();
 			}
 
-			ResultType GetWorkResult( void ) { return result.value; }
+			ResultType getWorkResult( void ) { return result.value; }
 
 		}; // class Thread< ResultType, void >
 
@@ -523,21 +523,21 @@ namespace frl
 				function = function_;
 			}
 
-			void Start( void )
+			void start( void )
 			{
 				lock::ScopeGuard guard( scopeGuard );
 				FRL_EXCEPT_GUARD();
-				if( ! isCreated )
-					FRL_THROW( FRL_STR( "Thread not created. Create thread before use function Thread::Start()" ) );
-				if ( isRunning )
+				if( ! created )
+					FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
+				if ( running )
 					FRL_THROW( FRL_STR( "Thread already created and running." ) );
-				isRunning = True;
-				startWait.Signal();
+				running = True;
+				startWait.signal();
 			}
 
 			virtual ~Thread( void ) { }
 
-			void GetWorkResult( void ) {}
+			void getWorkResult( void ) {}
 
 		};
 

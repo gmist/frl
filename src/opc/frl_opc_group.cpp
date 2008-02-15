@@ -107,20 +107,20 @@ namespace frl
 
 		Group::~Group()
 		{
-			groupGuard.Lock();
+			groupGuard.lock();
 
 			timerUpdate.tryStop();
 
 			timerRead.tryStop();
-			readEvent.Signal();
+			readEvent.signal();
 			timerRead.stop();
 
 			timerRefresh.tryStop();
-			refreshEvent.Signal();
+			refreshEvent.signal();
 			timerRefresh.stop();
 
 			timerWrite.tryStop();
-			writeEvent.Signal();
+			writeEvent.signal();
 			timerWrite.stop();
 		
 			for( std::list< AsyncRequest* >::iterator it = asyncReadList.begin(); it != asyncReadList.end(); ++it )
@@ -141,7 +141,7 @@ namespace frl
 					delete item;
 				}
 			}
-			groupGuard.UnLock();
+			groupGuard.unLock();
 		}
 
 		void Group::Init()
@@ -208,7 +208,7 @@ namespace frl
 
 		void Group::onReadTimer()
 		{
-			readEvent.Wait();
+			readEvent.wait();
 
 			if ( timerRead.isStop() )
 				return;
@@ -216,13 +216,18 @@ namespace frl
 			if( ! asyncReadList.size() )
 				return;
 
+			lock::ScopeGuard guard( groupGuard );
 			IOPCDataCallback* ipCallback = NULL;
 			HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
 
 			if( FAILED( hResult ) )
+			{
+				for( std::list< AsyncRequest* >::iterator it = asyncReadList.begin(); it != asyncReadList.end(); ++it )
+					delete (*it);
+				asyncReadList.clear();
 				return;
+			}
 
-			lock::ScopeGuard guard( groupGuard );
 			for( std::list< AsyncRequest* >::iterator it = asyncReadList.begin(), remIt; it != asyncReadList.end(); it = remIt )
 			{
 				remIt = it;
@@ -244,7 +249,7 @@ namespace frl
 
 		void Group::onRefreshTimer()
 		{
-			refreshEvent.Wait();
+			refreshEvent.wait();
 
 			if( timerRefresh.isStop() )
 				return;
@@ -252,13 +257,18 @@ namespace frl
 			if( ! asyncRefreshList.size() )
 				return;
 
+			lock::ScopeGuard guard( groupGuard );
 			IOPCDataCallback* ipCallback = NULL;
 			HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
 
 			if( FAILED( hResult ) )
+			{
+				for( std::list< AsyncRequest* >::iterator it = asyncRefreshList.begin(); it != asyncRefreshList.end(); ++it )
+					delete( *it );
+				asyncRefreshList.clear();
 				return;
+			}
 
-			lock::ScopeGuard guard( groupGuard );
 			for( std::list< AsyncRequest* >::iterator it = asyncRefreshList.begin(), remIt; it != asyncRefreshList.end(); it = remIt )
 			{
 				remIt = it;
@@ -280,7 +290,7 @@ namespace frl
 
 		void Group::onWriteTimer()
 		{
-			writeEvent.Wait();
+			writeEvent.wait();
 
 			if( timerWrite.isStop() )
 				return;
@@ -288,13 +298,18 @@ namespace frl
 			if( ! asyncWriteList.size() )
 				return;
 
+			lock::ScopeGuard guard( groupGuard );
 			IOPCDataCallback* ipCallback = NULL;
 			HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
 
 			if( FAILED( hResult ) )
+			{
+				for( std::list< AsyncRequest* >::iterator it = asyncWriteList.begin(); it != asyncWriteList.end(); ++it )
+					delete (*it);
+				asyncWriteList.clear();
 				return;
+			}
 
-			lock::ScopeGuard guard( groupGuard );
 			for( std::list< AsyncRequest* >::iterator it = asyncWriteList.begin(), remIt; it != asyncWriteList.end(); it = remIt )
 			{
 				remIt = it;
@@ -319,6 +334,8 @@ namespace frl
 			if( timerUpdate.isStop() )
 				return;
 
+			lock::ScopeGuard guard( groupGuard );
+
 			IOPCDataCallback* ipCallback = NULL;
 			HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
 
@@ -326,7 +343,6 @@ namespace frl
 				return;
 
 			std::list< OPCHANDLE > handles;
-			lock::ScopeGuard guard( groupGuard );
 			for( std::map< OPCHANDLE, GroupItem*>::iterator it = itemList.begin(); it != itemList.end(); ++it )
 			{
 				if( actived && (*it).second->isActived() && (*it).second->isChange() )

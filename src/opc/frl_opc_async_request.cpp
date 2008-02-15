@@ -29,55 +29,11 @@ namespace frl
 
 		}
 
-		AsyncRequest::AsyncRequest( const AsyncRequest &rhv )
-			:	id( rhv.id ),
-				cancelID( rhv.cancelID ),
-				cancelled( rhv.cancelled ),
-				handles( rhv.handles ),
-				source( rhv.source )
-		{
-			size_t size = handles.size();
-			values = NULL;
-			if( size != 0 && rhv.values != NULL )
-			{
-				values = new VARIANT[ size ];
-				for( size_t i = 0; i < size; i++ )
-				{
-					::VariantInit( & values[i] );
-					Variant::variantCopy( &values[i], &rhv.values[i] );
-				}
-			}
-		}
-
 		AsyncRequest::~AsyncRequest()
 		{
 			if( values != NULL )
 				delete [] values;
 			values = NULL;
-		}
-
-		AsyncRequest& AsyncRequest::operator = ( const AsyncRequest &rhv )
-		{
-			if( this == &rhv )
-				return *this;
-			cancelled = rhv.cancelled;
-			cancelID = rhv.cancelID;
-			id = rhv.id;
-			handles = rhv.handles;
-			size_t size = handles.size();
-			if( values != NULL )
-				delete [] values;
-			values = NULL;
-			if( size != 0  && rhv.values != NULL  )
-			{
-				values = new VARIANT[ size ];
-				for( size_t i = 0; i < size; i++ )
-				{
-					::VariantInit( & values[i] );
-					Variant::variantCopy( &values[i], &rhv.values[i] );
-				}
-			}
-			return *this;
 		}
 
 		void AsyncRequest::setTransactionID( DWORD id_ )

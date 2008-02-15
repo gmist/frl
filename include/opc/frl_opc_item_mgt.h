@@ -192,58 +192,57 @@ namespace frl
 					{
 						(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 						res = S_FALSE;
+						continue;
 					}
-					else 
+					 // and disconnected from all async requests
+					std::vector< size_t > requestRemove;
+					for( std::list< AsyncRequest* >::iterator iter = pT->asyncReadList.begin(), remIt; iter != pT->asyncReadList.end(); iter = remIt )
 					{
-						 // and disconnected from all async requests
-						std::vector< size_t > requestRemove;
-						for( std::list< AsyncRequest* >::iterator iter = pT->asyncReadList.begin(), remIt; iter != pT->asyncReadList.end(); iter = remIt )
+						remIt = iter;
+						++remIt;
+
+						(*iter)->removeHandles( phServer[i] );
+						if( (*iter)->getCounts() == 0 )
 						{
-							remIt = iter;
-							++remIt;
-
-							(*iter)->removeHandles( phServer[i] );
-							if( (*iter)->getCounts() == 0 )
-							{
-								AsyncRequest * request = (*iter);
-								delete request;
-								pT->asyncReadList.erase( iter );
-							}
-
+							AsyncRequest * request = (*iter);
+							delete request;
+							pT->asyncReadList.erase( iter );
 						}
 
-						requestRemove.clear();
-						for( std::list< AsyncRequest* >::iterator iter = pT->asyncWriteList.begin(), remIt; iter != pT->asyncWriteList.end(); iter = remIt )
-						{
-							remIt = iter;
-							++remIt;
-
-							(*iter)->removeHandles( phServer[i] );
-							if( (*iter)->getCounts() == 0 )
-							{
-								AsyncRequest * request = (*iter);
-								delete request;
-								pT->asyncWriteList.erase( iter );
-							}
-
-						}
-
-						requestRemove.clear();
-						for( std::list< AsyncRequest* >::iterator iter = pT->asyncRefreshList.begin(), remIt; iter != pT->asyncRefreshList.end(); iter = remIt )
-						{
-							remIt = iter;
-							++remIt;
-
-							(*iter)->removeHandles( phServer[i] );
-							if( (*iter)->getCounts() == 0 )
-							{
-								AsyncRequest * request = (*iter);
-								delete request;
-								pT->asyncRefreshList.erase( iter );
-							}
-						}
-						pT->itemList.erase( it );
 					}
+
+					requestRemove.clear();
+					for( std::list< AsyncRequest* >::iterator iter = pT->asyncWriteList.begin(), remIt; iter != pT->asyncWriteList.end(); iter = remIt )
+					{
+						remIt = iter;
+						++remIt;
+
+						(*iter)->removeHandles( phServer[i] );
+						if( (*iter)->getCounts() == 0 )
+						{
+							AsyncRequest * request = (*iter);
+							delete request;
+							pT->asyncWriteList.erase( iter );
+						}
+
+					}
+
+					requestRemove.clear();
+					for( std::list< AsyncRequest* >::iterator iter = pT->asyncRefreshList.begin(), remIt; iter != pT->asyncRefreshList.end(); iter = remIt )
+					{
+						remIt = iter;
+						++remIt;
+
+						(*iter)->removeHandles( phServer[i] );
+						if( (*iter)->getCounts() == 0 )
+						{
+							AsyncRequest * request = (*iter);
+							delete request;
+							pT->asyncRefreshList.erase( iter );
+						}
+					}
+					delete (*it).second;
+					pT->itemList.erase( it );
 				}
 				return res;
 			}

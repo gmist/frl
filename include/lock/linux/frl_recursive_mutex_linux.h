@@ -23,8 +23,8 @@ namespace frl
 			RecursiveMutex();
 			virtual ~RecursiveMutex();
 
-			bool Lock( void );
-			bool UnLock( void );
+			bool lock( void );
+			bool unLock( void );
 		}; // class RecursiveMutex
 	} // namespace lock
 } // namespace FatRat Library

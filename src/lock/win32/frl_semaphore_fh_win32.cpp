@@ -9,7 +9,7 @@ namespace frl
 {
 	namespace lock
 	{
-		void SemaphoreInit( SemaphoreDescriptor &semaphore, Long value )
+		void semaphoreInit( SemaphoreDescriptor &semaphore, Long value )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
 			if ( semaphore.semaphore != INVALID_HANDLE_VALUE )
@@ -20,41 +20,41 @@ namespace frl
 			semaphore.curValue = value;
 		}
 
-		void SemaphoreIsValid( SemaphoreDescriptor &semaphore )
+		void semaphoreIsValid( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
 			if ( semaphore.semaphore == INVALID_HANDLE_VALUE )
 				FRL_THROW( FRL_STR( "Semaphore not valid. Maybe semaphore not initialize." ) );
 		}
 
-		void SemaphoreDestroy( SemaphoreDescriptor &semaphore )
+		void semaphoreDestroy( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			if( ! CloseHandle( semaphore.semaphore ) )
 				FRL_THROW( FRL_STR( "Error semaphore destroy." ) );
 			semaphore.semaphore = INVALID_HANDLE_VALUE;
 		}
 
-		Long SemaphoreGetValue( SemaphoreDescriptor &semaphore )
+		Long semaphoreGetValue( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			return semaphore.curValue;
 		}
 
-		void SemaphorePost( SemaphoreDescriptor &semaphore )
+		void semaphorePost( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			::ReleaseSemaphore( semaphore.semaphore, 1, NULL ); // FIXME analyze return value
 			semaphore.curValue++;
 		}
 
-		void SemaphoreWait( SemaphoreDescriptor &semaphore )
+		void semaphoreWait( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			DWORD result = ::WaitForSingleObject( semaphore.semaphore, INFINITE );
 			switch( result )
 			{
@@ -70,10 +70,10 @@ namespace frl
 			}
 		}
 
-		Bool SemaphoreTryWait( SemaphoreDescriptor &semaphore )
+		Bool semaphoreTryWait( SemaphoreDescriptor &semaphore )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			DWORD result = ::WaitForSingleObject( semaphore.semaphore, NULL);
 			switch( result )
 			{
@@ -92,10 +92,10 @@ namespace frl
 			}
 		}
 
-		Bool SemaphoreTimedWait( SemaphoreDescriptor &semaphore, DWORD time_ )
+		Bool semaphoreTimedWait( SemaphoreDescriptor &semaphore, TimeOut time_ )
 		{
 			FRL_EXCEPT_GUARD_EX( FRL_FUNCTION_NAME );
-			SemaphoreIsValid( semaphore );
+			semaphoreIsValid( semaphore );
 			DWORD result = ::WaitForSingleObject( semaphore.semaphore, time_ );
 			switch( result )
 			{

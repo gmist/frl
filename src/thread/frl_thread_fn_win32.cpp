@@ -8,22 +8,22 @@ namespace frl
 	namespace thread
 	{
 
-		void IsValid( const ThreadDescriptor &descriptor )
+		void isValid( const ThreadDescriptor &descriptor )
 		{
 			FRL_EXCEPT_GUARD();
 			if( descriptor == InvalidThreadDescriptor )
 				FRL_THROW( FRL_STR( "Thread descriptor not valid." ) );
 		}
 
-		void Yield_( void )
+		void yield( void )
 		{
 			Sleep( 0 );
 		}
 
-		void Join( ThreadDescriptor &descriptor )
+		void join( ThreadDescriptor &descriptor )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( descriptor );
+			isValid( descriptor );
 			DWORD result = ::WaitForSingleObject( descriptor, INFINITE );
 			switch( result )
 			{
@@ -40,10 +40,10 @@ namespace frl
 			}
 		}
 
-		Bool Join( ThreadDescriptor &descriptor , TimeOut msec_ )
+		Bool join( ThreadDescriptor &descriptor , TimeOut msec_ )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( descriptor );
+			isValid( descriptor );
 			DWORD result = ::WaitForSingleObject( descriptor, msec_ );
 			switch( result )
 			{
@@ -63,10 +63,10 @@ namespace frl
 			}
 		}
 
-		void Kill( ThreadDescriptor &descriptor )
+		void kill( ThreadDescriptor &descriptor )
 		{				
 			FRL_EXCEPT_GUARD();
-			IsValid( descriptor );
+			isValid( descriptor );
 			if( ::TerminateThread( descriptor, 0) )
 			{
 				CloseHandle( descriptor );
@@ -76,7 +76,7 @@ namespace frl
 				FRL_THROW( FRL_STR( "Terminating thread error." ) );
 		}
 		
-		void Create( ThreadDescriptor &descriptor,  FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_, Bool isDetached_, UInt stackSize_ )
+		void create( ThreadDescriptor &descriptor,  FRL_LPTHREAD_START_ROUTINE startRoutine, void* parameter_, Bool isDetached_, UInt stackSize_ )
 		{
 			FRL_EXCEPT_GUARD();
 			DWORD threadID;
@@ -85,11 +85,11 @@ namespace frl
 				FRL_THROW( FRL_STR( "Thread creating error." ) );
 		}
 
-		Bool IsEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl )
+		Bool isEqual( const ThreadDescriptor &rvl, const ThreadDescriptor &lvl )
 		{
 			FRL_EXCEPT_GUARD();
-			IsValid( rvl );
-			IsValid( lvl );
+			isValid( rvl );
+			isValid( lvl );
 			if ( rvl == lvl )
 				return True;
 			return False;

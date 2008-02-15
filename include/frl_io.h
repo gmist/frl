@@ -8,4 +8,6 @@
 #include "os/win32/registry/frl_registry_Key.h"
 #endif /* FRL_PLATFORM_WIN32 */
 
+#include "io/fs/frl_fs_fn.h"
+
 #endif /* FRL_IO_H_HEADER_ */

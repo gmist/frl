@@ -80,7 +80,6 @@ namespace frl
 			// Constructors
 			Group();
 			Group( const String &groupName );
-			Group( const Group &group );
 			~Group(); // Destructor
 			void Init();
 			OPCHANDLE getServerHandle();
