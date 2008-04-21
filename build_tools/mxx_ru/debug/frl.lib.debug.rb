@@ -1,0 +1,30 @@
+require 'mxx_ru/cpp'
+
+MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
+{
+	if "vc" == toolset.name
+	global_cpp_compiler_option( "-W4" )
+	else
+	global_cpp_compiler_option( "-Wall" )
+	end
+
+	required_prj( "frl.dependency.vendors.opc_foundation.debug.rb" )
+
+	target("frl_d")
+	global_include_path("../../../include")
+
+	runtime_mode( Mxx_ru::Cpp::RUNTIME_DEBUG )
+	threading_mode( MxxRu::Cpp::THREADING_MULTI )
+
+	obj_placement( MxxRu::Cpp::CustomSubdirObjPlacement.new( "../../../output/frl_lib",\
+	"../../../output/frl_lib/obj/#{mxx_runtime_mode}/1/2/3" ) )
+	cpp_sources Dir.glob( "../../../src/**/*.cpp" )
+
+	lib( "shell32" )
+	lib( "oleaut32" )
+	lib( "kernel32" )
+	lib( "advapi32" )
+	lib( "ole32" )
+	lib( "user32" )
+	lib( "uuid" )
+}
