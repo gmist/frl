@@ -1,1 +1,0 @@
-Trace Mode 5 driver for PSOI2 (оянх2) device.
