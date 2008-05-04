@@ -1,7 +1,7 @@
 #ifndef frl_opc_util_h_
 #define frl_opc_util_h_
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"

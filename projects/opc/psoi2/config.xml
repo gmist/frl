@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<Config>
+<Config ShowWindow="1" ExitOnAllClientDisconnected="0">
 	<Log Level="trace" LogFileNamePrefix="psoi2_" ConsoleLogLocale="Russian"/>
 	<Psoi2 ComPort="1" Channels="20" Simulation="1" />
 	<Psoi2 ComPort="2" Channels="20" Simulation="1" />

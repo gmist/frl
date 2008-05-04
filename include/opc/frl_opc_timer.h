@@ -5,7 +5,7 @@
 #include "thread/frl_thread.h"
 #include "lock/frl_event.h"
 #include "frl_function.h"
-
+#include "frl_auto_value.h"
 
 namespace frl
 {
@@ -20,11 +20,17 @@ protected:
 	frl::Function0< void, T > function;
 	volatile Bool stopIt;
 	typedef typename Function0< void, T>::FunctionDef FuncDef;
+	AutoValue< Bool, False > isInit;
 public:
 
-	TimerProxy( T &ptr, FuncDef function_ )
-	: function( ptr, function_ )
+	TimerProxy()
 	{
+	}
+
+	void init( Function0< void, T > function_ )
+	{
+		function = function_;
+		isInit = True;
 	}
 
 	void func( void )
@@ -76,16 +82,21 @@ private:
 	thread::Thread< void, void, TimerProxy<T> > process;
 public:
 
-	Timer( T *ptr_, typename TimerProxy< T >::FuncDef function_ )
-	: TimerProxy< T>( *ptr_, function_ )
+	Timer()
 	{
 		TimerProxy< T >::time_ms = 100;
 		TimerProxy< T >::stopIt = True;
 	}
 
+
 	~Timer()
 	{
 		stop();
+	}
+
+	void init( T *ptr, typename TimerProxy< T >::FuncDef function_ )
+	{
+		TimerProxy< T >::init( Function0< void, T > ( *ptr, function_ ) );
 	}
 
 	void setTimer( int time_ )

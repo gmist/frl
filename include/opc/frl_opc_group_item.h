@@ -8,6 +8,8 @@
 #include "frl_non_copyable.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_serv_handle_counter.h"
+#include "frl_smart_ptr.h"
+#include <map>
 
 namespace frl
 {
@@ -55,6 +57,10 @@ public:
 	void setTimeStamp( FILETIME &ts );
 	void setQuality( WORD quality );
 }; // GroupItem
+
+typedef SmartPtr< GroupItem, smart_ptr::OwnerLinked > GroupItemElem;
+typedef std::map< OPCHANDLE, GroupItemElem > GroupItemElemList;
+
 } // namespace opc
 } // FatRat Library
 

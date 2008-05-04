@@ -1,5 +1,5 @@
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 #include "frl_lock.h"
 
 namespace frl

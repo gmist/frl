@@ -136,13 +136,13 @@ namespace frl
 #endif // Platform == Linux || Apple
 
 // Redefinition __FUNCTION__
-#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	#define FRL_FUNCTION_NAME __FUNCTIONW__
 #else
 	#define FRL_FUNCTION_NAME __FUNCTION__
 #endif
 
-#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	#define FRL_FILE_NAME __FILEW__
 #else
 	#define FRL_FILE_NAME __FILE__
@@ -150,14 +150,14 @@ namespace frl
 
 
 // Definition new line consecution character
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-	#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE ) 
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE ) 
 		const wchar_t FRL_NEW_LINE[] = L"\r\n";
 	#else
 		const char FRL_NEW_LINE[] = "\r\n";
 	#endif
 #else // ! FRL_PLATFORM_WIN32
-	#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE ) 
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE ) 
 		const wchar_t FRL_NEW_LINE[] = L"\n";
 	#else
 		const char FRL_NEW_LINE[] = "\n";

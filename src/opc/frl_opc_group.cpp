@@ -111,49 +111,23 @@ HRESULT STDMETHODCALLTYPE Group::CreateInstance( IUnknown** ippUnknown, const CL
 	return hResult;
 }
 
-#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-#pragma warning( push )
-#pragma warning( disable : 4355 )
-#endif
-
 Group::Group()
-	:	refCount( 0 ),
-		timerRead( this, &Group::onReadTimer ),
-		timerWrite( this, &Group::onWriteTimer ),
-		timerUpdate( this, &Group::onUpdateTimer )
+	:	refCount( 0 )
 {
 	Init();
 }
 
 Group::Group( const String &groupName )
 	:	refCount( 0 ),
-		name( groupName ),
-		timerRead( this, &Group::onReadTimer ),
-		timerWrite( this, &Group::onWriteTimer ),
-		timerUpdate( this, &Group::onUpdateTimer )
+		name( groupName )
 {
 	Init();
 }
 
-#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-#pragma warning( pop )
-#endif
-
 Group::~Group()
 {
 	groupGuard.lock();
-	
 	timerUpdate.stop();
-	
-	timerRead.tryStop();
-	readEvent.signal();
-	timerRead.stop();
-
-	timerWrite.tryStop();
-	writeEvent.signal();
-	timerWrite.stop();
-
-	std::for_each( itemList.begin(), itemList.end(), util_functors::MapSecondDeAlloc<OPCHANDLE, GroupItem*> );
 	unregisterInterface(IID_IOPCDataCallback);
 	groupGuard.unLock();
 }
@@ -173,13 +147,9 @@ void Group::Init()
 	lastUpdate = util::getFileTime();
 	tickOffset = -1;
 	registerInterface(IID_IOPCDataCallback);
-
-	timerRead.setTimer( 1 );
-	timerWrite.setTimer( 1 );
-	timerUpdate.setTimer( updateRate );
 	
-	timerRead.start();
-	timerWrite.start();
+	timerUpdate.init( this, &Group::onUpdateTimer );
+	timerUpdate.setTimer( updateRate );
 }
 
 void Group::setServerPtr( OPCServer *serverPtr )
@@ -212,82 +182,6 @@ void Group::setName( const String &newName )
 	name = newName;
 }
 
-void Group::onReadTimer()
-{
-	readEvent.wait();
-
-	if ( timerRead.isStop() )
-		return;
-
-	AsyncRequestList tmp;
-	{
-		lock::ScopeGuard guard( groupGuard );
-		if( ! asyncReadList.size() )
-			return;
-		asyncReadList.swap( tmp );
-	}
-
-	IOPCDataCallback* ipCallback = NULL;
-	HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
-
-	if( FAILED( hResult ) )
-	{
-		asyncReadList.clear();
-		return;
-	}
-	AsyncRequestList::iterator end = tmp.end();
-	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
-	{
-		if( (*it)->isCancelled() )
-		{
-			ipCallback->OnCancelComplete( (*it)->getTransactionID(), clientHandle );
-		}
-		else
-		{
-			if( (*it)->getCounts() != 0 )
-				doAsyncRead( ipCallback, (*it) );
-		}
-	}
-	ipCallback->Release();
-}
-
-void Group::onWriteTimer()
-{
-	writeEvent.wait();
-
-	if( timerWrite.isStop() )
-		return;
-	
-	AsyncRequestList tmp;
-	{
-		lock::ScopeGuard guard( groupGuard );
-		if( ! asyncWriteList.size() )
-			return;
-		asyncWriteList.swap( tmp );
-	}
-	
-	IOPCDataCallback* ipCallback = NULL;
-	HRESULT hResult = getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
-
-	if( FAILED( hResult ) )
-		return;
-
-	AsyncRequestList::iterator end = tmp.end();
-	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
-	{
-		if( (*it)->isCancelled() )
-		{
-			ipCallback->OnCancelComplete( (*it)->getTransactionID(), clientHandle );
-		}
-		else
-		{
-			if( (*it)->getCounts() != 0 )
-				doAsyncWrite( ipCallback, (*it) );
-		}
-	}
-	ipCallback->Release();
-}
-
 void Group::onUpdateTimer()
 {
 	if( timerUpdate.isStop() || ! actived )
@@ -299,8 +193,8 @@ void Group::onUpdateTimer()
 		return;
 
 	std::list< OPCHANDLE > handles;
-	std::map< OPCHANDLE, GroupItem*>::iterator end = itemList.end();
-	for( std::map< OPCHANDLE, GroupItem*>::iterator it = itemList.begin(); it != end; ++it )
+	GroupItemElemList::iterator end = itemList.end();
+	for( GroupItemElemList::iterator it = itemList.begin(); it != end; ++it )
 	{
 		if( (*it).second->isChange() && (*it).second->isActived() )
 			handles.push_back( (*it).first );
@@ -309,7 +203,7 @@ void Group::onUpdateTimer()
 	if( handles.empty() )
 		return;
 
-	AsyncRequestListElem request( new AsyncRequest(handles) );
+	AsyncRequestListElem request( new AsyncRequest( getServerHandle(), handles) );
 	request->setTransactionID( 0 );
 	doAsyncRefresh( request );
 }
@@ -369,7 +263,7 @@ void Group::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem 
 	std::list< OPCHANDLE >::const_iterator end = handles->end();
 	for( std::list< OPCHANDLE >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		std::map< OPCHANDLE, GroupItem* >::iterator iter = itemList.find( (*it) );
+		GroupItemElemList::iterator iter = itemList.find( (*it) );
 		if( iter == itemList.end() )
 		{
 			masterError = S_FALSE;
@@ -475,7 +369,7 @@ void Group::doAsyncRefresh( const AsyncRequestListElem &request )
 	std::list< OPCHANDLE >::const_iterator end = handles->end();
 	for( std::list< OPCHANDLE >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		std::map< OPCHANDLE, GroupItem* >::iterator iter = itemList.find( (*it) );
+		GroupItemElemList::iterator iter = itemList.find( (*it) );
 		if( iter == itemList.end() )
 		{
 			pErrors[i] = OPC_E_INVALIDHANDLE;
@@ -545,7 +439,7 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 	std::list< OPCHANDLE >::const_iterator end = handles->end();
 	for( std::list< OPCHANDLE >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		std::map< OPCHANDLE, GroupItem* >::iterator iter = itemList.find( (*it) );
+		GroupItemElemList::iterator iter = itemList.find( (*it) );
 		if( iter == itemList.end() )
 		{
 			masterError = S_FALSE;
@@ -578,11 +472,11 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 	}
 
 	callBack->OnWriteComplete(	request->getTransactionID(),
-													clientHandle,
-													masterError,
-													( DWORD )counts,
-													pHandles,
-													pErrors );
+												clientHandle,
+												masterError,
+												( DWORD )counts,
+												pHandles,
+												pErrors );
 	os::win32::com::freeMemory( pHandles );
 	os::win32::com::freeMemory( pErrors );
 }
@@ -609,16 +503,20 @@ Group* Group::clone()
 	newGroup->clientHandle = clientHandle;
 	newGroup->deleted = deleted;
 
-	std::map<OPCHANDLE, GroupItem*>::const_iterator end = itemList.end();
-	for( std::map<OPCHANDLE, GroupItem*>::const_iterator it = itemList.begin(); it != itemList.end(); ++it )
+	GroupItemElemList::const_iterator end = itemList.end();
+	for( GroupItemElemList::const_iterator it = itemList.begin(); it != itemList.end(); ++it )
 	{
-		GroupItem *item = (*it).second->clone();
-		newGroup->itemList.insert( std::pair< OPCHANDLE, GroupItem*> ( item->getServerHandle(), item ) );
+		GroupItemElem item( (*it).second->clone() );
+		newGroup->itemList.insert( std::pair< OPCHANDLE, GroupItemElem > ( item->getServerHandle(), item ) );
 	}
 	newGroup->timerUpdate.setTimer( newGroup->updateRate );
 	return newGroup;
 }
 
+OPCHANDLE Group::getClientHandle()
+{
+	return clientHandle;
+}
 } //namespace opc
 } //namespace FatRat Library
 

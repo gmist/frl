@@ -11,7 +11,7 @@ namespace opc
 LONG OPCServerFactory::serverLocks = 0;
 
 OPCServerFactory::OPCServerFactory()
-	:	refCount( 1 ), outProc( False ), noMoreServers( True )
+	:	refCount( 1 ), outProc( False )
 {
 
 }
@@ -82,14 +82,9 @@ HRESULT STDMETHODCALLTYPE OPCServerFactory::LockServer( /* [in] */ BOOL fLock )
 	}
 	else
 	{
-		LONG tmp = ::InterlockedDecrement( &OPCServerFactory::serverLocks );
+		::InterlockedDecrement( &OPCServerFactory::serverLocks );
 		if( outProc )
-		{
-			if( CoReleaseServerProcess() == 0 )
-				noMoreServers = True;
-		}
-		if( tmp == 0 )
-			noMoreServers = True;
+			CoReleaseServerProcess();
 	}
 	return S_OK;
 }
@@ -99,14 +94,9 @@ void OPCServerFactory::isOutProc( Bool isOutProc )
 	outProc = isOutProc;
 }
 
-void OPCServerFactory::usageServer()
-{
-	noMoreServers = False;
-}
-
 frl::Bool OPCServerFactory::isServerInUse()
 {
-	return !noMoreServers;
+	return OPCServerFactory::serverLocks > 0;
 }
 } // namespace opc
 } // namespace frl

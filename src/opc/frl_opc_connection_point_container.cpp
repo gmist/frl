@@ -17,7 +17,6 @@ ConnectionPointContainer::ConnectionPointContainer()
 
 ConnectionPointContainer::~ConnectionPointContainer()
 {
-	std::for_each( points.begin(), points.end(), util_functors::DeAlloc< ConnectionPoint > );
 }
 
 HRESULT STDMETHODCALLTYPE ConnectionPointContainer::EnumConnectionPoints( /* [out] */ IEnumConnectionPoints **ppEnum )
@@ -41,10 +40,10 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in]
 		return E_POINTER;
 
 	lock::ScopeGuard guard( cpGuard );
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
+	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == riid )
-			return (*it)->QueryInterface(IID_IConnectionPoint, (void**)ppCP);
+			return (*it)->QueryInterface( IID_IConnectionPoint, (void**)ppCP );
 	}
 
 	return CONNECT_E_NOCONNECTION;
@@ -53,7 +52,7 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in]
 frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 {
 	lock::ScopeGuard guard( cpGuard );
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
+	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 			return (*it)->isConnected();
@@ -64,26 +63,22 @@ frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 void ConnectionPointContainer::registerInterface( const IID& interface_ )
 {
 	lock::ScopeGuard guard( cpGuard );
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
+	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 			return; // already registration
 	}
-	ConnectionPoint* addedPoint = new ConnectionPoint( interface_, this );
-	addedPoint->AddRef();
-	points.push_back( addedPoint );
+	points.push_back( ConnectionPointElem( new ConnectionPoint( interface_, this ) ) );
 }
 
 void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 {
 	lock::ScopeGuard guard( cpGuard );
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
+	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 		{
-			ConnectionPoint* tmpPoint = (*it);
 			points.erase( it );
-			tmpPoint->deleting();
 			return;
 		}
 	}
@@ -92,7 +87,7 @@ void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 HRESULT ConnectionPointContainer::getCallback( const IID& interface_, IUnknown** callBack_ )
 {
 	lock::ScopeGuard guard( cpGuard );
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); it != points.end(); ++it )
+	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 		{

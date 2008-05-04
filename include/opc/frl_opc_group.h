@@ -14,7 +14,7 @@
 #include "opc/frl_opc_async_request.h"
 #include "frl_lock.h"
 #include "frl_non_copyable.h"
-#include "os/win32/com//frl_os_win32_com_allocator.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "opc/frl_opc_item_deadband_mgt.h"
 #include "opc/frl_opc_serv_handle_counter.h"
 
@@ -63,16 +63,9 @@ private:
 	LONGLONG tickOffset;
 
 	lock::Mutex groupGuard;
-	std::map< OPCHANDLE, GroupItem* > itemList;
-	AsyncRequestList asyncReadList;
-	AsyncRequestList asyncWriteList;
+	GroupItemElemList itemList;
 
-	Timer< Group > timerRead;
-	Timer< Group > timerWrite;
 	Timer< Group > timerUpdate;
-
-	lock::Event readEvent;
-	lock::Event writeEvent;
 
 public:
 	// IUnknown implementation
@@ -80,7 +73,7 @@ public:
 	QueryInterface( /* [in] */ REFIID iid, /* [iid_is][out] */ void** ppInterface );
 	ULONG STDMETHODCALLTYPE AddRef( void);
 	ULONG STDMETHODCALLTYPE Release( void);
-	HRESULT STDMETHODCALLTYPE CreateInstance(IUnknown** ippUnknown, const CLSID* pClsid);			
+	HRESULT STDMETHODCALLTYPE CreateInstance(IUnknown** ippUnknown, const CLSID* pClsid);
 
 	// Constructors
 	Group();
@@ -93,13 +86,12 @@ public:
 	void isDeleted( Bool deleteFlag );
 	void setName( const String &newName );
 	LONG getRefCount();
-	void onReadTimer();
-	void onWriteTimer();
 	void onUpdateTimer();
 	void doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem &request );
 	void doAsyncRefresh( const AsyncRequestListElem &request );
 	void doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem &request );
 	Group* clone();
+	OPCHANDLE getClientHandle();
 }; // class Group
 
 } // namespace opc

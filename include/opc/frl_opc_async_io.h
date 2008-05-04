@@ -47,7 +47,7 @@ public:
 		lock::ScopeGuard guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				result = S_FALSE;
@@ -60,11 +60,11 @@ public:
 
 		if( handles.size() > 0 )
 		{
-			AsyncRequestListElem request( new AsyncRequest(handles) );
+			AsyncRequestListElem request( new AsyncRequest( pT->getServerHandle(), handles) );
 			*pdwCancelID = request->getCancelID();
 			request->setTransactionID( dwTransactionID );
-			pT->asyncReadList.push_back( request );
-			pT->readEvent.signal();
+			pT->server->addAsyncReadRequest( request );
+			pT->server->asyncReadSignal();
 		}
 
 		return result;
@@ -103,7 +103,7 @@ public:
 		lock::ScopeGuard guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				result = S_FALSE;
@@ -116,12 +116,12 @@ public:
 
 		if( handles.size() > 0 )
 		{
-			AsyncRequestListElem request;
+			AsyncRequestListElem request( new AsyncRequest( pT->getServerHandle() ) );
 			request->init( handles, pItemValues );
 			*pdwCancelID = request->getCancelID();
 			request->setTransactionID( dwTransactionID );
-			pT->asyncWriteList.push_back( request );
-			pT->writeEvent.signal();
+			pT->server->addAsyncWriteRequest( request );
+			pT->server->asyncWriteSignal();
 		}
 		return result;
 	}
@@ -155,8 +155,8 @@ public:
 			return E_FAIL;
 		
 		std::list< OPCHANDLE > handles;
-		std::map< OPCHANDLE, GroupItem* >::iterator end = pT->itemList.end();
-		for( std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.begin(); it != end; ++it )
+		GroupItemElemList::iterator end = pT->itemList.end();
+		for( GroupItemElemList::iterator it = pT->itemList.begin(); it != end; ++it )
 		{
 			if( (*it).second->isActived() )
 				handles.push_back( (*it).first );
@@ -165,7 +165,7 @@ public:
 		if( handles.size() == 0 )
 			return E_FAIL;
 
-		AsyncRequestListElem request( new AsyncRequest(handles) );
+		AsyncRequestListElem request( new AsyncRequest( pT->getServerHandle(), handles) );
 		*pdwCancelID = request->getCancelID();
 		request->setTransactionID( dwTransactionID );
 		request->setSource( dwSource );
@@ -183,34 +183,7 @@ public:
 		if( ! pT->isConnected( IID_IOPCDataCallback ) )
 			return CONNECT_E_NOCONNECTION;
 
-		Bool isExistRead = False;
-		AsyncRequestList::iterator it;
-		lock::ScopeGuard guard( pT->groupGuard );
-		AsyncRequestList::iterator end = pT->asyncReadList.end();
-		for( it = pT->asyncReadList.begin(); it != end; ++it )
-		{
-			if( (*it)->getCancelID() == dwCancelID )
-			{
-				isExistRead = True;
-				break;
-			}
-		}
-		if( isExistRead )
-			(*it)->isCancelled( True );
-		
-		Bool isExistWrite = False;
-		end =  pT->asyncWriteList.end();
-		for( it = pT->asyncWriteList.begin(); it != end; ++it )
-		{
-			if( (*it)->getCancelID() == dwCancelID )
-			{
-				isExistWrite = True;
-				break;
-			}
-		}
-		if( isExistWrite )
-			(*it)->isCancelled( True );
-		if( isExistRead || isExistWrite )
+		if( pT->server->asyncRequestCancel( dwCancelID ) )
 			return S_OK;
 		return E_FAIL;
 	};

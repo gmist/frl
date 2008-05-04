@@ -1,5 +1,5 @@
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "os/win32/registry/frl_registry_RootKeys.h"
 
 namespace frl

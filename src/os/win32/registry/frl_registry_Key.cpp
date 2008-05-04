@@ -1,6 +1,6 @@
 #include "frl_platform.h"
 
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 
 #include "frl_exception.h"
 #include "os/win32/registry/frl_registry_Key.h"
@@ -250,7 +250,7 @@ void Key::setStringValue( const String &name, const String &data )
 												name.c_str(),
 												0,
 												REG_SZ,
-												(BYTE *)(LPCTSTR)data.c_str(),
+												(BYTE *)data.c_str(),
 												(DWORD)(data.length()+1)*sizeof(frl::Char))
 												)	!= ERROR_SUCCESS	)					
 		FRL_THROW_SYSAPI_EX( FRL_STR( "Write registry value error" ), LastError );
@@ -279,15 +279,15 @@ frl::String Key::getStringValue( const String &name )
 	if( type != REG_SZ && type != REG_EXPAND_SZ )
 		FRL_THROW( FRL_STR("Invalid registry value type (!=REG_SZ or !=REG_EXPAND_SZ).") );
 	frl::Char *pStr = new frl::Char[size];
-	if ((result = RegQueryValueEx( openForRead(), name.c_str(), NULL, &type, (BYTE*) pStr,(LPDWORD) &size ) ) == ERROR_SUCCESS )
+	if( (result = RegQueryValueEx( openForRead(), name.c_str(), NULL, &type, (BYTE*) pStr,(LPDWORD) &size ) ) != ERROR_SUCCESS )
 	{
-		String value = pStr;
-		delete [] pStr;						
-		return value;
+		delete [] pStr;
+		FRL_THROW_SYSAPI_EX( FRL_STR("Read registry value error!."), result );	
 	}
-	delete [] pStr;
-	FRL_THROW_SYSAPI_EX( FRL_STR("Read registry value error!."), result );
-	return FRL_STR(""); // for make compiler happy
+
+	String value = pStr;
+	delete [] pStr;						
+	return value;
 }
 
 frl::String Key::getStringValue()
@@ -307,7 +307,8 @@ void Key::setDWORDValue( const String &name, DWORD data )
 						name.c_str(),
 						0,
 						REG_DWORD,
-						reinterpret_cast<const unsigned char*>(&data), sizeof( DWORD ) )
+						reinterpret_cast<const unsigned char*>(&data),
+						sizeof( DWORD ) )
 			) != ERROR_SUCCESS )
 		FRL_THROW_SYSAPI_EX( FRL_STR( "Write registry value error."), result );
 }
@@ -332,14 +333,14 @@ DWORD Key::getDWORDValue( const String &name )
 						NULL,
 						&type,
 						reinterpret_cast< unsigned char*>( &value ),
-						&size ) ) == ERROR_SUCCESS )
+						&size ) ) != ERROR_SUCCESS )
 	{
-		if( type != REG_DWORD )
-			FRL_THROW( FRL_STR("Invalid registry value type (!=REG_DWORD).") );						
-		return value;
+		FRL_THROW_SYSAPI_EX( FRL_STR("Read registry value error!."), result );	
 	}
-	FRL_THROW_SYSAPI_EX( FRL_STR("Read registry value error!."), result );
-	return 0; // for make compiler happy
+
+	if( type != REG_DWORD )
+		FRL_THROW( FRL_STR("Invalid registry value type (!=REG_DWORD).") );						
+	return value;
 }
 
 DWORD Key::getDWORDValue()
@@ -364,7 +365,7 @@ void Key::setMultiStringValue( const String &name, const std::vector< String > &
 						name.c_str(),
 						0,
 						REG_MULTI_SZ,
-						reinterpret_cast<const unsigned char*>((LPCTSTR)tmp.c_str()),
+						reinterpret_cast<const unsigned char*>( tmp.c_str() ),
 						(DWORD)(tmp.length()+1)*sizeof(frl::Char) ) 
 						) != ERROR_SUCCESS )
 		FRL_THROW_SYSAPI_EX( FRL_STR("Write registry value error."), LastError );
@@ -390,36 +391,36 @@ std::vector< String > Key::getMultiStringValue( const String &name )
 		FRL_THROW( FRL_STR("Invalid registry value type (!=REG_MULTI_SZ).") );
 	
 	frl::Char *pStr = new frl::Char[size];
-	if ((result = RegQueryValueEx( 
+	if( (result = RegQueryValueEx( 
 					openForRead(),
 					name.c_str(),
 					NULL,
 					&type,
 					reinterpret_cast< unsigned char*>( pStr ),
 					(LPDWORD) &size) ) 
-					==ERROR_SUCCESS )
+					!=ERROR_SUCCESS )
 	{
-		std::vector< String > value;
-		frl::String tmp;
-		int tmpSize = size/sizeof(frl::Char) - 1;
-		for( int i = 0; i < tmpSize; ++i )
-		{
-			if( pStr[i] == '\0' )
-			{
-				value.push_back( tmp );
-				tmp.erase();
-			}
-			else
-			{
-				tmp += pStr[i];
-			}
-		}
-		delete [] pStr;						
-		return value;
+		delete [] pStr;
+		FRL_THROW_SYSAPI_EX( FRL_STR("Read registry value error!."), result );	
 	}
-	delete [] pStr;
-	FRL_THROW_SYSAPI_EX( FRL_STR("Read registry value error!."), result );
-	return std::vector<frl::String>(); // for make compiler happy
+
+	std::vector< String > value;
+	frl::String tmp;
+	int tmpSize = size/sizeof(frl::Char) - 1;
+	for( int i = 0; i < tmpSize; ++i )
+	{
+		if( pStr[i] == '\0' )
+		{
+			value.push_back( tmp );
+			tmp.erase();
+		}
+		else
+		{
+			tmp += pStr[i];
+		}
+	}
+	delete [] pStr;						
+	return value;
 }
 
 std::vector< String > Key::getMultiStringValue()
@@ -439,7 +440,7 @@ void Key::setBinaryValue( const String &name, const std::vector< unsigned char >
 		value[i] = data[i];
 	}
 	LONG LastError = RegSetValueEx( openForWrite(), name.c_str(), 0, REG_BINARY, value, (DWORD)size );
-	delete []value;
+	delete [] value;
 	if ( LastError != ERROR_SUCCESS )
 		FRL_THROW_SYSAPI_EX( FRL_STR("Write registry value error."), LastError );
 }
@@ -466,7 +467,7 @@ std::vector< unsigned char > Key::getBinaryValue( const String &name )
 		FRL_THROW_SYSAPI_EX( FRL_STR("Query registry value error."), result );
 	if ( type != REG_BINARY )
 		FRL_THROW( FRL_STR("Invalid registry value type (!=REG_BINARY).") );
-	unsigned char *data = new unsigned char[size]; // TODO: set safe ptr
+	unsigned char *data = new unsigned char[size];
 	result = RegQueryValueEx( openForRead(), name.c_str(), NULL, &type, data, (LPDWORD)&size );
 	if ( result != ERROR_SUCCESS )
 	{

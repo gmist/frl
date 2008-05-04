@@ -9,12 +9,19 @@ namespace smart_ptr
 template< class T >
 class OwnerRefCount
 {
+public:
+	FRL_EXCEPTION_CLASS( NullPtr );
+
 private:
 	volatile ULong *counts;
-public:
+protected:
 
-	OwnerRefCount() : counts( new ULong(1) )
+	OwnerRefCount( T *ptr )
 	{
+		if( ptr == NULL )
+			FRL_THROW_S_CLASS( NullPtr );
+
+		counts = new ULong( 1 );
 	}
 
 	OwnerRefCount( const OwnerRefCount &rhv )
@@ -22,14 +29,20 @@ public:
 		counts = rhv.counts;
 	}
 
-	T* addRef( T& ptr )
+	T* addRef( T *ptr )
 	{
+		if( ptr == NULL )
+			FRL_THROW_S_CLASS( NullPtr );
+
 		++*counts;
-		return &ptr;
+		return ptr;
 	}
 
-	bool release()
+	Bool release( T *ptr )
 	{
+		if( ptr == NULL )
+			FRL_THROW_S_CLASS( NullPtr );
+
 		if( --*counts == 0 )
 		{
 			delete counts;

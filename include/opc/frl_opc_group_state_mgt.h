@@ -110,15 +110,15 @@ public:
 						if( pT->isConnected( IID_IOPCDataCallback ) )
 						{
 							std::list< OPCHANDLE > handles;
-							std::map< OPCHANDLE, GroupItem* >::iterator end = pT->itemList.end();
-							for( std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.begin(); it != end; ++it )
+							GroupItemElemList::iterator end = pT->itemList.end();
+							for( GroupItemElemList::iterator it = pT->itemList.begin(); it != end; ++it )
 							{
 								if( (*it).second->isActived() )
 									handles.push_back( (*it).first );
 							}
 							if( handles.size() )
 							{
-								AsyncRequestListElem request( new AsyncRequest(handles) );
+								AsyncRequestListElem request( new AsyncRequest( pT->getServerHandle(), handles) );
 								pT->doAsyncRefresh( request );
 							}
 						}
@@ -128,8 +128,7 @@ public:
 			}
 			else
 			{
-				pT->asyncReadList.clear();
-				pT->asyncWriteList.clear();
+				// TODO add clear read and write async requests
 			}
 		}
 		return hResult;

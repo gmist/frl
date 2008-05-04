@@ -12,7 +12,7 @@
 #include "stream_std/frl_ostream.h"
 #include "stream_std/frl_sstream.h"
 
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #endif
 
@@ -21,7 +21,7 @@ namespace frl
 namespace console_std
 {
 // Переопределяем переменные
-#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	static std::wostream& Out = std::wcout;
 	static std::wistream& In = std::wcin;
 	static std::wostream& Err = std::wcerr;
@@ -33,7 +33,7 @@ namespace console_std
 	static std::ostream& Log = std::clog;
 #endif
 		
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 	namespace backgroundColor
 	{
 		const static DWORD blue = BACKGROUND_BLUE;

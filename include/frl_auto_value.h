@@ -19,6 +19,8 @@ namespace frl
 		typedef TYPE Type;
 	};
 
+	//see http://rsdn.ru/Forum/Message.aspx?mid=174720&only=1
+	// and http://rsdn.ru/Forum/Message.aspx?mid=612566&only=1
 	template< 
 					typename TYPE, 
 					TYPE initValue = 0, 

@@ -22,7 +22,7 @@ public:
 		/* [size_is][in] */ DWORD *pdwPropertyIDs,
 		/* [size_is][size_is][out] */ OPCITEMPROPERTIES **ppItemProperties)
 	{
-		T* pT = static_cast< T* >( this );
+		// T* pT = static_cast< T* >( this );
 		//lock::ScopeGuard guard( pT->scopeGuard );
 		if( pszItemIDs == NULL || ppItemProperties == NULL )
 			return E_INVALIDARG;

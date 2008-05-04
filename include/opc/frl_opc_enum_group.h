@@ -1,7 +1,7 @@
 #ifndef frl_opc_enum_group_h_
 #define frl_opc_enum_group_h_
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #include <vector>
 #include "opc/frl_opc_group.h"
@@ -23,11 +23,11 @@ private:
 	#endif
 
 	size_t currentIndex;	//Current element
-	std::vector< opc::Group* > groupList;
+	std::vector< opc::GroupElem > groupList;
 
 public:
 	EnumGroup();
-	EnumGroup( const std::vector< Group* > &groups );
+	EnumGroup( const std::vector< GroupElem > &groups );
 	virtual ~EnumGroup();
 
 	// IUnknown implementation

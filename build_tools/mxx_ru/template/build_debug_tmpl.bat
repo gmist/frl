@@ -12,5 +12,6 @@ ruby frl.test.opc_test.debug.rb
 ruby frl.test.poor_xml.debug.rb
 ruby frl.test.smart_ptr.debug.rb
 ruby frl.test.thread.debug.rb
+ruby frl.test.psoi2_sender.debug.rb
 ruby frl.projects.psoi2.debug.rb
 cd ..

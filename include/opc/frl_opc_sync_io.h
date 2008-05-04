@@ -54,7 +54,7 @@ public:
 		lock::ScopeGuard guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				result = S_FALSE;
@@ -126,7 +126,7 @@ public:
 		lock::ScopeGuard guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				result = S_FALSE;
@@ -196,7 +196,7 @@ public:
 		lock::ScopeGuard guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				result = S_FALSE;
@@ -262,7 +262,7 @@ public:
 				continue;	
 			}
 
-			std::map< OPCHANDLE, GroupItem* >::iterator it = pT->itemList.find( phServer[i] );
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				res = S_FALSE;

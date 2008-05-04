@@ -1,5 +1,7 @@
 #ifndef frl_smart_ptr_owner_copy_h_
 #define frl_smart_ptr_owner_copy_h_
+#include "frl_types.h"
+#include "frl_exception.h"
 
 namespace frl
 {
@@ -10,12 +12,23 @@ template< class T >
 class OwnerCopy
 {
 public:
-	OwnerCopy() {}
-	T* addRef( T &ptr)
+	FRL_EXCEPTION_CLASS( NullPtr );
+protected:
+	OwnerCopy( T *ptr )
 	{
-		return new T( ptr );
 	}
-	bool release() { return true; }
+
+	T* addRef( T *ptr)
+	{
+		if( ptr == NULL )
+			FRL_THROW_S_CLASS( NullPtr );
+		return new T( *ptr );
+	}
+
+	Bool release( T *ptr ) 
+	{ 
+		return true;
+	}
 	void swap( OwnerCopy &rhv ) {}
 };
 

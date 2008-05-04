@@ -6,7 +6,6 @@
 #include "frl_non_copyable.h"
 #include "lock/frl_mutex.h"
 #include "lock/frl_event.h"
-#include "frl_auto_value.h"
 #include "frl_exception.h"
 #include "frl_empty_type.h"
 
@@ -117,18 +116,24 @@ class MasterThreadBase
 {
 protected:
 lock::Mutex scopeGuard;
-AutoValue< volatile Bool > created;
-AutoValue< volatile Bool > running;
+volatile Bool created;
+volatile Bool running;
 frl::lock::Event startWait;
 frl::lock::Event joinWait;
 ThreadDescriptor descriptor;
 public:
 
+MasterThreadBase()
+: created( False ), running( False ), descriptor( InvalidThreadDescriptor )
+{
+}
+
 virtual ~MasterThreadBase( void )
 {
-	lock::ScopeGuard guard( scopeGuard );
+	scopeGuard.lock();
 	FRL_EXCEPT_GUARD();
 	this->kill();
+	scopeGuard.unLock();
 }
 
 void create( Bool isDetached_ = False , UInt stackSize_ = 0 )
@@ -161,12 +166,15 @@ void kill( void )
 		startWait.signal();
 		thread::kill( descriptor );
 	}
-	if( descriptor != InvalidThreadDescriptor )
+	else
 	{
-		#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-		::CloseHandle( descriptor );
-		#endif
-		descriptor = InvalidThreadDescriptor;
+		if( descriptor != InvalidThreadDescriptor )
+		{
+			#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+			::CloseHandle( descriptor );
+			#endif
+			descriptor = InvalidThreadDescriptor;
+		}
 	}
 	created = running = frl::False;
 }

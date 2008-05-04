@@ -73,7 +73,7 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::GetConnectionPointContainer( /* [out]
 		return E_INVALIDARG;
 
 	if( container != NULL )
-		return container->QueryInterface(IID_IConnectionPointContainer, (void**)ppCPC);
+		return container->QueryInterface( IID_IConnectionPointContainer, (void**)ppCPC );
 
 	return E_FAIL;
 }
@@ -99,17 +99,11 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::Advise( /* [in] */ IUnknown *pUnkSink
 	cookie = *(reinterpret_cast< DWORD* >( callBack ));
 	*pdwCookie = cookie;
 
-	// notify the container.
-	ConnectionPointContainer* pContainer = container;
-
-	if( pContainer != NULL )
-		pContainer->AddRef();
-
-	DWORD dwCookie = cookie;
-	if( pContainer != NULL )
+	if( container != NULL )
 	{
-		pContainer->OnAdvise( iid_interface, dwCookie );
-		pContainer->Release();
+		container->AddRef();
+		container->OnAdvise( iid_interface, cookie );
+		container->Release();
 	}
 
 	return S_OK;
@@ -121,19 +115,14 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::Unadvise( /* [in] */ DWORD dwCookie )
 		return CONNECT_E_NOCONNECTION;
 
 	callBack->Release();
-
-	ConnectionPointContainer* pContainer = container;
-
-	if( pContainer != NULL )
-		pContainer->AddRef();
-
 	callBack = NULL;
 	cookie   = 0;
 
-	if( pContainer != NULL )
+	if( container != NULL )
 	{
-		pContainer->OnUnadvise( iid_interface, dwCookie);
-		pContainer->Release();
+		container->AddRef();
+		container->OnUnadvise( iid_interface, dwCookie);
+		container->Release();
 	}
 
 	return S_OK;
@@ -151,17 +140,6 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::EnumConnections( /* [out] */ IEnumCon
 frl::Bool ConnectionPoint::isConnected()
 {
 	return cookie != 0;
-}
-
-frl::Bool ConnectionPoint::deleting()
-{
-	if ( callBack != NULL) 
-	{
-		callBack->Release();
-		callBack = NULL;
-	}
-	container = NULL;
-	return (Release() == 0);
 }
 
 IUnknown* ConnectionPoint::getCallBack()

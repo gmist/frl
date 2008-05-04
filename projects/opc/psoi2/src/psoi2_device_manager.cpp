@@ -1,5 +1,4 @@
 #include <Windows.h>
-#include <iostream>
 #include "psoi2_device_manager.h"
 #include "psoi2_device.h"
 #include "frl_lexical_cast.h"
@@ -15,7 +14,7 @@ DeviceManager::DeviceManager()
 	{
 		config.LoadFromCurrenttDir( FRL_STR("config.xml") );
 		frl::poor_xml::NodesList log = config.getRoot()->getSubNodes( FRL_STR("Log") );
-		frl::String logLevelStr = (*(log.begin()))->getProprtyVal( FRL_STR("Level") );
+		frl::String logLevelStr = ( *log.begin() )->getProprtyVal( FRL_STR("Level") );
 		frl::logging::Level logLevel = frl::logging::LEVEL_TRACE;
 
 		if( logLevelStr == FRL_STR("msg") )
@@ -29,9 +28,7 @@ DeviceManager::DeviceManager()
 		if( logLevelStr == FRL_STR("none" ) )
 			logLevel = frl::logging::LEVEL_NONE;
 
-		frl::String logFileNamePrefix = (*(log.begin()))->getProprtyVal( FRL_STR("LogFileNamePrefix") );
-		frl::String logLocale = (*(log.begin()))->getProprtyVal( FRL_STR("ConsoleLogLocale") );
-		setlocale( LC_ALL, frl::multiByteCompatibility( logLocale ).c_str() );
+		frl::String logFileNamePrefix = ( *log.begin() )->getProprtyVal( FRL_STR("LogFileNamePrefix") );
 		frl::poor_xml::NodesList settings = config.getRoot()->getSubNodes( FRL_STR("Psoi2") );
 		for( frl::poor_xml::NodesList::iterator it = settings.begin(); it != settings.end(); ++it )
 		{

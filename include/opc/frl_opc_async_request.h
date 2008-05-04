@@ -23,10 +23,11 @@ private:
 	std::list< OPCHANDLE > handles;
 	VARIANT *values;
 	DWORD source;
+	OPCHANDLE groupHandle;
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
-	AsyncRequest();
-	AsyncRequest( const std::list< OPCHANDLE > &handles_ );
+	AsyncRequest( OPCHANDLE groupHandle_ );
+	AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE > &handles_ );
 	AsyncRequest( const AsyncRequest &request );
 	~AsyncRequest();
 	void setTransactionID( DWORD id_ );
@@ -45,6 +46,7 @@ public:
 	static DWORD getUniqueCancelID();
 	AsyncRequest& operator = ( const AsyncRequest &rvl );
 	void swap( AsyncRequest &req );
+	OPCHANDLE getGroupHandle();
 }; // class AsyncRequest
 
 typedef frl::SmartPtr< AsyncRequest, frl::smart_ptr::OwnerRefCount > AsyncRequestListElem;

@@ -1,5 +1,5 @@
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <io.h>
 #include "io/fs/frl_fs_fn.h"
 #include "frl_string.h"
@@ -483,7 +483,7 @@ void concatenate( const String &fileName1, const String &fileName2, const String
 
 	UChar buffer[4096];
 	FileRWCount countWrite, countRead;
-	while( True )
+	for( ; ; )
 	{
 		countRead = read( dm.file1, buffer, sizeof(buffer) );
 
@@ -492,7 +492,7 @@ void concatenate( const String &fileName1, const String &fileName2, const String
 
 		countWrite = write( dm.fileDst, buffer, countRead );
 	}
-	while( True )
+	for( ; ; )
 	{
 		countRead = read( dm.file2, buffer, sizeof(buffer) );
 

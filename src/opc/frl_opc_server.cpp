@@ -1,5 +1,5 @@
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #include <algorithm>
 #include "sys/frl_sys_util.h"
@@ -14,6 +14,25 @@ namespace frl
 {
 namespace opc
 {
+
+namespace private_
+{
+inline
+void clearAyncRequestList( const OPCHANDLE &handle, AsyncRequestList &requestList )
+{
+for( AsyncRequestList::iterator iter = requestList.begin(), remIt;
+	iter != requestList.end(); 
+	iter = remIt )
+{
+	remIt = iter;
+	++remIt;
+	(*iter)->removeHandle( handle );
+	if( (*iter)->getCounts() == 0 )
+		requestList.erase( iter );
+}
+}
+}
+
 OPCServer::OPCServer()
 	: refCount( 0 )
 {
@@ -29,15 +48,128 @@ OPCServer::OPCServer()
 	serverStatus.wMajorVersion = 2;
 	registerInterface(IID_IOPCShutdown);
 	factory.LockServer( TRUE );
-	factory.usageServer();
+	
+	timerRead.init( this, &OPCServer::onReadTimer );
+	timerWrite.init( this, &OPCServer::onWriteTimer );
+	timerRead.setTimer( 1 );
+	timerWrite.setTimer( 1 );
+	timerRead.start();
+	timerWrite.start();
 }
 
 OPCServer::~OPCServer()
 {
-	std::for_each( groupItem.begin(),
-						groupItem.end(),
-						util_functors::MapSecondDeAlloc< OPCHANDLE, Group* > );
+	timerRead.tryStop();
+	readEvent.signal();
+	timerRead.stop();
+
+	timerWrite.tryStop();
+	writeEvent.signal();
+	timerWrite.stop();
+
 	factory.LockServer( FALSE );
+}
+
+void OPCServer::onReadTimer()
+{
+	readEvent.wait();
+
+	if ( timerRead.isStop() )
+		return;
+
+	AsyncRequestList tmp;
+	{
+		lock::ScopeGuard guard( readGuard );
+		if( ! asyncReadList.size() )
+			return;
+		asyncReadList.swap( tmp );
+	}
+
+	IOPCDataCallback* ipCallback = NULL;
+	HRESULT hResult;
+	
+	lock::ScopeGuard guard( scopeGuard );
+	GroupElemMap::iterator group;
+	GroupElemMap::iterator groupEnd = groupItem.end();
+	
+	AsyncRequestList::iterator end = tmp.end();
+	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
+	{
+		group = groupItem.find( (*it)->getGroupHandle() );
+		if( group == groupEnd )
+			continue;
+		hResult = (*group).second->getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
+		if( FAILED( hResult ) )
+			continue;
+
+		if( (*it)->isCancelled() )
+		{
+			ipCallback->OnCancelComplete( (*it)->getTransactionID(), (*group).second->getClientHandle() );
+		}
+		else
+		{
+			if( (*it)->getCounts() != 0 )
+				(*group).second->doAsyncRead( ipCallback, (*it) );
+		}
+		ipCallback->Release();
+	}
+}
+
+void OPCServer::onWriteTimer()
+{
+	writeEvent.wait();
+
+	if( timerWrite.isStop() )
+		return;
+
+	AsyncRequestList tmp;
+	{
+		lock::ScopeGuard guard( writeGuard );
+		if( ! asyncWriteList.size() )
+			return;
+		asyncWriteList.swap( tmp );
+	}
+
+	IOPCDataCallback* ipCallback = NULL;
+	HRESULT hResult;
+
+	lock::ScopeGuard guard( scopeGuard );
+	GroupElemMap::iterator group;
+	GroupElemMap::iterator groupEnd = groupItem.end();
+
+	AsyncRequestList::iterator end = tmp.end();
+	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
+	{
+		group = groupItem.find( (*it)->getGroupHandle() );
+		if( group == groupEnd )
+			continue;
+		hResult = (*group).second->getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
+		if( FAILED( hResult ) )
+			continue;
+
+		if( (*it)->isCancelled() )
+		{
+			ipCallback->OnCancelComplete( (*it)->getTransactionID(), (*group).second->getClientHandle() );
+		}
+		else
+		{
+			if( (*it)->getCounts() != 0 )
+				(*group).second->doAsyncWrite( ipCallback, (*it) );
+		}
+		ipCallback->Release();
+	}
+}
+
+void OPCServer::addAsyncReadRequest( const AsyncRequestListElem &request )
+{
+	lock::ScopeGuard guard( readGuard );
+	asyncReadList.push_back( request );
+}
+
+void OPCServer::addAsyncWriteRequest( const AsyncRequestListElem &request )
+{
+	lock::ScopeGuard guard( writeGuard );
+	asyncWriteList.push_back( request );
 }
 
 STDMETHODIMP OPCServer::QueryInterface( REFIID iid, LPVOID* ppInterface )
@@ -222,7 +354,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR 
 	String name = wstring2string( szName );
 	#endif
 
-	std::map< String, frl::opc::Group* >::iterator it = groupItemIndex.find( name );
+	GroupElemIndexMap::iterator it = groupItemIndex.find( name );
 	if(it == groupItemIndex.end() )
 		return E_INVALIDARG;
 
@@ -257,13 +389,13 @@ HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGr
 {
 	lock::ScopeGuard guard( scopeGuard );
 
-	std::map< OPCHANDLE, Group*>::iterator it = groupItem.find( hServerGroup );
+	GroupElemMap::iterator it = groupItem.find( hServerGroup );
 	if( it == groupItem.end() )
 		return E_FAIL;
 
-	Group *grpItem = (*it).second;
+	Group* grpItem = smart_ptr::GetPtr( (*it).second );
 	groupItemIndex.erase( grpItem->getName() );
-	groupItem.erase( hServerGroup );
+	groupItem.erase( it );
 	grpItem->isDeleted( True );
 	if( grpItem->Release() != 0 && ! bForce )
 	{
@@ -278,11 +410,11 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 
 	if( riid == IID_IEnumUnknown )
 	{
-		std::vector< Group* > unkn;
+		std::vector< GroupElem > unkn;
 		if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
 		{
 			unkn.reserve( groupItem.size() );
-			for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+			for( GroupElemMap::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
 				unkn.push_back( (*it).second );
 		}
 
@@ -306,7 +438,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 		if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
 		{
 			nameList.reserve( groupItem.size() );
-			for( std::map< OPCHANDLE, frl::opc::Group* >::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+			for( GroupElemMap::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
 				nameList.push_back( (*it).second->getName() );
 		}
 
@@ -327,7 +459,7 @@ HRESULT OPCServer::setGroupName( const String &oldName, const String &newName )
 {
 	lock::ScopeGuard guard( scopeGuard );
 
-	std::map< String, Group* >::iterator it =  groupItemIndex.find( newName );
+	GroupElemIndexMap::iterator it =  groupItemIndex.find( newName );
 	if( it != groupItemIndex.end() )
 		return OPC_E_DUPLICATENAME;
 
@@ -335,9 +467,9 @@ HRESULT OPCServer::setGroupName( const String &oldName, const String &newName )
 	if( it == groupItemIndex.end() )
 		return E_INVALIDARG;
 
-	Group *tmpGroup = (*it).second;
+	GroupElem tmpGroup = (*it).second;
 	groupItemIndex.erase( it );
-	groupItemIndex.insert( std::pair< String, Group* >( newName, tmpGroup) );
+	groupItemIndex.insert( std::pair< String, GroupElem >( newName, tmpGroup) );
 	return S_OK;
 }
 
@@ -348,7 +480,7 @@ HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Grou
 
 	lock::ScopeGuard guard( scopeGuard );
 
-	std::map< String, Group* >::iterator it = groupItemIndex.find( cloneName );
+	GroupElemIndexMap::iterator it = groupItemIndex.find( cloneName );
 	if( it != groupItemIndex.end() )
 		return OPC_E_DUPLICATENAME;
 
@@ -372,8 +504,8 @@ HRESULT OPCServer::addNewGroup( Group **group )
 	if( (*group)->getName().empty() )
 		(*group)->setName( util::getUniqueName() );
 
-	groupItemIndex.insert( std::pair< String, Group* >( (*group)->getName(), (*group) ) );
-	groupItem.insert( std::pair< OPCHANDLE, Group* >( (*group)->getServerHandle(), (*group ) ) );
+	groupItemIndex.insert( std::pair< String, GroupElem >( (*group)->getName(), (*group) ) );
+	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( (*group)->getServerHandle(), (*group ) ) );
 	return S_OK;
 }
 
@@ -389,6 +521,65 @@ OPCSERVERSTATE OPCServer::getServerState()
 {
 	return serverStatus.dwServerState;
 }
+
+void OPCServer::asyncReadSignal()
+{
+	readEvent.signal();
+}
+
+void OPCServer::asyncWriteSignal()
+{
+	writeEvent.signal();
+}
+
+frl::Bool OPCServer::asyncRequestCancel( DWORD id )
+{
+	Bool isExistRead = False;
+	AsyncRequestList::iterator it;
+	readGuard.lock();
+	AsyncRequestList::iterator end = asyncReadList.end();
+	for( it = asyncReadList.begin(); it != end; ++it )
+	{
+		if( (*it)->getCancelID() == id )
+		{
+			isExistRead = True;
+			break;
+		}
+	}
+	if( isExistRead )
+		(*it)->isCancelled( True );
+	readGuard.unLock();
+
+	writeGuard.lock();
+	Bool isExistWrite = False;
+	end =  asyncWriteList.end();
+	for( it = asyncWriteList.begin(); it != end; ++it )
+	{
+		if( (*it)->getCancelID() == id )
+		{
+			isExistWrite = True;
+			break;
+		}
+	}
+	if( isExistWrite )
+		(*it)->isCancelled( True );
+	writeGuard.unLock();
+	
+	return  ( isExistRead || isExistWrite );
+}
+
+void OPCServer::removeItemFromAsyncReadRequestList( OPCHANDLE handle_ )
+{
+	lock::ScopeGuard guar( readGuard );
+	private_::clearAyncRequestList( handle_, asyncReadList );
+}
+
+void OPCServer::removeItemFromAsyncWriteRequestList( OPCHANDLE handle_ )
+{
+	lock::ScopeGuard guar( writeGuard );
+	private_::clearAyncRequestList( handle_, asyncWriteList );
+}
+
 } // namespace opc
 } // FatRat Library
 

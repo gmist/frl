@@ -38,7 +38,7 @@ void ColorOut::GetDefaultAttributes()
 void ColorOut::SetAttributes( frl::Long attrib )
 {
 	FRL_EXCEPT_GUARD();
-	#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+	#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 		if( ! SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), (WORD)( attrib ) ) )
 			FRL_THROW_SYSAPI( FRL_STR("Error on set console screen buffer information.") );
 	#endif

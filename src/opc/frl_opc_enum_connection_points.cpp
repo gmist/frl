@@ -14,21 +14,13 @@ EnumConnectionPoints::EnumConnectionPoints()
 {
 }
 
-EnumConnectionPoints::EnumConnectionPoints( const std::list< ConnectionPoint* > &pointsList )
-	:	refCount( 0 ), currentIndex( 0 )
+EnumConnectionPoints::EnumConnectionPoints( const ConnectionPointList &pointsList )
+	:	refCount( 0 ), currentIndex( 0 ), points( pointsList )
 {
-	for( std::list< ConnectionPoint* >::const_iterator it = pointsList.begin(); it != pointsList.end(); ++it )
-	{
-		ConnectionPoint *point = new ConnectionPoint();
-		*point = *( const_cast< ConnectionPoint* >( *it ));
-		point->AddRef();
-		points.push_back( point );
-	}
 }
 
 EnumConnectionPoints::~EnumConnectionPoints()
 {
-	std::for_each( points.begin(), points.end(), util_functors::DeAlloc< ConnectionPoint > );
 }
 
 STDMETHODIMP EnumConnectionPoints::QueryInterface( REFIID iid, LPVOID* ppInterface )
@@ -81,7 +73,7 @@ HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Next( /* [in] */ ULONG cConnecti
 		return S_FALSE;
 
 	ULONG i = (ULONG)currentIndex;
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); i < cConnections; ++i, ++it )
+	for( ConnectionPointList::iterator it = points.begin(); i < cConnections; ++i, ++it )
 	{
 		if( it == points.end() )
 		{
@@ -89,9 +81,8 @@ HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Next( /* [in] */ ULONG cConnecti
 			currentIndex = points.size();
 			return S_FALSE;
 		}
-		ppCP[i] = (*it);
+		ppCP[i] = smart_ptr::GetPtr(*it);
 		ppCP[i]->AddRef();
-
 	}
 	*pcFetched = i;
 	currentIndex = i;
@@ -128,7 +119,7 @@ HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Clone( /* [out] */ IEnumConnecti
 		return E_OUTOFMEMORY;
 	}
 
-	for( std::list< ConnectionPoint* >::iterator it = points.begin(); it != points.end();  ++it )
+	for( ConnectionPointList::iterator it = points.begin(); it != points.end();  ++it )
 	{
 		pNewEnum->points.push_back( *it );
 	}

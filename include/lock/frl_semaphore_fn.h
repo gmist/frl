@@ -3,7 +3,7 @@
 
 #include "frl_types.h"
 
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #endif
 
@@ -12,7 +12,7 @@ namespace frl
 
 	namespace lock
 	{
-		#if (FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
+		#if( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
 			struct SemaphoreDescriptor
 			{
 				HANDLE semaphore;
@@ -24,7 +24,7 @@ namespace frl
 			};
 		#endif
 
-		#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+		#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 			struct SemaphoreDescriptor
 			{
 				sem_t semaphore;

@@ -182,6 +182,31 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="include"
+			Filter="*.h"
+			>
+			<File
+				RelativePath="..\..\..\..\test\function\functions.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\test\function\struct_functions.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\test\function\test_function0.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\test\function\test_function1.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\test\function\test_function2.h"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

@@ -4,7 +4,7 @@
 namespace frl
 {
 	// Return string length
-	#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		size_t stringLength(const frl::Char *string )
 		{
 			if( string == NULL )
@@ -44,26 +44,15 @@ namespace frl
 		return str;
 	}
 
-	// Return unicode independ string
-	#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		std::wstring unicodeIndependString( std::string str )
-		{
-			return string2wstring( str );
-		}
-		std::wstring unicodeIndependString( std::wstring str )
-		{
-			return str;
-		}
-	#else // ! UNICODE
-		std::string unicodeIndependString( std::wstring str )
-		{
-			return wstring2string( str );
-		}
-		std::string unicodeIndependString( std::string str )
-		{
-			return str;
-		}
-	#endif // Return unicode independ string
+	std::wstring unicodeCompatibility( const std::wstring& str )
+	{		
+		return str;
+	}
+
+	std::wstring unicodeCompatibility( const std::string& str )
+	{
+		return string2wstring( str );
+	}
 
 	// Always return multibyte string
 	std::string multiByteCompatibility( const std::string &str )

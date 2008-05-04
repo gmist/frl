@@ -14,12 +14,18 @@
 #include "opc/address_space/frl_opc_addr_space_crawler.h"
 #include "opc/frl_opc_browse.h"
 #include "opc/frl_opc_item_io.h"
+#include "opc/frl_opc_async_request.h"
+#include "opc/frl_opc_timer.h"
+#include "frl_smart_ptr.h"
 
 namespace frl
 {
 namespace opc
 {
 class Group;
+typedef SmartPtr< Group, smart_ptr::OwnerCOM > GroupElem;
+typedef std::map< OPCHANDLE, GroupElem > GroupElemMap;
+typedef std::map< String, GroupElem > GroupElemIndexMap;
 
 class OPCServer
 	:	public OPCCommon,
@@ -44,17 +50,43 @@ private:
 	LONG refCount;
 	#endif
 
-	std::map< OPCHANDLE, frl::opc::Group* > groupItem;
-	std::map< String, frl::opc::Group* > groupItemIndex;
+	GroupElemMap groupItem;
+	GroupElemIndexMap groupItemIndex;
 	lock::Mutex scopeGuard;
 	OPCSERVERSTATUS serverStatus;
 	address_space::AddrSpaceCrawler crawler;
+	
+	AsyncRequestList asyncReadList;
+	AsyncRequestList asyncWriteList;
 
+	Timer< OPCServer > timerRead;
+	Timer< OPCServer > timerWrite;
+
+	lock::Event readEvent;
+	lock::Event writeEvent;
+	
+	lock::Mutex readGuard;
+	lock::Mutex writeGuard;
 public:
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 
 	OPCServer();
 	~OPCServer();
+
+	void onReadTimer();
+	void onWriteTimer();
+	
+	void addAsyncReadRequest( const AsyncRequestListElem &request );
+	void addAsyncWriteRequest( const AsyncRequestListElem &request );
+
+	void asyncReadSignal();
+	void asyncWriteSignal();
+	
+	Bool asyncRequestCancel( DWORD id );
+	
+	void removeItemFromAsyncReadRequestList( OPCHANDLE handle_ );
+	void removeItemFromAsyncWriteRequestList( OPCHANDLE handle_ );
+
 	HRESULT setGroupName( const String &oldName, const String &newName );
 	HRESULT cloneGroup( const String &name, const String &cloneName, Group **group );
 	HRESULT addNewGroup( Group **group );

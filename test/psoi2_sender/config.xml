@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<Config>
+	<Psoi2Sender ComPort="1" Channels="5" Delay="5"/>
+</Config>

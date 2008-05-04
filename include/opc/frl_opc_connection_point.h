@@ -35,7 +35,6 @@ public:
 	IUnknown* getCallBack();
 	const IID& getInterface();
 	Bool isConnected();
-	Bool deleting();
 
 	// IUnknown implementation
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface);

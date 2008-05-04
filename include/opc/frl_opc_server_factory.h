@@ -23,7 +23,6 @@ private:
 
 	static LONG serverLocks;
 	volatile Bool outProc;
-	volatile Bool noMoreServers;
 public:
 	// Constructor, destructor
 	OPCServerFactory();
@@ -44,7 +43,6 @@ public:
 
 	// OPCServerFactory methods
 	void isOutProc( Bool isOutProc );
-	void usageServer();
 	Bool isServerInUse();
 };
 

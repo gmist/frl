@@ -948,6 +948,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_com.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_copy.h"
 					>
 				</File>
@@ -967,6 +971,22 @@
 			<Filter
 				Name="function"
 				>
+				<File
+					RelativePath="..\..\..\include\function\frl_function0.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\function\frl_function1.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\function\frl_function2.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\function\frl_function_base.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 	</Files>

@@ -18,7 +18,7 @@ protected:
 	{
 		delete ptr;
 	}
-public:
+	
 	SimplyStorage()
 	{
 		ptr = new T;

@@ -123,7 +123,6 @@ struct X
 
 frl::Bool testClassVoidVoid()
 {
-	int vlaue = 0;
 	try
 	{
 		X x;

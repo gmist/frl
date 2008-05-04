@@ -13,23 +13,7 @@ namespace frl
 {
 namespace opc
 {
-namespace private_
-{
-inline
-void clearAyncRequestList( const OPCHANDLE &handle, AsyncRequestList &requestList )
-{
-	for( AsyncRequestList::iterator iter = requestList.begin(), remIt;
-			iter != requestList.end(); 
-			iter = remIt )
-	{
-		remIt = iter;
-		++remIt;
-		(*iter)->removeHandle( handle );
-		if( (*iter)->getCounts() == 0 )
-			requestList.erase( iter );
-	}
-}
-}
+
 
 template< class T >
 class ItemMgt : public IOPCItemMgt
@@ -97,7 +81,7 @@ HRESULT STDMETHODCALLTYPE AddItems(
 			continue;
 		}
 
-		GroupItem *item = new GroupItem();
+		GroupItemElem item( new GroupItem() );
 		item->Init( pItemArray[i] );
 		(*ppAddResults)[i].hServer = item->getServerHandle();
 
@@ -106,7 +90,7 @@ HRESULT STDMETHODCALLTYPE AddItems(
 		(*ppAddResults)[i].dwAccessRights = tag->getAccessRights();
 		(*ppAddResults)[i].dwBlobSize = 0;
 		(*ppAddResults)[i].pBlob = NULL;
-		pT->itemList.insert( std::pair< OPCHANDLE, GroupItem* > ( item->getServerHandle(), item ));
+		pT->itemList.insert( std::pair< OPCHANDLE, GroupItemElem > ( item->getServerHandle(), item ));
 		(*ppErrors)[i] = S_OK;
 	}
 	return res;
@@ -138,7 +122,7 @@ HRESULT STDMETHODCALLTYPE ValidateItems(
 	*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 	if( *ppErrors == NULL )
 	{
-		CoTaskMemFree( *ppValidationResults );
+		os::win32::com::freeMemory( *ppValidationResults );
 		return E_OUTOFMEMORY;
 	}
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
@@ -206,7 +190,7 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 	os::win32::com::zeroMemory<HRESULT>( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
-	std::map< OPCHANDLE, GroupItem* >::iterator it;
+	GroupItemElemList::iterator it;
 	lock::ScopeGuard guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
@@ -218,10 +202,9 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 			continue;
 		}
 		// and disconnected from all async requests
-		private_::clearAyncRequestList( phServer[i], pT->asyncReadList );
-		private_::clearAyncRequestList( phServer[i], pT->asyncWriteList );
+		pT->server->removeItemFromAsyncReadRequestList( phServer[i] );
+		pT->server->removeItemFromAsyncWriteRequestList( phServer[i] );
 
-		delete (*it).second;
 		pT->itemList.erase( it );
 	}
 	return res;
@@ -249,7 +232,7 @@ HRESULT STDMETHODCALLTYPE SetActiveState(
 	os::win32::com::zeroMemory<HRESULT>( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
-	std::map< OPCHANDLE, GroupItem* >::iterator it;
+	GroupItemElemList::iterator it;
 	lock::ScopeGuard guard( pT->groupGuard );
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
@@ -287,7 +270,7 @@ HRESULT STDMETHODCALLTYPE SetClientHandles(
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
-	std::map< OPCHANDLE, GroupItem* >::iterator it;
+	GroupItemElemList::iterator it;
 	lock::ScopeGuard guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
@@ -326,7 +309,7 @@ HRESULT STDMETHODCALLTYPE SetDatatypes(
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
-	std::map< OPCHANDLE, GroupItem* >::iterator it;
+	GroupItemElemList::iterator it;
 	lock::ScopeGuard guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
@@ -364,13 +347,12 @@ HRESULT STDMETHODCALLTYPE CreateEnumerator(
 		EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 		if (temp == NULL)
 			return (E_OUTOFMEMORY);
-		std::map< OPCHANDLE, GroupItem* >::iterator it;
-		std::map< OPCHANDLE, GroupItem* >::iterator end = pT->itemList.end();
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( it = pT->itemList.begin(); it != end; ++it )
 		{
 			OPCHANDLE h = it->first;
-			GroupItem* i = (*it).second;
-			temp->addItem ( h, i );
+			temp->addItem ( h, (*it).second );
 		}
 		return temp->QueryInterface(riid,(void**)ppUnk);
 	}

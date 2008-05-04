@@ -11,7 +11,7 @@ EnumGroup::EnumGroup()
 {
 }
 
-EnumGroup::EnumGroup( const std::vector< Group* > &groups )
+EnumGroup::EnumGroup( const std::vector< GroupElem > &groups )
 	: refCount( 0 ), currentIndex( 0 ), groupList( groups )
 {
 }
@@ -75,7 +75,7 @@ STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown **rgelt, ULONG *pceltFetched 
 	size_t i = currentIndex;
 	for( ; ( i < groupList.size() ) && ( *pceltFetched < celt ); ++i )
 	{
-		pGroup = groupList[i];
+		pGroup = smart_ptr::GetPtr( groupList[i] );
 		rgelt[*pceltFetched] = reinterpret_cast< IUnknown*>( pGroup );
 		if( pGroup != NULL  )
 			pGroup->AddRef();

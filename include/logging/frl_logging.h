@@ -20,7 +20,8 @@ public:
 	template< typename T >
 	void addDestination( const T& )
 	{
-		destionations.push_back( (const SmartPtr< ILogWriter >&) SmartPtr< T >() );
+		SmartPtr< T > tmp;
+		destionations.push_back(  *( ( SmartPtr< ILogWriter >* )( &tmp ) ) );
 	}
 
 	void addDestination( const FileWriter& );

@@ -179,7 +179,7 @@ NodesList Parser::getSubNodes( const String &buffer )
 
 	String tmpBuffer = buffer;
 	String tmpBuffer2;
-	while( frl::True )
+	for( ; ; )
 	{
 		if( tmpBuffer.empty() )
 			break;
@@ -243,7 +243,7 @@ std::map< String, String > Parser::getProperties( const String &buffer )
 	if( buffer.empty() )
 		return properties;
 	String tmpBuffer = buffer;
-	while( True )
+	for( ; ; )
 	{
 		size_t equalSimbol = tmpBuffer.find( FRL_STR("=") );
 		if( equalSimbol == String::npos )

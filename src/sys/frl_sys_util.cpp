@@ -28,27 +28,21 @@ String getCodeErrorDescription( WORD langID, DWORD error )
 		::GetModuleHandle(NULL),
 		error,
 		langID,
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		( LPWSTR )&tsMsg,
-		#else
-		( LPSTR )&tsMsg,
-		#endif
+		( LPTCH )&tsMsg,
 		0,
 		NULL
 		);
 
 	if (dwResult == 0)
 	{
+		if( tsMsg != NULL )
+			LocalFree( tsMsg );
 		dwResult = ::FormatMessage(
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
 			NULL,
 			error,
 			langID, 
-			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			( LPWSTR )&tsMsg,
-			#else
-			( LPSTR )&tsMsg,
-			#endif
+			( LPTCH )&tsMsg,
 			0,
 			NULL
 			);

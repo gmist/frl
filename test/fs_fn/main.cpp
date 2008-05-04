@@ -541,7 +541,7 @@ frl::Bool TestConcat( void )
 	removal( fileName2 );
 	FileOffset length = frl::io::fs::length( fileNameDst );
 	removal( fileNameDst );
-	if( length != text.size() * 2 )
+	if( (size_t)length != text.size() * 2 )
 		return frl::False;
 	return frl::True;
 }

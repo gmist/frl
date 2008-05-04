@@ -25,7 +25,7 @@ EnumOPCItemAttributes::~EnumOPCItemAttributes()
 			if( itemList[i]->szAccessPath != NULL )
 				os::win32::com::freeMemory( itemList[i]->szAccessPath );
 
-			CoTaskMemFree( itemList[i] );
+			os::win32::com::freeMemory( itemList[i] );
 		}
 	}
 }
@@ -90,7 +90,7 @@ OPCITEMATTRIBUTES* EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES *i )
 	return c;
 }
 
-void EnumOPCItemAttributes::addItem( OPCHANDLE first, GroupItem* i )
+void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 {
 	OPCITEMATTRIBUTES *attributes = (OPCITEMATTRIBUTES *)CoTaskMemAlloc( sizeof(OPCITEMATTRIBUTES) );
 	ZeroMemory( attributes, sizeof(OPCITEMATTRIBUTES) );

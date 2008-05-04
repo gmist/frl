@@ -1,4 +1,5 @@
 require 'mxx_ru/cpp'
+require 'ftools'
 
 MxxRu::Cpp::exe_target("frl.project.psoi2.release.rb")\
 {

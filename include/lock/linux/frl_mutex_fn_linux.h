@@ -3,7 +3,7 @@
 
 #include "frl_platform.h"
 
-#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 namespace frl
 {
 	namespace lock

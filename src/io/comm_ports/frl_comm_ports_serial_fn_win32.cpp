@@ -59,20 +59,11 @@ SerialPortDescriptor open( const String &portName )
 		setEventMask(portHandle, EVENT_RECV | EVENT_ERROR | EVENT_BREAK );
 		// set default timeouts
 		setReadTimeouts( portHandle, READ_TIMEOUT_NON_BLOCK );
-		// set default configuration for the communications device
-		COMMCONFIG commConfig;
-		commConfig.wVersion = 1;
-		DWORD size = sizeof( commConfig );
-		commConfig.dwSize = size;
-		if( !::GetDefaultCommConfig( portName.c_str(), &commConfig, &size ) )
-			FRL_THROW_S_CLASS( UnableGetDefaultCommConfig );
-
-		if( !::SetCommConfig( portHandle, &commConfig, size) )
-			FRL_THROW_S_CLASS( UnableSetCommConfig );
 	}
 	catch( frl::Exception& ex )
 	{
 		close( portHandle );
+		portHandle = fs::InvalidFileDescriptor;
 		throw ex;
 	}
 	return portHandle;

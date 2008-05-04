@@ -6,6 +6,7 @@
 #include <list>
 #include "frl_types.h"
 #include "frl_lock.h"
+#include "frl_smart_ptr.h"
 
 namespace frl
 {
@@ -13,22 +14,26 @@ namespace opc
 {
 
 class ConnectionPoint;
+typedef SmartPtr< ConnectionPoint, smart_ptr::OwnerCOM > ConnectionPointElem;
+typedef std::list< ConnectionPointElem > ConnectionPointList;
+
 class ConnectionPointContainer : public IConnectionPointContainer
 {
 private:
-	std::list< ConnectionPoint* > points;
+	ConnectionPointList points;
 	lock::Mutex cpGuard;
 
 protected:
 	void registerInterface( const IID& interface_ );
 	void unregisterInterface( const IID& interface_ );
-	HRESULT getCallback( const IID& interface_, IUnknown** callBack_ );
 	Bool isConnected( const IID &interface_ );
 
 public:
 
 	ConnectionPointContainer();
 	virtual ~ConnectionPointContainer();			
+
+	HRESULT getCallback( const IID& interface_, IUnknown** callBack_ );
 
 	// IConnectionPointContainer implementation
 	virtual HRESULT STDMETHODCALLTYPE EnumConnectionPoints( 

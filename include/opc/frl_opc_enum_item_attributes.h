@@ -1,7 +1,7 @@
 #ifndef frl_opc_enum_item_attributes_h_
 #define frl_opc_enum_item_attributes_h_
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <vector>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_group_item.h"
@@ -31,7 +31,7 @@ private:
 public:
 	EnumOPCItemAttributes();
 	virtual ~EnumOPCItemAttributes();
-	void addItem( OPCHANDLE first,  GroupItem* i );
+	void addItem( OPCHANDLE first,  const GroupItemElem &i );
 
 	// the IUnknown Functions
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface );

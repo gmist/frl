@@ -9,22 +9,24 @@ namespace opc
 {
 using namespace os::win32::com;
 
-AsyncRequest::AsyncRequest()
+AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		values( NULL ),
-		source( OPC_DS_DEVICE )
+		source( OPC_DS_DEVICE ),
+		groupHandle( groupHandle_ )
 {
 }
 
-AsyncRequest::AsyncRequest( const std::list< OPCHANDLE > &handles_ )
+AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE > &handles_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		handles( handles_ ),
 		values( NULL ),
-		source( 0 )
+		source( 0 ),
+		groupHandle( groupHandle_ )
 {
 
 }
@@ -36,6 +38,7 @@ AsyncRequest::AsyncRequest( const AsyncRequest &request )
 	cancelled = request.cancelled;
 	handles = request.handles;
 	values = NULL;
+	groupHandle = request.groupHandle;
 	if( request.values != NULL )
 	{
 		size_t size = handles.size();
@@ -203,6 +206,12 @@ void AsyncRequest::swap( AsyncRequest &req )
 	std::swap( source, req.source );
 	std::swap( *values, *req.values );
 }
+
+OPCHANDLE AsyncRequest::getGroupHandle()
+{
+	return groupHandle;
+}
+
 } // namespace opc
 } // namespace frl
 

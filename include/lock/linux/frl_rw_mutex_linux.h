@@ -1,7 +1,7 @@
 #ifndef FRL_RW_MUTEX_LINUX_H_
 #define FRL_RW_MUTEX_LINUX_H_
 #include "frl_platform.h"
-#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 #include <pthread.h>
 
 namespace frl

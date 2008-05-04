@@ -21,7 +21,7 @@ namespace frl
 	typedef double					Double;
 
 	// Redefinitions variables type of "long"
-	#if ( FRL_COMPILER == FRL_COMPILER_MSVC )
+	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
 		typedef unsigned __int64		ULong;
 		typedef __int64					Long;
 	#elif( FRL_COMPILER == FRL_COMPILER_MINGW )
@@ -35,7 +35,7 @@ namespace frl
 	#endif
 
 	// Redefinitions variables types of *char*
-	#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		typedef wchar_t Char;
 		typedef wchar_t SChar;
 		typedef wchar_t UChar;
@@ -65,18 +65,18 @@ namespace frl
 	const frl::Bool True = true;
 	const frl::Bool False = false;
 
-	#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+	#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 	typedef unsigned long TimeOut;
 	#endif // __linux__
 
-	#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+	#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 	typedef DWORD TimeOut;
 	#endif // WIN32
 
 
 	namespace thread
 	{
-		#if ( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+		#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 		typedef void* ( *FRL_LPTHREAD_START_ROUTINE ) ( void *thread_param );
 
 		// Переопределяем переменную идентификатор нити
@@ -86,7 +86,7 @@ namespace frl
 		const ThreadDescriptor InvalidThreadDescriptor = 0;
 		#endif // FRL_PLATFORM_LINUX
 
-		#if ( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+		#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 		typedef LPTHREAD_START_ROUTINE FRL_LPTHREAD_START_ROUTINE;
 
 		// Переопределяем переменную идентификатор нити
@@ -102,7 +102,7 @@ namespace frl
 		// Definitions types variables for works with file system
 		namespace fs
 		{
-			#if ( FRL_PLATFORM ==  FRL_PLATFORM_LINUX )
+			#if( FRL_PLATFORM ==  FRL_PLATFORM_LINUX )
 				typedef frl::Int FileDerscriptor;	// File handle
 				typedef frl::Long FileOffset;		// File offset (position)
 				typedef size_t FileRWCount; // Number read-write simbols in read-write operations
@@ -111,7 +111,7 @@ namespace frl
 				const Offset InvalidFileOffset = -1;		// Invalid file offset (position)
 			#endif // FRL_PLATFORM_LINUX
 
-			#if ( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
+			#if( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
 				typedef HANDLE FileDescriptor;	// File handle
 				typedef Long FileOffset;
 				typedef DWORD FileRWCount;

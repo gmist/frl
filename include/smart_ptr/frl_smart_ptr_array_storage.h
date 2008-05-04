@@ -1,5 +1,6 @@
 #ifndef frl_smart_ptr_array_storage_h_
 #define frl_smart_ptr_array_storage_h_
+#include <iostream>
 
 namespace frl
 {
@@ -18,7 +19,7 @@ protected:
 	{
 		delete [] ptr;
 	}
-public:
+	
 	ArrayStorage( T* newObj )
 	{
 		ptr = newObj;
@@ -27,6 +28,12 @@ public:
 	void swap( ArrayStorage &rhv )
 	{
 		std::swap( ptr, rhv.ptr );
+	}
+public:
+	
+	T& operator [] ( size_t pos )
+	{
+		return ptr[pos];
 	}
 };
 

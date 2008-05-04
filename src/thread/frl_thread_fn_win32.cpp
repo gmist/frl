@@ -1,5 +1,5 @@
 #include "frl_platform.h"
-#if (FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
 #include "thread/frl_thread_fn.h"
 #include "frl_exception.h"
 

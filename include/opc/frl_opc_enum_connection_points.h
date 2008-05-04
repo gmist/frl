@@ -6,6 +6,7 @@
 #include <OCIdl.h>
 #include <list>
 #include "os/win32/com/frl_os_win32_com_allocator.h"
+#include "frl_smart_ptr.h"
 
 namespace frl
 {
@@ -13,6 +14,9 @@ namespace opc
 {
 
 class ConnectionPoint;
+typedef SmartPtr< ConnectionPoint, smart_ptr::OwnerCOM > ConnectionPointElem;
+typedef std::list< ConnectionPointElem > ConnectionPointList;
+
 class EnumConnectionPoints : public IEnumConnectionPoints, public os::win32::com::Allocator
 {
 private:
@@ -24,11 +28,11 @@ private:
 	#endif
 
 	size_t currentIndex;	//Current element
-	std::list< ConnectionPoint* > points;
+	ConnectionPointList points;
 public:
 	
 	EnumConnectionPoints();
-	EnumConnectionPoints( const std::list< ConnectionPoint* > &pointsList );
+	EnumConnectionPoints( const ConnectionPointList &pointsList );
 	virtual ~EnumConnectionPoints();
 
 	// IUnknown implementation

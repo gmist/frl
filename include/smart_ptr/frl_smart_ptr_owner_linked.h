@@ -1,5 +1,6 @@
 #ifndef frl_smart_ptr_owner_linked_h_
 #define frl_smart_ptr_owner_linked_h_
+#include "frl_types.h"
 
 namespace frl
 {
@@ -11,9 +12,10 @@ class OwnerLinked
 private:
 	mutable const OwnerLinked< T > *prev;
 	mutable const OwnerLinked< T > *next;
-public:
-public:
-	OwnerLinked() 
+
+protected:
+
+	OwnerLinked( T *ptr ) 
 	{ 
 		prev = next = NULL;
 	}
@@ -28,12 +30,12 @@ public:
 			prev->next = this;
 	}
 
-	T* addRef( T &ptr )
+	T* addRef( T *ptr )
 	{
-		return &ptr;
+		return ptr;
 	}
 	
-	bool release()
+	Bool release( T *ptr )
 	{
 		if( prev )
 			prev->next = next;
@@ -44,8 +46,6 @@ public:
 
 	void swap( OwnerLinked& other )
 	{
-	
-		// решение проблемы #2
 		bool p_neighbor = ( prev == &other );
 		bool n_neighbor = ( next == &other );
 		

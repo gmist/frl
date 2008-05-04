@@ -17,9 +17,8 @@ frl::Bool createBranchInRootBranch()
 			return True;
 		return False;
 	}
-	catch( frl::Exception &ex )
+	catch( frl::Exception& )
 	{
-		ex.~Exception();
 		return False;
 	}
 	return False;
@@ -40,9 +39,8 @@ frl::Bool createBranchInBranch()
 			return True;
 		return False;
 	}
-	catch( frl::Exception &ex )
+	catch( frl::Exception& )
 	{
-		ex.~Exception();
 		return False;
 	}
 	return False;
@@ -56,9 +54,8 @@ frl::Bool createSubBranchInNotExistBranch()
 		addressSpace.finalConstruct( FRL_STR(".") );
 		addressSpace.addBranch( FRL_STR("brach1.branch11") );
 	}
-	catch( Tag::NotExistTag &ex )
+	catch( Tag::NotExistTag& )
 	{
-		ex.~NotExistTag();
 		return True;
 	}
 	catch( ... )
@@ -81,9 +78,8 @@ frl::Bool createLeafInRootBranch()
 			return True;
 		return False;
 	}
-	catch( frl::Exception &ex )
+	catch( frl::Exception& )
 	{
-		ex.~Exception();
 		return False;
 	}
 	return False;
@@ -104,9 +100,8 @@ frl::Bool createLeafInSubBranch()
 			return True;
 		return False;
 	}
-	catch( frl::Exception &ex )
+	catch( frl::Exception& )
 	{
-		ex.~Exception();
 		return False;
 	}
 	return False;
@@ -120,9 +115,8 @@ frl::Bool createLeafInNotExistBranch()
 		addressSpace.finalConstruct( FRL_STR(".") );
 		addressSpace.addLeaf( FRL_STR( "branch1.leaf1" ) );
 	}
-	catch( Tag::NotExistTag &ex )
+	catch( Tag::NotExistTag& )
 	{
-		ex.~NotExistTag();
 		return True;
 	}
 	catch( ... )
@@ -149,9 +143,8 @@ frl::Bool getFullIDLeaf()
 			return True;
 		return False;
 	}
-	catch( frl::Exception &ex )
+	catch( frl::Exception& )
 	{
-		ex.~Exception();
 		return False;
 	}
 	return False;
@@ -167,9 +160,8 @@ frl::Bool doubleCreateBranch()
 		addressSpace.addBranch( branchName );
 		addressSpace.addBranch( branchName );
 	}
-	catch( Tag::IsExistTag &ex )
+	catch( Tag::IsExistTag& )
 	{
-		ex.~IsExistTag();
 		return True;
 	}
 	catch( ... )
@@ -183,7 +175,6 @@ frl::Bool doubleCreateSubBranch()
 {
 	const String branchName = FRL_STR("branch1");
 	const String subBranchName = FRL_STR("branch11");
-	Bool flag = False;
 	try
 	{
 		AddressSpace addressSpace;
@@ -192,9 +183,8 @@ frl::Bool doubleCreateSubBranch()
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 	}
-	catch( Tag::IsExistTag &ex )
+	catch( Tag::IsExistTag& )
 	{
-		ex.~IsExistTag();
 		return True;
 	}
 	catch( ... )
@@ -215,9 +205,8 @@ frl::Bool createInvalidNameBranch1()
 		addressSpace.addBranch( branchName );
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 	}
-	catch( frl::opc::address_space::AddressSpace::InvalidBranchName &ex )
+	catch( frl::opc::address_space::AddressSpace::InvalidBranchName& )
 	{
-		ex.~InvalidBranchName();
 		return True;
 	}
 	catch( ... )
@@ -239,9 +228,8 @@ frl::Bool createInvalidNameBranch2()
 		addressSpace.addBranch( branchName );
 		addressSpace.addBranch( branchName + addressSpace.getDelimiter() + subBranchName );
 	}
-	catch( frl::opc::address_space::AddressSpace::InvalidBranchName &ex )
+	catch( frl::opc::address_space::AddressSpace::InvalidBranchName& )
 	{
-		ex.~InvalidBranchName();
 		return True;
 	}
 	catch( ... )
@@ -261,9 +249,8 @@ frl::Bool createDoubleLeaf()
 		addressSpace.addLeaf( FRL_STR( "leaf1" ) );
 		addressSpace.addLeaf( FRL_STR( "leaf1" ) );
 	}
-	catch( Tag::IsExistTag &ex )
+	catch( Tag::IsExistTag& )
 	{
-		ex.~IsExistTag();
 		return True;
 	}
 	return False;

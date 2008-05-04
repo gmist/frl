@@ -86,10 +86,11 @@ Psoi2Device::Psoi2Device(	frl::UInt portNumber_,
 			comPort.setReadTimeouts( serial::READ_TIMEOUT_NON_BLOCK );
 			FRL_LOG_TRACE(log) << FRL_STR("Порт настроен");
 		}
-		catch( frl::Exception& )
+		catch( frl::Exception& ex )
 		{
-			String msg = FRL_STR("Unable open COM port# ") + lexicalCast< frl::Int, frl::String >( portNumber );
+			String msg = FRL_STR("Unable open COM port#") + lexicalCast< frl::Int, frl::String >( portNumber );
 			FRL_LOG_ERROR( log ) << msg;
+			FRL_LOG_ERROR( log ) << ex.getFullDescription();
 			::MessageBox( NULL,
 				msg.c_str(),
 				FRL_STR("OPC server starting error!"),
@@ -237,11 +238,11 @@ void Psoi2Device::workProcess()
 	FRL_LOG_TRACE( log ) << FRL_STR("Запуск процесса приема данных" );
 	using namespace io::comm_ports::serial;
 	char readBuffer[ 101 ] = {'\0'};
-	SerialRWCount counts = 0;
-	SerialRWCount pos = 0;	
+	SerialRWCount counts;
 
 	do
 	{
+		counts = 0;
 		try
 		{
 			FRL_LOG_TRACE( log ) << FRL_STR("Ожидание данных" );
@@ -258,49 +259,68 @@ void Psoi2Device::workProcess()
 			{
 				FRL_LOG_WARN( log ) << FRL_STR("Пришли не данные, а событие: " )
 												<< comPort.getLastEvent();
+				continue;
 			}
 		}
-		catch( frl::Exception& )
+		catch( frl::Exception& ex)
 		{
-			counts = 0;
+			FRL_LOG_ERROR( log ) << ex.getFullDescription();
 			continue;
 		}
-		if( counts > 0 )
+		
+		if( counts == 0 )
 		{
-			readBuffer[ counts ] = '\0';
-			int byteRead = -2;
-			std::vector< std::bitset<8> > pure_array;
-			pure_array.resize( getBytesNumber() );
-			Bool transfer = False;
-			for( SerialRWCount i = 0; i < counts; i++ )
+			FRL_LOG_TRACE( log ) << FRL_STR("Посылка нулевой длины - данные для обработки отсутствуют");
+			continue;
+		}
+		
+		if( counts > getBytesNumber() + 2 )
+		{
+			FRL_LOG_WARN( log ) << FRL_STR("Очень большая посылка. Ожидалась посылка из ")
+											<< getBytesNumber()
+											<< FRL_STR("байт. Возможно используется ")
+											<< (counts - 2) / 2
+											<< FRL_STR(" канальная ПСОИ2");
+			continue;
+		}
+		
+		if( readBuffer[1] != (Int)getBytesNumber() )
+		{
+			FRL_LOG_WARN( log ) << FRL_STR( "Посылка нормальной длины, но 2 байт предпологает посылку в " )
+											<< readBuffer[1] << FRL_STR(" байт. (?)");
+			continue;
+		}
+		
+		readBuffer[ counts ] = '\0';
+		int byteRead = -2;
+		std::vector< std::bitset<8> > pure_array;
+		pure_array.resize( getBytesNumber() );
+		Bool transfer = False;
+		for( SerialRWCount i = 0; i < counts; i++ )
+		{
+			std::bitset<8> byteTmp( readBuffer[i] );
+			if( byteTmp.to_ulong() == 251 ) // ищем начало посылки
 			{
-				FRL_LOG_TRACE( log ) <<  FRL_STR("Обработка данных" );
-				if( readBuffer[i] == 251 ) // ищем начало посылки
-				{
-					FRL_LOG_TRACE( log ) << FRL_STR("Найдено начало посылки" );
-					transfer = true;
-					byteRead = -2;
-				}
+				FRL_LOG_TRACE( log ) << FRL_STR("Найдено начало посылки" );
+				transfer = true;
+				byteRead = -2;
+			}
 
-				if( byteRead >= 0 && byteRead < (int)getBytesNumber() )
-				{
-					pure_array[byteRead] = std::bitset<8>( readBuffer[i] );
-				}
-				if( byteRead > (int)getBytesNumber() )
-				{
-					FRL_LOG_WARN( log ) <<  FRL_STR("Очень большая посылка - данные неверны" );
-					transfer = False;
-				}
-				if( transfer )
-					++byteRead;
-			}
-			if( ( byteRead >= (int)getBytesNumber() - 1 )  && transfer )
+			if( byteRead >= 0 && byteRead < (int)getBytesNumber() )
 			{
-				FRL_LOG_TRACE( log ) << FRL_STR("Разбор данных" );
-				fillValues( pure_array );
+				pure_array[byteRead] = byteTmp;
 			}
-			else
-				FRL_LOG_WARN( log ) << FRL_STR("Данные не были обработаны" );
+			if( transfer )
+				++byteRead;
+		}
+		if( ( byteRead == (int)getBytesNumber() )  && transfer )
+		{
+			FRL_LOG_TRACE( log ) << FRL_STR("Разбор данных" );
+			fillValues( pure_array );
+		}
+		else
+		{
+			FRL_LOG_WARN( log ) << FRL_STR("Данные не были обработаны - неверный формат данных" );
 		}
 	}
 	while( 1 );
@@ -312,9 +332,11 @@ void Psoi2Device::fillValues( const std::vector< std::bitset<8> > &pure_array )
 	std::vector< std::bitset< 4 > > pure_bite;
 	pure_bite.resize( getBytesNumber() * 2 );
 	
+	FRL_LOG_TRACE( log ) << FRL_STR("Обнуление временного массива" );
 	for( std::vector< std::bitset< 4 > >::iterator it = pure_bite.begin(); it != pure_bite.end(); ++it )
 		*it = 0;
 	
+	FRL_LOG_TRACE( log ) << FRL_STR("Разбивка на полу-байты" );
 	// Разбиваем на полу-байты
 	for( frl::UInt i = 0, j = 0; i < getBytesNumber(); ++i, j+=2)
 	{	
@@ -325,33 +347,28 @@ void Psoi2Device::fillValues( const std::vector< std::bitset<8> > &pure_array )
 		}
 	}
 	
-	char ch_tmp[2] = {'\0' };
-	std::string tmpSt;
-	std::vector< float > cannel_value;
-	cannel_value.resize( getChannelsNumber() );
+	String tmpSt;
+	std::vector< float > channel_value( getChannelsNumber() );
 	
+	FRL_LOG_TRACE( log ) << FRL_STR("Заполнение pure массива" );
 	for( frl::UInt i = 0, j = 0 ; i < getChannelsNumber(); ++i, j = j+4 )
 	{
 		for( int k =0; k < 3; ++k )
 		{
-			ch_tmp[0] = '\0';
-			ch_tmp[1] = '\0';
-			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			_itoa_s( ( int)pure_bite[ j+k ].to_ulong(), ch_tmp, 2, 10 );
-			#else
-			_itoa( ( int)pure_bite[ j+k ].to_ulong(), ch_tmp, 10 );
-			#endif
-			tmpSt += ch_tmp[0];
+			tmpSt += lexicalCast< unsigned long, String >( pure_bite[ j + k ].to_ulong() );
 		}
-		cannel_value[i] = (float)atoi(tmpSt.c_str());
+		channel_value[i] = lexicalCast< String, float >( tmpSt );
 		tmpSt.clear();
 	}
 	
+	FRL_LOG_TRACE( log ) << FRL_STR("Создание временных массивов" );
 	std::vector< float > values( getChannelsNumber() );
 	std::vector< frl::Bool > pph_type( getChannelsNumber() );
 	std::vector< frl::Bool > pph_accuracy( getChannelsNumber() );
 	std::vector< frl::Bool > overr_crossing( getChannelsNumber() );
 	std::vector< frl::Bool > gen_accuracy( getChannelsNumber() );
+
+	FRL_LOG_TRACE( log ) << FRL_STR("Заполнение временных массивов" );
 	// Заполняем все массивы
 	for( frl::UInt i =0, j=3; i < getChannelsNumber(); ++i, j+=4 )
 	{
@@ -362,18 +379,24 @@ void Psoi2Device::fillValues( const std::vector< std::bitset<8> > &pure_array )
 
 		// вычисляем значение концентрации в зависимости от типа ППХ
 		if (pph_type[i] == 0)				
-			cannel_value[i] = cannel_value[i]/10.0f;
+			channel_value[i] = channel_value[i]/10.0f;
 		else
-			cannel_value[i] = cannel_value[i]/100.0f;
+			channel_value[i] = channel_value[i]/100.0f;
 	}
 	
+	FRL_LOG_TRACE( log ) << FRL_STR("Установка значений тэгов" );
 	for( frl::UInt i = 0; i < getChannelsNumber(); ++i )
 	{
-		setValue( i, cannel_value[i] );
+		setValue( i, channel_value[i] );
+		FRL_LOG_TRACE( log ) << FRL_STR("Значение канала №") << i <<  FRL_STR("==") << channel_value[i];
 		setGoodPPC( i, pph_accuracy[i] );
+		FRL_LOG_TRACE( log ) << FRL_STR("Исправность ППХ канала №") << i <<  FRL_STR("==") << pph_accuracy[i];
 		setGoodMGC(i, gen_accuracy[i] );
+		FRL_LOG_TRACE( log ) << FRL_STR("Исправность МГХ канала №") << i <<  FRL_STR("==") << gen_accuracy[i];
 		setThresholdExceeding( i, overr_crossing[i] );
+		FRL_LOG_TRACE( log ) << FRL_STR("Превышение нормы канала №") << i <<  FRL_STR("==") << overr_crossing[i];
 		setTypePPC( i, pph_type[i] );
+		FRL_LOG_TRACE( log ) << FRL_STR("Тип ППХ канала №") << i <<  FRL_STR("==") << pph_type[i];
 	}
 }
 

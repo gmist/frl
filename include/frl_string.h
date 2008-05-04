@@ -18,18 +18,13 @@ std::wstring string2wstring( const std::string &str );
 // Converting wstring to string
 std::string wstring2string( const std::wstring &wstr );
 
-// Return unicode independ string
-#if ( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	std::wstring unicodeIndependString( std::string str );
-	std::wstring unicodeIndependString( std::wstring str );
-#else
-	std::string unicodeIndependString( std::wstring str );
-	std::string unicodeIndependString( std::string str );
-#endif
+// Always return wstring
+std::wstring unicodeCompatibility( const std::wstring& str );
+std::wstring unicodeCompatibility( const std::string& str );
 
 // Always return multibyte string
-	std::string multiByteCompatibility( const std::string &str );
-	std::string multiByteCompatibility( const std::wstring &str );
+std::string multiByteCompatibility( const std::string &str );
+std::string multiByteCompatibility( const std::wstring &str );
 
 // Convert number to string
 template < class T >
