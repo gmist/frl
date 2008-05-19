@@ -166,7 +166,7 @@ public:
 		if( pT->deleted )
 			return E_FAIL;
 		
-		if (ppUnk == NULL)
+		if( ppUnk == NULL )
 			return E_INVALIDARG;
 
 		T* group = NULL;
@@ -195,13 +195,40 @@ public:
 		/* [in] */ DWORD dwKeepAliveTime,
 		/* [out] */ DWORD *pdwRevisedKeepAliveTime)
 	{
-		return E_NOTIMPL;
+		if( pdwRevisedKeepAliveTime == NULL )
+			return E_INVALIDARG;
+		
+		T* pT = static_cast<T*> (this);
+
+		if( dwKeepAliveTime == 0 )
+		{
+			pT->keepAlive = *pdwRevisedKeepAliveTime = 0;
+			return S_OK;
+		}
+
+		static const DWORD maxKeepAliveTime = 100000; // 100 sec
+
+		DWORD tmp = dwKeepAliveTime; // for non blocked change Group::keepAlive
+		if( tmp%maxKeepAliveTime != 0 )
+		{
+			tmp = maxKeepAliveTime * ( tmp / maxKeepAliveTime + 1 );
+		}
+		pT->keepAlive = *pdwRevisedKeepAliveTime = tmp;
+		
+		if( tmp != dwKeepAliveTime )
+			return OPC_S_UNSUPPORTEDRATE;
+		return S_OK;
 	}
 
 	virtual HRESULT STDMETHODCALLTYPE GetKeepAlive( 
 		/* [out] */ DWORD *pdwKeepAliveTime)
 	{
-		return E_NOTIMPL;;
+		if( pdwKeepAliveTime == NULL )
+			return E_INVALIDARG;
+
+		T* pT = static_cast<T*> (this);
+		*pdwKeepAliveTime = pT->keepAlive;
+		return S_OK;
 	}
 }; // class GroupStateMgt
 } // namespace opc
