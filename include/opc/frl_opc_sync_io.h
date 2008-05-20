@@ -211,7 +211,14 @@ public:
 			}
 			try
 			{
-				( *ppErrors )[i] = ( (*it).second->readValue() ).copyTo( (*ppvValues)[i] );
+				if( pdwMaxAge[i] == 0xFFFFFFFF )
+				{
+					( *ppErrors )[i] = (*it).second->getCachedValue().copyTo( (*ppvValues)[i] );
+				}
+				else
+				{
+					( *ppErrors )[i] = (*it).second->readValue().copyTo( (*ppvValues)[i]  );
+				}
 			}
 			catch( Tag::NotExistTag& )
 			{
@@ -255,19 +262,19 @@ public:
 		HRESULT res = S_OK;
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
-			{
-				res = S_FALSE;
-				(*ppErrors)[i] = OPC_E_BADTYPE;
-				continue;	
-			}
-
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
 			if( it == pT->itemList.end() )
 			{
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 				continue;
+			}
+
+			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
+			{
+				res = S_FALSE;
+				(*ppErrors)[i] = OPC_E_BADTYPE;
+				continue;	
 			}
 
 			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )

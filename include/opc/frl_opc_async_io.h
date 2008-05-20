@@ -138,7 +138,7 @@ public:
 		if( pdwCancelID == NULL )
 			return E_INVALIDARG;
 
-		if (dwSource != OPC_DS_CACHE && dwSource != OPC_DS_DEVICE)
+		if( dwSource != OPC_DS_CACHE && dwSource != OPC_DS_DEVICE )
 			return E_INVALIDARG;
 
 		*pdwCancelID = 0;
@@ -235,7 +235,8 @@ public:
 		/* [out] */ DWORD *pdwCancelID,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors)
 	{
-		return E_NOTIMPL;
+		// dirty hack!!!
+		return Read( dwCount, phServer, dwTransactionID, pdwCancelID, ppErrors );
 	}
 
 	virtual HRESULT STDMETHODCALLTYPE WriteVQT( 
@@ -254,7 +255,12 @@ public:
 		/* [in] */ DWORD dwTransactionID,
 		/* [out] */ DWORD *pdwCancelID)
 	{
-		return E_NOTIMPL;
+		// dirty hack!!!
+		if( dwMaxAge == 0xFFFFFFFF )
+		{
+			return Refresh2( OPC_DS_CACHE, dwTransactionID, pdwCancelID );
+		}
+		return Refresh2( OPC_DS_DEVICE, dwTransactionID, pdwCancelID );
 	}
 };
 

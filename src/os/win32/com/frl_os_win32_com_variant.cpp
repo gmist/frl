@@ -152,7 +152,7 @@ void Variant::variantClear( VARIANT *ptr )
 	os::win32::com::zeroMemory( ptr );
 }
 
-VARTYPE Variant::getType()
+const VARTYPE& Variant::getType() const
 {
 	return value.vt;
 }

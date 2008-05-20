@@ -455,7 +455,7 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 			continue;
 		}
 
-		if( request->getValues()[i].vt == VT_EMPTY )
+		if( request->getValues()[i].getType() == VT_EMPTY )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADTYPE;

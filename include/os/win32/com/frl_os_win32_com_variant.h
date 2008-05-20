@@ -49,7 +49,7 @@ public:
 	// methods
 	void init();
 	void clear();
-	VARTYPE getType();
+	const VARTYPE& getType() const;
 	void setType( VARTYPE type );
 	VARIANT& getRef();
 	VARIANT* getPtr();

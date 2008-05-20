@@ -32,33 +32,18 @@ AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE >
 }
 
 AsyncRequest::AsyncRequest( const AsyncRequest &request )
+	:	id( request.id ),
+		cancelID( request.cancelID ),
+		cancelled( request.cancelled ),
+		handles( request.handles ),
+		groupHandle( request.groupHandle ),
+		values( request.values )
 {
-	id = request.id;
-	cancelID = request.cancelID;
-	cancelled = request.cancelled;
-	handles = request.handles;
-	values = NULL;
-	groupHandle = request.groupHandle;
-	if( request.values != NULL )
-	{
-		size_t size = handles.size();
-		if( size )
-		{					
-			values = new VARIANT[ size ];
-			for( size_t i =0; i < size; ++i )
-			{
-				::VariantInit( &values[i] );
-				Variant::variantCopy( &values[i], &request.values[i] );
-			}
-		}
-	}
+
 }
 
 AsyncRequest::~AsyncRequest()
 {
-	if( values != NULL )
-		delete [] values;
-	values = NULL;
 }
 
 void AsyncRequest::setTransactionID( DWORD id_ )
@@ -88,27 +73,25 @@ void AsyncRequest::isCancelled( Bool isCancelled_ )
 
 void AsyncRequest::init( const std::list< OPCHANDLE > &handles_, const VARIANT *values_ )
 {
-	if( values != NULL )
-		delete [] values;
-	values = NULL;
+	if( ! values.empty() )
+		values.clear();
+
 	handles = handles_;
 	size_t counts = handles.size();
 	if( counts == 0 )
 		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
 
-	values = new VARIANT[ counts ];
+	values.reserve( counts );
 	for( DWORD i = 0; i < counts; ++i )
 	{
-		::VariantInit( &values[i] );
-		Variant::variantCopy( &values[i], &values_[i] );
+		values.push_back( values_[i] );
 	}
 }
 
 void AsyncRequest::init( const std::list< OPCHANDLE > &handles_ )
 {
-	if( values != NULL )
-		delete [] values;
-	values = NULL;
+	if( ! values.empty() )
+		values.clear();
 	handles = handles_;
 }
 
@@ -122,7 +105,7 @@ size_t AsyncRequest::getCounts() const
 	return handles.size();
 }
 
-const VARIANT* AsyncRequest::getValues() const
+const std::vector< os::win32::com::Variant >&  AsyncRequest::getValues() const
 {
 	return values;
 }
@@ -145,29 +128,27 @@ void AsyncRequest::removeHandle( OPCHANDLE handle )
 		++posList;
 	}
 
-	if( values == NULL )
+	if( ! originalSize )
 		return;
 
 	size_t size = handles.size();
 	if( size == 0 )
 	{
-		delete [] values;
-		values = NULL;
+		values.clear();
+		return;
 	}
 	if( size != originalSize )
 	{
-		VARIANT *tmpVal = new VARIANT[ size ];
-		for( size_t i = 0, j = 0; i < originalSize; ++i )
+		std::vector< os::win32::com::Variant > tmpList;
+		tmpList.reserve( size );
+		for( size_t i = 0; i < originalSize; ++i )
 		{
 			if( i != posList )
 			{
-				::VariantInit( &tmpVal[ j ] );
-				Variant::variantCopy( &tmpVal[ j ], &values[ i ] );
-				++j;
+				tmpList.push_back( values[ i ] );
 			}
 		}
-		delete [] values;
-		values = tmpVal;
+		values.swap( tmpList );
 	}
 }
 
@@ -204,7 +185,7 @@ void AsyncRequest::swap( AsyncRequest &req )
 	std::swap( cancelled, req.cancelled );
 	std::swap( cancelID, req.cancelID );
 	std::swap( source, req.source );
-	std::swap( *values, *req.values );
+	values.swap( req.values );
 }
 
 OPCHANDLE AsyncRequest::getGroupHandle()

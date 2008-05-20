@@ -4,11 +4,13 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #include <list>
+#include <vector>
 #include "..\dependency\vendors\opc_foundation\opcda.h"
 #include "frl_types.h"
 #include "frl_exception.h"
-#include "frl_non_copyable.h"
+#include "os/win32/com/frl_os_win32_com_variant.h"
 #include "frl_smart_ptr.h"
+
 
 namespace frl
 {
@@ -21,7 +23,7 @@ private:
 	DWORD cancelID;
 	Bool cancelled;
 	std::list< OPCHANDLE > handles;
-	VARIANT *values;
+	std::vector< os::win32::com::Variant > values;
 	DWORD source;
 	OPCHANDLE groupHandle;
 public:
@@ -39,7 +41,7 @@ public:
 	void init( const std::list< OPCHANDLE > &handles_, const VARIANT *values_ );
 	const std::list<OPCHANDLE>& getHandles() const;
 	size_t getCounts() const;
-	const VARIANT* getValues() const;
+	const std::vector< os::win32::com::Variant >& getValues() const;
 	void removeHandle( OPCHANDLE handle );
 	DWORD getSource() const;
 	void setSource( DWORD source_ );
