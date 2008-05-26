@@ -13,7 +13,6 @@ AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
-		values( NULL ),
 		source( OPC_DS_DEVICE ),
 		groupHandle( groupHandle_ )
 {
@@ -23,21 +22,34 @@ AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE >
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
-		handles( handles_ ),
-		values( NULL ),
 		source( 0 ),
 		groupHandle( groupHandle_ )
 {
-
+	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != handles_.end(); ++it )
+	{
+		ItemHVQT tmp;
+		tmp.setHandle( (*it) );
+		itemHVQTList.push_back( tmp );
+	}
 }
 
 AsyncRequest::AsyncRequest( const AsyncRequest &request )
 	:	id( request.id ),
 		cancelID( request.cancelID ),
 		cancelled( request.cancelled ),
-		handles( request.handles ),
-		groupHandle( request.groupHandle ),
-		values( request.values )
+		itemHVQTList( request.itemHVQTList ),
+		groupHandle( request.groupHandle )
+{
+
+}
+
+AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< ItemHVQT >& itemsList )
+	:	id( 0 ),
+		cancelID( getUniqueCancelID() ),
+		cancelled( False ),
+		source( 0 ),
+		groupHandle( groupHandle_ ),
+		itemHVQTList( itemsList )
 {
 
 }
@@ -73,82 +85,61 @@ void AsyncRequest::isCancelled( Bool isCancelled_ )
 
 void AsyncRequest::init( const std::list< OPCHANDLE > &handles_, const VARIANT *values_ )
 {
-	if( ! values.empty() )
-		values.clear();
+	if( ! itemHVQTList.empty() )
+		itemHVQTList.clear();
 
-	handles = handles_;
-	size_t counts = handles.size();
-	if( counts == 0 )
+	if( handles_.empty() || values_ == NULL )
 		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
 
-	values.reserve( counts );
-	for( DWORD i = 0; i < counts; ++i )
+	size_t i = 0;
+	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != handles_.end(); ++it, ++i )
 	{
-		values.push_back( values_[i] );
+		ItemHVQT tmp;
+		tmp.setHandle( (*it) );
+		tmp.setValue( values_[i] );
+		itemHVQTList.push_back( tmp );
 	}
 }
 
 void AsyncRequest::init( const std::list< OPCHANDLE > &handles_ )
 {
-	if( ! values.empty() )
-		values.clear();
-	handles = handles_;
+	if( ! itemHVQTList.empty() )
+		itemHVQTList.clear();
+
+	if( handles_.empty() )
+		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
+
+	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != handles_.end(); ++it )
+	{
+		ItemHVQT tmp;
+		tmp.setHandle( (*it) );
+		itemHVQTList.push_back( tmp );
+	}
 }
 
-const std::list<OPCHANDLE>& AsyncRequest::getHandles() const
+const std::list< ItemHVQT >& AsyncRequest::getItemHVQTList() const
 {
-	return handles;
+	return itemHVQTList;
 }
 
 size_t AsyncRequest::getCounts() const
 {
-	return handles.size();
-}
-
-const std::vector< os::win32::com::Variant >&  AsyncRequest::getValues() const
-{
-	return values;
+	return itemHVQTList.size();
 }
 
 void AsyncRequest::removeHandle( OPCHANDLE handle )
 {
-	size_t originalSize = handles.size();
-	if( originalSize == 0 )
+	if( itemHVQTList.empty() )
 		return;
 
-	size_t posList = 0;
-	std::list< OPCHANDLE >::iterator end = handles.end();
-	for( std::list< OPCHANDLE >::iterator it = handles.begin(); it != end; ++it )
+	std::list< ItemHVQT >::iterator end = itemHVQTList.end();
+	for( std::list< ItemHVQT >::iterator it = itemHVQTList.begin(); it != end; ++it )
 	{
-		if( (*it) == handle )
+		if( (*it).getHandle() == handle )
 		{
-			handles.erase( it );
-			break;
+			itemHVQTList.erase( it );
+			return;
 		}
-		++posList;
-	}
-
-	if( ! originalSize )
-		return;
-
-	size_t size = handles.size();
-	if( size == 0 )
-	{
-		values.clear();
-		return;
-	}
-	if( size != originalSize )
-	{
-		std::vector< os::win32::com::Variant > tmpList;
-		tmpList.reserve( size );
-		for( size_t i = 0; i < originalSize; ++i )
-		{
-			if( i != posList )
-			{
-				tmpList.push_back( values[ i ] );
-			}
-		}
-		values.swap( tmpList );
 	}
 }
 
@@ -180,12 +171,11 @@ AsyncRequest& AsyncRequest::operator=( const AsyncRequest &request )
 
 void AsyncRequest::swap( AsyncRequest &req )
 {
-	handles.swap( req.handles );
+	itemHVQTList.swap( req.itemHVQTList );
 	std::swap( id, req.id );
 	std::swap( cancelled, req.cancelled );
 	std::swap( cancelID, req.cancelID );
 	std::swap( source, req.source );
-	values.swap( req.values );
 }
 
 OPCHANDLE AsyncRequest::getGroupHandle()

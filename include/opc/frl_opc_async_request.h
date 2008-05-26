@@ -5,10 +5,9 @@
 #include <Windows.h>
 #include <list>
 #include <vector>
-#include "..\dependency\vendors\opc_foundation\opcda.h"
-#include "frl_types.h"
 #include "frl_exception.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
+#include "opc/frl_opc_item_hvqt.h"
 #include "frl_smart_ptr.h"
 
 
@@ -22,14 +21,14 @@ private:
 	DWORD id;
 	DWORD cancelID;
 	Bool cancelled;
-	std::list< OPCHANDLE > handles;
-	std::vector< os::win32::com::Variant > values;
+	std::list< ItemHVQT > itemHVQTList;
 	DWORD source;
 	OPCHANDLE groupHandle;
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
 	AsyncRequest( OPCHANDLE groupHandle_ );
 	AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE > &handles_ );
+	AsyncRequest( OPCHANDLE groupHandle_, const std::list< ItemHVQT >& itemsList );
 	AsyncRequest( const AsyncRequest &request );
 	~AsyncRequest();
 	void setTransactionID( DWORD id_ );
@@ -39,9 +38,8 @@ public:
 	void isCancelled( Bool isCancelled_ );
 	void init( const std::list< OPCHANDLE > &handles_ );
 	void init( const std::list< OPCHANDLE > &handles_, const VARIANT *values_ );
-	const std::list<OPCHANDLE>& getHandles() const;
+	const std::list< ItemHVQT >& getItemHVQTList() const;
 	size_t getCounts() const;
-	const std::vector< os::win32::com::Variant >& getValues() const;
 	void removeHandle( OPCHANDLE handle );
 	DWORD getSource() const;
 	void setSource( DWORD source_ );

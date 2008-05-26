@@ -237,5 +237,3 @@ library OPCCOMN
     // interface AsyncIOPCServerList2;
     // interface AsyncIOPCEnumGUID;
 };
-
-

@@ -119,8 +119,8 @@ void ServerKind::registrerServer( const std::vector<IID> &categories )
 			FRL_STR("\\" ) +
 			FRL_STR("Implemented Categories\\") +
 			lexicalCast<GUID, String >( (*it) ), key.getRootKey() );
+		key.create();
 	}
-	key.create();
 }
 
 void ServerKind::unregisterServer()

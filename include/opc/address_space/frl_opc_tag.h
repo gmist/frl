@@ -108,7 +108,7 @@ public:
 
 	const FILETIME& getTimeStamp();
 
-	void setTimeStamp( FILETIME &ts );
+	void setTimeStamp( const FILETIME& ts );
 
 	void setScanRate( DWORD scanRate_ );
 

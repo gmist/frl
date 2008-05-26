@@ -862,28 +862,13 @@ void __RPC_STUB IOPCServerList2_CLSIDFromProgID_Stub(
     PRPC_MESSAGE _pRpcMessage,
     DWORD *_pdwStubPhase);
 
-
-
 #endif 	/* __IOPCServerList2_INTERFACE_DEFINED__ */
-
-
 
 #ifndef __OPCCOMN_LIBRARY_DEFINED__
 #define __OPCCOMN_LIBRARY_DEFINED__
 
 /* library OPCCOMN */
 /* [helpstring][version][uuid] */ 
-
-
-
-
-
-
-
-
-
-
-
 
 EXTERN_C const IID LIBID_OPCCOMN;
 #endif /* __OPCCOMN_LIBRARY_DEFINED__ */
@@ -897,5 +882,3 @@ EXTERN_C const IID LIBID_OPCCOMN;
 #endif
 
 #endif
-
-

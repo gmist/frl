@@ -258,12 +258,12 @@ void Group::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem 
 	}
 
 	HRESULT masterError = S_OK;
-	const std::list< OPCHANDLE >  *handles = &request->getHandles();
+	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
 	size_t i = 0;
-	std::list< OPCHANDLE >::const_iterator end = handles->end();
-	for( std::list< OPCHANDLE >::const_iterator it = handles->begin(); it != end; ++it, ++i )
+	std::list< ItemHVQT >::const_iterator end = handles->end();
+	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		GroupItemElemList::iterator iter = itemList.find( (*it) );
+		GroupItemElemList::iterator iter = itemList.find( (*it).getHandle() );
 		if( iter == itemList.end() )
 		{
 			masterError = S_FALSE;
@@ -364,12 +364,12 @@ void Group::doAsyncRefresh( const AsyncRequestListElem &request )
 		return;
 	}
 
-	const std::list< OPCHANDLE >  *handles = &request->getHandles();
+	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
 	size_t i = 0;
-	std::list< OPCHANDLE >::const_iterator end = handles->end();
-	for( std::list< OPCHANDLE >::const_iterator it = handles->begin(); it != end; ++it, ++i )
+	std::list< ItemHVQT >::const_iterator end = handles->end();
+	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		GroupItemElemList::iterator iter = itemList.find( (*it) );
+		GroupItemElemList::iterator iter = itemList.find( (*it).getHandle() );
 		if( iter == itemList.end() )
 		{
 			pErrors[i] = OPC_E_INVALIDHANDLE;
@@ -434,12 +434,12 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 
 	HRESULT masterError = S_OK;
 
-	const std::list< OPCHANDLE >  *handles = &request->getHandles();
+	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
 	size_t i = 0;
-	std::list< OPCHANDLE >::const_iterator end = handles->end();
-	for( std::list< OPCHANDLE >::const_iterator it = handles->begin(); it != end; ++it, ++i )
+	std::list< ItemHVQT >::const_iterator end = handles->end();
+	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		GroupItemElemList::iterator iter = itemList.find( (*it) );
+		GroupItemElemList::iterator iter = itemList.find( (*it).getHandle() );
 		if( iter == itemList.end() )
 		{
 			masterError = S_FALSE;
@@ -455,19 +455,29 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 			continue;
 		}
 
-		if( request->getValues()[i].getType() == VT_EMPTY )
+		if( (*it).getValue().getType() == VT_EMPTY )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADTYPE;
 			continue;
 		}
 
-		pErrors[i] = (*iter).second->writeValue( request->getValues()[i] );
+		pErrors[i] = (*iter).second->writeValue( (*it).getValue() );
 
 		if( FAILED( pErrors[i] ) )
 		{
 			masterError = S_FALSE;
 			continue;
+		}
+		
+		if( (*it).isQualitySpecified() )
+		{
+			(*iter).second->setQuality( (*it).getQuality() );
+		}
+
+		if( (*it).isTimeStampSpecified() )
+		{
+			(*iter).second->setTimeStamp( (*it).getTimeStamp() );
 		}
 	}
 

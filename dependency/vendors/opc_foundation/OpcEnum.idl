@@ -45,4 +45,3 @@ library OpcEnumLib
 		          interface IOpcServerList;
 	};
 };
-

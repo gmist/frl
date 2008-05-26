@@ -4,39 +4,39 @@
 
 namespace frl
 {
-	namespace lock
-	{
-		Mutex::Mutex( void )
-		{
-			mutexInit( mutex );
-			isInitialize = True;
-		}
+namespace lock
+{
+Mutex::Mutex( void )
+{
+	mutexInit( mutex );
+	isInitialize = True;
+}
 
-		Mutex::~Mutex( void )
-		{
-			if ( isInitialize )
-				mutexDestroy( mutex );
-		}
+Mutex::~Mutex( void )
+{
+	if ( isInitialize )
+		mutexDestroy( mutex );
+}
 
-		void Mutex::lock( void )
-		{
-			if( !isInitialize )
-				FRL_THROW( FRL_STR( "Mutex not initialize." ) );
-			mutexLock( mutex );
-		}
+void Mutex::lock( void )
+{
+	if( !isInitialize )
+		FRL_THROW( FRL_STR( "Mutex not initialize." ) );
+	mutexLock( mutex );
+}
 
-		void Mutex::unLock( void )
-		{
-			if( !isInitialize )
-				FRL_THROW( FRL_STR( "Mutex not initialize." ) );
-			mutexUnlock( mutex );
-		}
+void Mutex::unLock( void )
+{
+	if( !isInitialize )
+		FRL_THROW( FRL_STR( "Mutex not initialize." ) );
+	mutexUnlock( mutex );
+}
 
-		Bool Mutex::tryLock( void )
-		{
-			if( !isInitialize )
-				FRL_THROW( FRL_STR( "Mutex not initialize." ) );
-			return mutexTryLock( mutex );
-		}
-	} // namespace lock
+Bool Mutex::tryLock( void )
+{
+	if( !isInitialize )
+		FRL_THROW( FRL_STR( "Mutex not initialize." ) );
+	return mutexTryLock( mutex );
+}
+} // namespace lock
 } // FatRat Library

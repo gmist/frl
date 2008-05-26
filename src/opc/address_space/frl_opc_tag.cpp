@@ -357,7 +357,7 @@ void Tag::browse( std::vector< TagBrowseInfo > &arr )
 	}
 }
 
-void Tag::setTimeStamp( FILETIME &ts )
+void Tag::setTimeStamp( const FILETIME& ts )
 {
 	timeStamp = ts;
 }

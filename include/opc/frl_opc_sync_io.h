@@ -274,7 +274,7 @@ public:
 			{
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADTYPE;
-				continue;	
+				continue;
 			}
 
 			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )

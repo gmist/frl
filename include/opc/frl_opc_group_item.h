@@ -20,6 +20,8 @@ namespace address_space
 	class Tag;
 }
 
+static const Float invalidDeadBand = -1.0;
+
 class GroupItem
 	:	private NonCopyable,
 		public ServerHandleCounter
@@ -33,6 +35,7 @@ private:
 	FILETIME lastChange;
 	os::win32::com::Variant cachedValue;
 	address_space::Tag *tagRef;
+	Float deadBand;
 public:
 	GroupItem();
 	~GroupItem();
@@ -54,8 +57,10 @@ public:
 	GroupItem* clone() const;
 	const os::win32::com::Variant& getCachedValue() const;
 	void resetTimeStamp();
-	void setTimeStamp( FILETIME &ts );
+	void setTimeStamp( const FILETIME& ts );
 	void setQuality( WORD quality );
+	void setDeadBand( Float newDeadBand );
+	Float getDeadBand();
 }; // GroupItem
 
 typedef SmartPtr< GroupItem, smart_ptr::OwnerLinked > GroupItemElem;

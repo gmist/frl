@@ -1191,5 +1191,3 @@ library OPCDA
     interface IOPCAsyncIO3;
     interface IOPCGroupStateMgt2;
 };
-
-

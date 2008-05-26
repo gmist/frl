@@ -79,6 +79,3 @@ MIDL_DEFINE_GUID(CLSID, CLSID_OpcServerList,0x13486D51,0x4821,0x11D2,0xA4,0x94,0
 #ifdef __cplusplus
 }
 #endif
-
-
-

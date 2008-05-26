@@ -38,6 +38,7 @@ friend class GroupStateMgt< Group >;
 friend class ItemMgt< Group >;
 friend class SyncIO< Group >;
 friend class AsyncIO< Group >;
+friend class ItemDeadBandMgt< Group >;
 private:
 	// reference counter
 	#if( FRL_COMPILER == FRL_COMPILER_MSVC )

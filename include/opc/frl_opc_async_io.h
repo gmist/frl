@@ -247,7 +247,80 @@ public:
 		/* [out] */ DWORD *pdwCancelID,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors)
 	{
-		return E_NOTIMPL;
+		T* pT = static_cast<T*> (this);
+		if( pT->deleted )
+			return E_FAIL;
+
+		if( phServer == NULL || pdwCancelID == NULL || ppErrors == NULL )
+			return E_INVALIDARG;
+
+		*pdwCancelID = 0;
+		*ppErrors    = NULL;
+
+		if( dwCount == 0 )
+			return E_INVALIDARG;
+
+		if( ! pT->isConnected( IID_IOPCDataCallback ) )
+			return CONNECT_E_NOCONNECTION;
+
+		*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
+		os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
+
+		HRESULT result = S_OK;
+		std::list< ItemHVQT > itemsHVQTList;
+
+		lock::ScopeGuard guard( pT->groupGuard );
+		for( DWORD i = 0; i < dwCount; ++i )
+		{
+			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
+			if( it == pT->itemList.end() )
+			{
+				result = S_FALSE;
+				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
+				continue;
+			}
+
+			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
+			{
+				result = S_FALSE;
+				(*ppErrors)[i] = OPC_E_BADTYPE;
+				continue;
+			}
+
+			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )
+			{
+				result = S_FALSE;
+				(*ppErrors)[i] = OPC_E_BADRIGHTS;
+				continue;
+			}
+
+			ItemHVQT tmp;
+			tmp.setHandle( (*it).first );
+			tmp.setValue( pItemVQT[i].vDataValue );
+
+			if( pItemVQT[i].bQualitySpecified )
+			{
+				tmp.setQuality( pItemVQT[i].wQuality );
+			}
+			
+			if( pItemVQT[i].bTimeStampSpecified )
+			{
+				tmp.setTimeStamp( pItemVQT[i].ftTimeStamp );
+			}
+
+			itemsHVQTList.push_back( tmp );
+			(*ppErrors)[i] = S_OK;
+		}
+
+		if( itemsHVQTList.size() > 0 )
+		{
+			AsyncRequestListElem request( new AsyncRequest( pT->getServerHandle(), itemsHVQTList ) );
+			*pdwCancelID = request->getCancelID();
+			request->setTransactionID( dwTransactionID );
+			pT->server->addAsyncWriteRequest( request );
+			pT->server->asyncWriteSignal();
+		}
+		return result;
 	}
 
 	virtual HRESULT STDMETHODCALLTYPE RefreshMaxAge( 

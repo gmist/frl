@@ -14,7 +14,8 @@ GroupItem::GroupItem()
 	:	clientHandle( 0 ),
 		actived( False ),
 		requestDataType( VT_EMPTY ),
-		tagRef( NULL )
+		tagRef( NULL ),
+		deadBand( invalidDeadBand )
 {
 	resetTimeStamp();
 }
@@ -163,7 +164,7 @@ void GroupItem::resetTimeStamp()
 	lastChange.dwHighDateTime = 0;
 }
 
-void GroupItem::setTimeStamp( FILETIME &ts )
+void GroupItem::setTimeStamp( const FILETIME& ts )
 {
 	if( tagRef == NULL )
 		tagRef = opcAddressSpace::getInstance().getLeaf( itemID );
@@ -175,6 +176,16 @@ void GroupItem::setQuality( WORD quality )
 	if( tagRef == NULL )
 		tagRef = opcAddressSpace::getInstance().getLeaf( itemID );
 	tagRef->setQuality( quality );
+}
+
+void GroupItem::setDeadBand( Float newDeadBand )
+{
+	deadBand = newDeadBand;
+}
+
+frl::Float GroupItem::getDeadBand()
+{
+	return deadBand;
 }
 
 } // namespace opc
