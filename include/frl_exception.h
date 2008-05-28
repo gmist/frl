@@ -20,6 +20,7 @@ namespace frl
 #define FRL_THROW_CLASS_EX( xClass, description, function ) throw( xClass( description, function, FRL_FILE_NAME, __LINE__ ) )
 
 #define FRL_THROW_SYSAPI( description ) throw( frl::Exception(description + frl::String( FRL_STR( " " ) ) + frl::sys::util::getLastErrorDescription(), FRL_FUNCTION_NAME, FRL_FILE_NAME, __LINE__ ) );
+#define FRL_THROW_SYSAPI_S() throw( frl::Exception( frl::sys::util::getLastErrorDescription(), FRL_FUNCTION_NAME, FRL_FILE_NAME, __LINE__ ) );
 #define FRL_THROW_SYSAPI_EX( description, error ) throw( frl::Exception(description + frl::String( FRL_STR( " " ) ) + frl::sys::util::getCodeErrorDescription(error), FRL_FUNCTION_NAME, FRL_FILE_NAME, __LINE__ ) );
 
 #define FRL_EXCEPT_GUARD_EX( a ) frl::Exception::ExceptionGuard exceptionGuardObject( ( a ) )

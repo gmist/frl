@@ -18,13 +18,6 @@ OPCHANDLE getUniqueServerHandle()
 	return ++handle;
 }
 
-const FILETIME& getFileTime()
-{
-	static FILETIME fileTime;
-	GetSystemTimeAsFileTime( &fileTime );
-	return fileTime;
-}
-
 frl::String getUniqueName()
 {
 	static unsigned long counter = 0;

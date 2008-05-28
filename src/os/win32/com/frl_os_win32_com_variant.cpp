@@ -307,9 +307,14 @@ Variant& Variant::operator=( const FILETIME &rVal )
 	clear();
 	value.vt = VT_DATE;
 	SYSTEMTIME st;
-	FileTimeToSystemTime( &rVal, &st );
-	SystemTimeToVariantTime( &st, &value.date );
-	::ZeroMemory( &st, sizeof(SYSTEMTIME) );
+	if( ! :: FileTimeToSystemTime( &rVal, &st ) )
+	{
+		FRL_THROW_SYSAPI_S();
+	}
+	if( ! ::SystemTimeToVariantTime( &st, &value.date ) )
+	{
+		FRL_THROW_S();
+	}
 	return *this;
 }
 
@@ -451,14 +456,14 @@ Variant::operator FILETIME() const
 		FRL_THROW_S();
 	SYSTEMTIME st;
 	if( ! ::VariantTimeToSystemTime( value.date, &st ) )
+	{
 		FRL_THROW_S();
+	}
 	FILETIME ft;
 	if( ! ::SystemTimeToFileTime( &st, &ft ) )
 	{
-		::ZeroMemory( &st, sizeof(SYSTEMTIME) );
-		FRL_THROW_S();
+		FRL_THROW_SYSAPI_S();
 	}
-	::ZeroMemory( &st, sizeof(SYSTEMTIME) );
 	return ft;
 }
 

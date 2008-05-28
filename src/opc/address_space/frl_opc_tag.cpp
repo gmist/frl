@@ -29,9 +29,7 @@ Tag::Tag( Bool is_Branch_, const String &delimiter_ )
 		value.setType( VT_ARRAY );
 	else
 		value.setType( VT_EMPTY );
-	SYSTEMTIME SystemTime;
-	GetSystemTime( &SystemTime );
-	SystemTimeToFileTime( &SystemTime, &timeStamp );
+	::GetSystemTimeAsFileTime( &timeStamp );
 }
 
 Tag::~Tag()
@@ -245,9 +243,7 @@ void Tag::write( const os::win32::com::Variant &newVal )
 	if( os::win32::com::Variant::isEqual( value, newVal ) )
 		return;
 	value = newVal;
-	SYSTEMTIME SystemTime;
-	GetSystemTime( &SystemTime );
-	SystemTimeToFileTime( &SystemTime, &timeStamp );
+	::GetSystemTimeAsFileTime( &timeStamp );
 }
 
 const FILETIME& Tag::getTimeStamp()

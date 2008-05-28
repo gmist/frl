@@ -20,8 +20,7 @@ namespace opc
 namespace util
 {
 
-OPCHANDLE getUniqueServerHandle();	
-const FILETIME& getFileTime();
+OPCHANDLE getUniqueServerHandle();
 String getUniqueName();
 
 char* duplicateString( const char *str );

@@ -110,6 +110,8 @@ void OPCServer::onReadTimer()
 		{
 			if( (*it)->getCounts() != 0 )
 				(*group).second->doAsyncRead( ipCallback, (*it) );
+			else
+				continue;
 		}
 		ipCallback->Release();
 	}
@@ -155,6 +157,8 @@ void OPCServer::onWriteTimer()
 		{
 			if( (*it)->getCounts() != 0 )
 				(*group).second->doAsyncWrite( ipCallback, (*it) );
+			else
+				continue;
 		}
 		ipCallback->Release();
 	}

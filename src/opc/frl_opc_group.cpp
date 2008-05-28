@@ -144,7 +144,7 @@ void Group::Init()
 	deadband = 0;
 	localeID = LOCALE_NEUTRAL;
 	keepAlive = 0;
-	lastUpdate = util::getFileTime();
+	::GetSystemTimeAsFileTime( &lastUpdate );
 	tickOffset = -1;
 	registerInterface(IID_IOPCDataCallback);
 	
@@ -200,12 +200,30 @@ void Group::onUpdateTimer()
 			handles.push_back( (*it).first );
 	}
 
-	if( handles.empty() )
-		return;
+	if( ! handles.empty() )
+	{
+		GetSystemTimeAsFileTime( &lastUpdate );
+		AsyncRequestListElem request( new AsyncRequest( getServerHandle(), handles) );
+		request->setTransactionID( 0 );
+		doAsyncRefresh( request );	
+	}
 
-	AsyncRequestListElem request( new AsyncRequest( getServerHandle(), handles) );
-	request->setTransactionID( 0 );
-	doAsyncRefresh( request );
+	if( keepAlive == 0 ) // keep alive not used
+	{
+		return;
+	}
+	
+	FILETIME curTime;
+	GetSystemTimeAsFileTime( &curTime );
+	ULONGLONG lastUpdateCount = *(ULONGLONG*)( &lastUpdate );
+	ULONGLONG curTimeCount = *(ULONGLONG*)( &curTime );
+	if( ( curTimeCount - lastUpdateCount ) >= keepAlive * 10000000 )
+	{
+		GetSystemTimeAsFileTime( &lastUpdate );
+		AsyncRequestListElem request( new AsyncRequest( getServerHandle(), handles) );
+		request->setTransactionID( 0 );
+		doAsyncRefresh( request );	
+	}
 }
 
 void Group::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem &request )
@@ -292,7 +310,7 @@ void Group::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem 
 		pTimeStamp[i] = (*iter).second->getTimeStamp();
 	}
 
-	callBack->OnReadComplete( request->getTransactionID(),
+	callBack->OnReadComplete(	request->getTransactionID(),
 												clientHandle,
 												S_OK,
 												masterError,
@@ -318,6 +336,30 @@ void Group::doAsyncRefresh( const AsyncRequestListElem &request )
 		return;
 
 	size_t counts = request->getCounts();
+	
+	if( counts == 0 ) // keep alive
+	{
+		OPCHANDLE pHandles = NULL;
+		VARIANT pValue;
+		VariantInit( &pValue );
+		WORD pQuality = 0;
+		FILETIME  pTimeStamp;
+		memset( &pTimeStamp, 0, sizeof( pTimeStamp ) );
+		HRESULT pErrors = S_OK;
+
+		callBack->OnDataChange(	request->getTransactionID(),
+												clientHandle,
+												S_OK,
+												S_OK,
+												0,
+												&pHandles,
+												&pValue,
+												&pQuality,
+												&pTimeStamp,
+												&pErrors );
+		callBack->Release();
+		return;
+	}
 
 	OPCHANDLE *pHandles = NULL;
 	VARIANT *pValue = NULL;
