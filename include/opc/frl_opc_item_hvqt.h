@@ -16,8 +16,8 @@ private:
 	WORD quality;
 	FILETIME timeStamp;
 
-	Bool timeStampSpecified;
 	Bool qualitySpecified;
+	Bool timeStampSpecified;
 public:
 	ItemHVQT();
 	ItemHVQT(	OPCHANDLE handle_,

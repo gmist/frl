@@ -88,7 +88,11 @@ namespace frl
 				<<	FRL_STR( ". \n" )
 				<<	FRL_STR( "-----------------------------------\n" );
 
+		#if( FRL_COMPILER == FRL_COMPILER_MINGW  )
+		if( line > (ULong)(0) )
+		#else
 		if( line > 0 )
+		#endif
 		{
 			desc << FRL_STR( "\nFile: " ) << file.c_str();
 			desc << FRL_STR( "\nLine: " ) << line;

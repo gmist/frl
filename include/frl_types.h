@@ -25,8 +25,8 @@ namespace frl
 		typedef unsigned __int64		ULong;
 		typedef __int64					Long;
 	#elif( FRL_COMPILER == FRL_COMPILER_MINGW )
-		typedef unsigned long int	ULong;
-		typedef long int				Long;
+		typedef unsigned long long ULong;
+		typedef long long				Long;
 	#elif ( FRL_COMPILER == FRL_COMPILER_GNUC )
 		typedef unsigned long long	ULong;
 		typedef long long				Long;

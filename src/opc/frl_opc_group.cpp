@@ -339,7 +339,7 @@ void Group::doAsyncRefresh( const AsyncRequestListElem &request )
 	
 	if( counts == 0 ) // keep alive
 	{
-		OPCHANDLE pHandles = NULL;
+		OPCHANDLE pHandles = 0;
 		VARIANT pValue;
 		VariantInit( &pValue );
 		WORD pQuality = 0;

@@ -38,6 +38,7 @@ AsyncRequest::AsyncRequest( const AsyncRequest &request )
 		cancelID( request.cancelID ),
 		cancelled( request.cancelled ),
 		itemHVQTList( request.itemHVQTList ),
+		source( request.source ),
 		groupHandle( request.groupHandle )
 {
 
@@ -47,9 +48,9 @@ AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< ItemHVQT >&
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
+		itemHVQTList( itemsList ),
 		source( 0 ),
-		groupHandle( groupHandle_ ),
-		itemHVQTList( itemsList )
+		groupHandle( groupHandle_ )
 {
 
 }
