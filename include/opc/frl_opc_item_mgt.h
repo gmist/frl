@@ -344,6 +344,9 @@ HRESULT STDMETHODCALLTYPE CreateEnumerator(
 
 	if ( riid == IID_IEnumOPCItemAttributes)
 	{
+		if( pT->itemList.empty() )
+			return S_FALSE;
+
 		EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 		if (temp == NULL)
 			return (E_OUTOFMEMORY);
@@ -356,7 +359,7 @@ HRESULT STDMETHODCALLTYPE CreateEnumerator(
 		}
 		return temp->QueryInterface(riid,(void**)ppUnk);
 	}
-	return E_NOINTERFACE;
+	return E_INVALIDARG;
 }
 }; // class ItemMgt
 } // namespace opc
