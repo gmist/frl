@@ -115,13 +115,6 @@ public:
 		String itemID;
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
-			{
-				res = S_FALSE;
-				(*ppErrors)[i] = OPC_E_BADTYPE;
-				continue;	
-			}
-
 			try
 			{
 				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
@@ -143,6 +136,13 @@ public:
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;
 				continue;
+			}
+
+			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
+			{
+				res = S_FALSE;
+				(*ppErrors)[i] = OPC_E_BADTYPE;
+				continue;	
 			}
 
 			VARIANT tmp;

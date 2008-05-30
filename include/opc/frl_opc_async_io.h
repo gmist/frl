@@ -280,17 +280,17 @@ public:
 				continue;
 			}
 
-			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
-			{
-				result = S_FALSE;
-				(*ppErrors)[i] = OPC_E_BADTYPE;
-				continue;
-			}
-
 			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;
+				continue;
+			}
+
+			if( pItemVQT[i].vDataValue.vt == VT_EMPTY )
+			{
+				result = S_FALSE;
+				(*ppErrors)[i] = OPC_E_BADTYPE;
 				continue;
 			}
 
