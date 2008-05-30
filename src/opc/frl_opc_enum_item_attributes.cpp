@@ -143,14 +143,20 @@ void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 
 STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES **ppItemArray, ULONG *pceltFetched )
 {
-	if( ppItemArray == NULL || celt == 0 ) 
-		return E_INVALIDARG;
-
-	if( pceltFetched != NULL ) 
+	if( pceltFetched )
+	{
 		*pceltFetched = 0;
+	}
+
+	if( ppItemArray == NULL )
+	{
+		return E_INVALIDARG;
+	}
 
 	if( ppItemArray == NULL || ( celt != 1 && pceltFetched == NULL) )
+	{
 		return E_POINTER;
+	}
 
 	size_t i;
 	for( i = 0; i < celt; ++i )
@@ -163,9 +169,13 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES **ppItem
 	}
 
 	if( i == celt )
+	{
 		return S_OK;
+	}
 	else
+	{
 		return S_FALSE;
+	}
 }
 
 STDMETHODIMP EnumOPCItemAttributes::Skip( ULONG celt )
