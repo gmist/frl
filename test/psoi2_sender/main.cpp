@@ -23,7 +23,7 @@ void genSendingPacket( unsigned char* buffer, int channels )
 		buffer[ i ] = 0;
 
 	buffer[0] = 251;
-	buffer[1] = channels * 2;
+	buffer[1] = static_cast< unsigned char >( channels * 2 );
 	
 	std::bitset< 8 > tmpByte;
 	std::bitset< 4 > tmpVal;
@@ -116,6 +116,4 @@ int main( int argc, char *argv[] )
 		console_std::ColorOut( console_std::foregroundColor::iDefault ) << ex.getFullDescription() << FRL_NEW_LINE;
 		return 1;
 	}
-	
-	return 0;
 }

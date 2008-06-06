@@ -40,7 +40,7 @@ int main( int argc, char *argv[] )
 	}
 	else
 	{
-		while(  true )
+		for( ; ; )
 		{
 			::Sleep( 1000 );
 		}

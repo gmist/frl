@@ -47,8 +47,6 @@ int main( int argc, char *argv[] )
 	server.registrerServer3();
 	server.init();
 
-	while(  true )
+	for( ; ; )
 		::Sleep(100);
-
-	return 0;
 }

@@ -82,14 +82,13 @@ bool test_ThreadKill( void )
 		test_thread.join();
 		if( global_i == 10010 || test_thread.self() != frl::thread::InvalidThreadDescriptor )
 			return false;
-		return true;
 	}
 	catch ( frl::Exception& e)
 	{
 		frl::console_std::Out << e.getFullDescription();
 		return false;
 	}
-	return false;
+	return true;
 }
 
 bool test_ThreadEqual( void )
@@ -100,14 +99,15 @@ bool test_ThreadEqual( void )
 		frl::thread::Thread< void, void > testThread_2;
 		testThread_1.create( NullThreadFunc );
 		testThread_2.create( NullThreadFunc );
-		return ( testThread_1 == testThread_1 ) && ( testThread_1 != testThread_2 );
+		if( ( testThread_1 == testThread_1 ) && ( testThread_1 != testThread_2 ) )
+			return true;
 	}
 	catch ( frl::Exception& e)
 	{
 		frl::console_std::Out << e.getFullDescription();
 		return false;
 	}
-	return true;
+	return false;
 }
 
 
@@ -134,7 +134,6 @@ frl::Bool testClassVoidVoid()
 		{
 			return frl::True;
 		}
-		return frl::False;
 	}
 	catch( frl::Exception &ex )
 	{
@@ -167,7 +166,6 @@ frl::Bool testClassLongVoid()
 		{
 			return frl::True;
 		}
-		return frl::False;
 	}
 	catch( frl::Exception &ex )
 	{
@@ -197,8 +195,7 @@ frl::Bool testClassVoidLong()
 		if( g_value == 12345L )
 		{
 			return frl::True;
-		}
-		return frl::False;
+		}		
 	}
 	catch( frl::Exception &ex )
 	{

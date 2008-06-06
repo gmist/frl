@@ -7,7 +7,7 @@ MxxRu::Cpp::lib_target("frl.lib.release.rb")\
 	global_cpp_compiler_option( "/MP" )
 	global_cpp_compiler_option( "/D UNICODE" )
 	else
-	global_cpp_compiler_option( "-Wall" )
+	global_cpp_compiler_option( "-W6" )
 	end
 
 	required_prj( "frl.dependency.vendors.opc_foundation.release.rb" )

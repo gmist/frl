@@ -4,6 +4,8 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 {
 	if "vc" == toolset.name
 	global_cpp_compiler_option( "-W4" )
+	global_cpp_compiler_option( "/MP" )
+	global_cpp_compiler_option( "/D UNICODE" )
 	else
 	global_cpp_compiler_option( "-Wall" )
 	end

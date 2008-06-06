@@ -15,7 +15,6 @@ frl::Bool createBranchInRootBranch()
 		addressSpace.addBranch( branchName );
 		if( addressSpace.getBranch( branchName )->getID() == branchName )
 			return True;
-		return False;
 	}
 	catch( frl::Exception& )
 	{
@@ -37,7 +36,6 @@ frl::Bool createBranchInBranch()
 		addressSpace.addBranch(subBranchName );
 		if( addressSpace.getBranch( subBranchName )->getID() == subBranchName )
 			return True;
-		return False;
 	}
 	catch( frl::Exception& )
 	{
@@ -76,7 +74,6 @@ frl::Bool createLeafInRootBranch()
 		addressSpace.addLeaf( leafName );
 		if( addressSpace.getLeaf( leafName )->getID() == leafName )
 			return True;
-		return False;
 	}
 	catch( frl::Exception& )
 	{
@@ -98,7 +95,6 @@ frl::Bool createLeafInSubBranch()
 		if( addressSpace.getLeaf( branchName + addressSpace.getDelimiter() + leafName )->getID() 
 			== branchName + addressSpace.getDelimiter() + leafName )
 			return True;
-		return False;
 	}
 	catch( frl::Exception& )
 	{
@@ -141,7 +137,6 @@ frl::Bool getFullIDLeaf()
 		String name = addressSpace.getLeaf( fullName )->getID();
 		if( addressSpace.getLeaf( fullName )->getID() == fullName )
 			return True;
-		return False;
 	}
 	catch( frl::Exception& )
 	{

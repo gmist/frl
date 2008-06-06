@@ -30,9 +30,8 @@ frl::Bool createAndDeleteTest()
 		if( ! testKey.isExist() )
 			return frl::False;
 		testKey.deleteKey();
-		if( testKey.isExist() )
-			return frl::False;
-		return frl::True;
+		if( ! testKey.isExist() )			
+			return frl::True;
 	}
 	catch (frl::Exception &ex)
 	{
@@ -60,7 +59,6 @@ frl::Bool createFullPathAndRecurciveDelete()
 		removeKey.deleteKey( frl::True );
 		if ( testKey.isExist() || testKey1.isExist() || testKey2.isExist() || removeKey.isExist() )
 			FRL_THROW( FRL_STR("Error") );
-		return frl::True;
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -69,7 +67,7 @@ frl::Bool createFullPathAndRecurciveDelete()
 			removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;
 }
 
 frl::Bool DWORDValueTest()
@@ -84,7 +82,6 @@ frl::Bool DWORDValueTest()
 		if( testKey2.getDWORDValue( FRL_STR("test_dword") ) != 10 )
 			FRL_THROW( FRL_STR("Error!") );		
 		removeKey.deleteKey( frl::True );	
-		return frl::True;
 	}
 	catch( frl::Exception &ex )
 	{
@@ -92,7 +89,7 @@ frl::Bool DWORDValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;
 }
 
 frl::Bool DWORDDefaultValueTest()
@@ -107,7 +104,6 @@ frl::Bool DWORDDefaultValueTest()
 		if( testKey2.getDWORDValue() != 10 )
 			FRL_THROW( FRL_STR("Error!") );		
 		removeKey.deleteKey( frl::True );	
-		return frl::True;
 	}
 	catch( frl::Exception &ex )
 	{
@@ -115,7 +111,7 @@ frl::Bool DWORDDefaultValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;
 }
 
 
@@ -132,7 +128,6 @@ frl::Bool StringValueTest()
 		if( key2.getStringValue( FRL_STR("test_str")) != testMsg1 )
 			FRL_THROW( FRL_STR("Error!") );		
 		removeKey.deleteKey( frl::True );
-		return frl::True;	
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -140,7 +135,7 @@ frl::Bool StringValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;
 }
 
 frl::Bool StringDefaultValueTest()
@@ -156,7 +151,6 @@ frl::Bool StringDefaultValueTest()
 		if( key2.getStringValue() != testMsg1 )
 			FRL_THROW( FRL_STR("Error!") );		
 		removeKey.deleteKey( frl::True );
-		return frl::True;	
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -164,7 +158,7 @@ frl::Bool StringDefaultValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;	
 }
 
 
@@ -182,8 +176,7 @@ frl::Bool MultiStringValueTest()
 		frl::os::win32::registry::Key key2( FRL_STR("{9648C663-5517-4a7e-AFDA-44DE68BD5188}\\test" ) );						
 		if ( key2.getMultiStringValue( FRL_STR("test_str") ) != val )
 			FRL_THROW(FRL_STR("Error"));				
-		removeKey.deleteKey( frl::True );
-		return frl::True;	
+		removeKey.deleteKey( frl::True );	
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -191,7 +184,7 @@ frl::Bool MultiStringValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;
 }
 
 frl::Bool MultiStringDefaultValueTest()
@@ -209,7 +202,6 @@ frl::Bool MultiStringDefaultValueTest()
 		if ( key2.getMultiStringValue() != val )
 			FRL_THROW(FRL_STR("Error"));				
 		removeKey.deleteKey( frl::True );
-		return frl::True;	
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -217,7 +209,7 @@ frl::Bool MultiStringDefaultValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}
-	return frl::False;
+	return frl::True;
 }
 
 
@@ -236,13 +228,12 @@ frl::Bool BinaryValueTest()
 		frl::os::win32::registry::Key key1( FRL_STR("{1FB0B8D2-26B7-4043-9514-FEFE2D2DD28D}") );
 		std::vector< unsigned char > zz1;		
 		for( int i = 0; i < 200; i++ )
-			zz1.push_back( i );
+			zz1.push_back( (unsigned char) i );
 		key1.setBinaryValue( FRL_STR("test_binary_value"), zz1);
 		frl::os::win32::registry::Key key2( FRL_STR("{1FB0B8D2-26B7-4043-9514-FEFE2D2DD28D}") );
 		if( key2.getBinaryValue( FRL_STR("test_binary_value") ) != zz1 )
 			FRL_THROW( FRL_STR("error"));
-		removeKey.deleteKey( frl::True );
-		return frl::True;
+		removeKey.deleteKey( frl::True );		
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -250,7 +241,7 @@ frl::Bool BinaryValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}	
-	return frl::False;
+	return frl::True;
 }
 
 frl::Bool BinaryDefaultValueTest()
@@ -262,13 +253,12 @@ frl::Bool BinaryDefaultValueTest()
 		frl::os::win32::registry::Key key1( FRL_STR("{1FB0B8D2-26B7-4043-9514-FEFE2D2DD28D}") );
 		std::vector< unsigned char > zz1;		
 		for( int i = 0; i < 200; i++ )
-			zz1.push_back( i );
+			zz1.push_back( (unsigned char) i );
 		key1.setBinaryValue( zz1);
 		frl::os::win32::registry::Key key2( FRL_STR("{1FB0B8D2-26B7-4043-9514-FEFE2D2DD28D}") );
 		if( key2.getBinaryValue() != zz1 )
 			FRL_THROW( FRL_STR("error"));
-		removeKey.deleteKey( frl::True );
-		return frl::True;
+		removeKey.deleteKey( frl::True );		
 	}
 	catch ( frl::Exception &ex )
 	{
@@ -276,7 +266,7 @@ frl::Bool BinaryDefaultValueTest()
 		removeKey.deleteKey( frl::True );
 		return frl::False;
 	}	
-	return frl::False;
+	return frl::True;
 }
 
 
@@ -299,8 +289,8 @@ frl::Bool GetNumSubKeysTest()
 
 		int num = removeKey.getNumSubkeys();
 		removeKey.deleteKey(frl::True);
-		return num == 4;
-
+		if( num == 4 )
+			return frl::True;
 	}
 	catch ( frl::Exception &ex)
 	{
@@ -325,7 +315,8 @@ frl::Bool GetNumSubvaluesTest()
 		key.setDWORDValue( FRL_STR("value3"), 3 );		
 		int num = removeKey.getNumSubvalues();
 		removeKey.deleteKey( frl::True );
-		return num == 4;
+		if( num == 4 )
+			return frl::True;		
 	}
 	catch ( frl::Exception &ex )
 	{

@@ -221,7 +221,7 @@ void Psoi2Device::startProcess()
 void Psoi2Device::simulationProcess()
 {
 	FRL_LOG_TRACE( log ) << FRL_STR("Запуск процесса-симулятора" );
-	while( 1 )
+	for( ; ; )
 	{
 		::Sleep( 2000 );
 		for( frl::UInt i = 0; i < getChannelsNumber(); ++i )
@@ -240,7 +240,7 @@ void Psoi2Device::workProcess()
 	char readBuffer[ 101 ] = {'\0'};
 	SerialRWCount counts;
 
-	do
+	for( ; ; )
 	{
 		counts = 0;
 		try
@@ -322,8 +322,7 @@ void Psoi2Device::workProcess()
 		{
 			FRL_LOG_WARN( log ) << FRL_STR("Данные не были обработаны - неверный формат данных" );
 		}
-	}
-	while( 1 );
+	}	
 }
 
 void Psoi2Device::fillValues( const std::vector< std::bitset<8> > &pure_array )
