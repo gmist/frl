@@ -1,10 +1,6 @@
 #ifndef frl_smart_ptr_h_
 #define frl_smart_ptr_h_
-#include "smart_ptr/frl_smart_ptr_owner_copy.h"
-#include "smart_ptr/frl_smart_ptr_owner_ref_count.h"
 #include "smart_ptr/frl_smart_ptr_simply_storage.h"
-#include "smart_ptr/frl_smart_ptr_array_storage.h"
-#include "smart_ptr/frl_smart_ptr_owner_linked.h"
 #include "smart_ptr/frl_smart_ptr_owner_com.h"
 
 namespace frl
@@ -13,7 +9,7 @@ namespace frl
 template
 <
 	class T,
-	template< class > class OwnerShip = smart_ptr::OwnerRefCount,
+	template< class > class OwnerShip = smart_ptr::OwnerCOM,
 	template< class > class Storage = smart_ptr::SimplyStorage
 >
 class SmartPtr : public Storage< T >, public OwnerShip< T >

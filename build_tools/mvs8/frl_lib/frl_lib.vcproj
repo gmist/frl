@@ -953,23 +953,7 @@
 				Name="smart_ptr"
 				>
 				<File
-					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_array_storage.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_com.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_copy.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_linked.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_ref_count.h"
 					>
 				</File>
 				<File
