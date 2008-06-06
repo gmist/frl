@@ -109,7 +109,7 @@ const String& Document::getEncoding()
 	return encoding;
 }
 
-SmartPtr< Node > Document::getRoot()
+boost::shared_ptr< Node > Document::getRoot()
 {
 	return root;
 }

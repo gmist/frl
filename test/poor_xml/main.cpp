@@ -116,7 +116,7 @@ frl::Bool openNotEmptyFile()
 		if( doc.getRoot()->getName() != FRL_STR("VisualStudioProject" ) )
 			return frl::False;
 		
-		frl::SmartPtr< frl::poor_xml::Node > node;
+		boost::shared_ptr< frl::poor_xml::Node > node;
 		node = doc.getRoot()->getFirstNode( FRL_STR("Configurations") )->getNode( FRL_STR("Configuration"), 
 					FRL_STR("Name"),
 					FRL_STR("Debug|Win32") );
@@ -138,7 +138,7 @@ frl::Bool openLargeFile()
 		doc.LoadFromCurrenttDir( FRL_STR("largeFile.xml") );
 		if( doc.getVersion() != FRL_STR("1.0" ) || doc.getEncoding() != FRL_STR( "utf-8" ) )
 			return frl::False;
-		frl::SmartPtr< frl::poor_xml::Node > node;
+		boost::shared_ptr< frl::poor_xml::Node > node;
 		node = doc.getRoot()->getFirstNode( FRL_STR("members") )->getNode( FRL_STR("member"),
 					FRL_STR("name"),
 					FRL_STR("T:Microsoft.VisualStudio.Package.AuthoringScope") );

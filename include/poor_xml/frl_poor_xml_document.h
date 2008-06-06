@@ -12,7 +12,7 @@ namespace poor_xml
 class Document : private NonCopyable
 {
 private:
-	SmartPtr< Node > root;
+	boost::shared_ptr< Node > root;
 	String version;
 	String encoding;
 	void parseHeader( String &buffer );
@@ -28,7 +28,7 @@ public:
 	void LoadFromCurrenttDir( const String& fileName );
 	const String& getVersion();
 	const String& getEncoding();
-	SmartPtr< Node > getRoot();
+	boost::shared_ptr< Node > getRoot();
 };
 } // namespace poor_xml
 } // FatRat Library

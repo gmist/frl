@@ -43,7 +43,7 @@ NodesList Node::getSubNodes( const String &name_ )
 	return nodesList;
 }
 
-SmartPtr< Node > Node::getFirstNode( const String& name_ )
+boost::shared_ptr< Node > Node::getFirstNode( const String& name_ )
 {
 	for( NodesList::iterator it = nodes.begin(); it != nodes.end(); ++it )
 	{
@@ -61,9 +61,9 @@ String Node::getProprtyVal( const String &propertyName )
 	return (*it).second;
 }
 
-SmartPtr< Node > Node::getNode( const String &name_, const String &propertyName, const String &propertyValue )
+boost::shared_ptr< Node > Node::getNode( const String &name_, const String &propertyName, const String &propertyValue )
 {
-	std::list< SmartPtr < Node > > nodesList = getSubNodes( name_ );
+	std::list< boost::shared_ptr< Node > > nodesList = getSubNodes( name_ );
 	for( NodesList::iterator it = nodesList.begin(); it != nodesList.end(); ++it )
 	{
 		if( (*it)->getProprtyVal( propertyName ) == propertyValue )

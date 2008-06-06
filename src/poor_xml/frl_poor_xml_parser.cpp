@@ -209,7 +209,7 @@ NodesList Parser::getSubNodes( const String &buffer )
 			propetriesStr = tmpBuffer.substr( endNamePos, endNodeDef - endNamePos );
 		}
 
-		SmartPtr< Node > newNode( new Node( nodeName ) );
+		boost::shared_ptr< Node > newNode( new Node( nodeName ) );
 		ret.push_back( newNode );
 		newNode->properties = getProperties( propetriesStr );
 		if( ! simple )

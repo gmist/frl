@@ -2,9 +2,9 @@
 #define frl_poor_xml_node_h_
 #include <map>
 #include <list>
+#include <boost/smart_ptr.hpp>
 #include "frl_types.h"
 #include "frl_exception.h"
-#include "frl_smart_ptr.h"
 
 namespace frl
 {
@@ -13,7 +13,7 @@ namespace poor_xml
 class Parser;
 class Node;
 
-typedef std::list< SmartPtr< Node > > NodesList;
+typedef std::list< boost::shared_ptr< Node > > NodesList;
 
 class Node
 {
@@ -33,8 +33,8 @@ public:
 	const String& getName();
 	NodesList getSubNodes( const String &name_ );
 	String getProprtyVal( const String &propertyName );
-	SmartPtr< Node > getFirstNode( const String &name_ );
-	SmartPtr< Node > getNode( const String &name_, const String &propertyName, const String &propertyValue );
+	boost::shared_ptr< Node > getFirstNode( const String &name_ );
+	boost::shared_ptr< Node > getNode( const String &name_, const String &propertyName, const String &propertyValue );
 }; // class Node
 } // namespace poor_xml
 } // FatRat Library
