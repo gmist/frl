@@ -13,7 +13,7 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 	required_prj( "frl.dependency.vendors.opc_foundation.debug.rb" )
 	target("frl_d")
 	
-	# set path to boost library (please modiff )
+	# set path to boost library (please modify to you local copy ot boost)
 	global_include_path("../../../../../../../../src/lib/boost/trunk")
 	global_include_path("../../../include")
 
