@@ -20,8 +20,8 @@ public:
 	template< typename T >
 	void addDestination( const T& )
 	{
-		SmartPtr< T > tmp;
-		destionations.push_back(  *( ( SmartPtr< ILogWriter >* )( &tmp ) ) );
+		boost::shared_ptr< T > tmp( new T );
+		destionations.push_back(  *( ( boost::shared_ptr< ILogWriter >* )( &tmp ) ) );
 	}
 
 	void addDestination( const FileWriter& );

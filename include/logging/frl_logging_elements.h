@@ -1,9 +1,9 @@
 #ifndef frl_logging_elements_h_
 #define frl_logging_elements_h_
 #include <list>
+#include <boost/shared_ptr.hpp>
 #include "frl_types.h"
 #include "time/frl_time_sys_time.h"
-#include "frl_smart_ptr.h"
 #include "frl_lexical_cast.h"
 
 namespace frl
@@ -37,7 +37,7 @@ public:
 	virtual String proccess(  const LogParameter &param ) = 0;
 };
 
-typedef std::list< frl::SmartPtr< frl::logging::ILogElement > > ListLogElements;
+typedef std::list< boost::shared_ptr< frl::logging::ILogElement > > ListLogElements;
 
 class LexicalElement : public ILogElement
 {
@@ -121,10 +121,10 @@ inline
 ListLogElements operator << ( const LHV &lhv, const RHV &rhv )
 {
 	ListLogElements tmp;
-	SmartPtr< LHV > lhvTmp( new LHV() );
-	SmartPtr< RHV > rhvTmp( new RHV() );
-	tmp.push_back( (const SmartPtr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const SmartPtr< ILogElement >&) rhvTmp );
+	boost::shared_ptr< LHV > lhvTmp( new LHV() );
+	boost::shared_ptr< RHV > rhvTmp( new RHV() );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
 	return tmp;
 }
 
@@ -133,26 +133,26 @@ inline
 ListLogElements operator << ( const String &lhv, const String &rhv )
 {
 	ListLogElements tmp;
-	SmartPtr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
-	SmartPtr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
-	tmp.push_back( (const SmartPtr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const SmartPtr< ILogElement >&) rhvTmp );
+	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
+	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
 	return tmp;
 }
 
 inline
 ListLogElements operator << ( const String &lhv, ListLogElements rhv )
 {
-	SmartPtr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
-	rhv.push_back( (const SmartPtr< ILogElement >&) lhvTmp );
+	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
+	rhv.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
 	return rhv;
 }
 
 inline
 ListLogElements operator << ( ListLogElements lhv, const String &rhv )
 {
-	SmartPtr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
-	lhv.push_back( (const SmartPtr< ILogElement >&) rhvTmp );
+	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
+	lhv.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
 	return lhv;
 }
 
@@ -161,10 +161,10 @@ inline
 ListLogElements operator << ( const String &lhv, const RHV &rhv )
 {
 	ListLogElements tmp;
-	SmartPtr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
-	SmartPtr< RHV > rhvTmp( new RHV() );
-	tmp.push_back( (const SmartPtr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const SmartPtr< ILogElement >&) rhvTmp );
+	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
+	boost::shared_ptr< RHV > rhvTmp( new RHV() );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
 	return tmp;
 }
 
@@ -173,10 +173,10 @@ inline
 ListLogElements operator << ( const LHV &lhv, const String &rhv )
 {
 	ListLogElements tmp;
-	SmartPtr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
-	SmartPtr< LHV > lhvTmp( new LHV() );
-	tmp.push_back( (const SmartPtr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const SmartPtr< ILogElement >&) rhvTmp );
+	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
+	boost::shared_ptr< LHV > lhvTmp( new LHV() );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
+	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
 	return tmp;
 }
 
@@ -185,8 +185,8 @@ template< class LHV >
 inline
 ListLogElements operator << ( const LHV &lhv, ListLogElements rhv )
 {
-	SmartPtr< LHV > lhvTmp( new LHV() );
-	rhv.push_back( (const SmartPtr< ILogElement >&) lhvTmp );
+	boost::shared_ptr< LHV > lhvTmp( new LHV() );
+	rhv.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
 	return rhv;
 }
 
@@ -194,8 +194,8 @@ template< class RHV >
 inline
 ListLogElements operator << ( ListLogElements lhv, const RHV &rhv )
 {
-	SmartPtr< RHV > rhvTmp( new RHV() );
-	lhv.push_back( (const SmartPtr< ILogElement >&) rhvTmp );
+	boost::shared_ptr< RHV > rhvTmp( new RHV() );
+	lhv.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
 	return lhv;
 }
 

@@ -65,8 +65,8 @@ void Logger::addDestination( const FileWriter& )
 {
 	if( name.empty() )
 		return;
-	SmartPtr< FileWriter > ptr( new FileWriter( name + FRL_STR(".log") ) );
-	destionations.push_back( (const SmartPtr< ILogWriter >&) ptr );
+	boost::shared_ptr< FileWriter > ptr( new FileWriter( name + FRL_STR(".log") ) );
+	destionations.push_back( (const boost::shared_ptr< ILogWriter >&) ptr );
 }
 
 } // namespace logging

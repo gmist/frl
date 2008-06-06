@@ -4,7 +4,6 @@
 #include "console_std/frl_iostream.h"	
 #include "frl_lock.h"
 #include "io/fs/frl_fs_fn.h"
-#include "frl_smart_ptr.h"
 
 namespace frl
 {
@@ -23,7 +22,7 @@ public:
 	virtual void write( const ListLogElements &elements, const LogParameter &param ) = 0;
 };
 
-typedef std::list< frl::SmartPtr< frl::logging::ILogWriter > > ListLogWriters;
+typedef std::list< boost::shared_ptr< frl::logging::ILogWriter > > ListLogWriters;
 
 class ConsoleWriter : public ILogWriter
 {
