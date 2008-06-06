@@ -5,10 +5,10 @@
 #include <Windows.h>
 #include <list>
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "frl_exception.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_item_hvqt.h"
-#include "frl_smart_ptr.h"
 
 
 namespace frl
@@ -49,7 +49,7 @@ public:
 	OPCHANDLE getGroupHandle();
 }; // class AsyncRequest
 
-typedef frl::SmartPtr< AsyncRequest, frl::smart_ptr::OwnerRefCount > AsyncRequestListElem;
+typedef boost::shared_ptr< AsyncRequest > AsyncRequestListElem;
 typedef std::list< AsyncRequestListElem > AsyncRequestList;
 
 } // namespace opc
