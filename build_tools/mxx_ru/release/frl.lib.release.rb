@@ -13,6 +13,8 @@ MxxRu::Cpp::lib_target("frl.lib.release.rb")\
 	required_prj( "frl.dependency.vendors.opc_foundation.release.rb" )
 	target("frl")
 
+	# set path to boost library (please modiff )
+	global_include_path("../../../../../../../../src/lib/boost/trunk")
 	global_include_path("../../../include")
 
 	runtime_mode( Mxx_ru::Cpp::RUNTIME_RELEASE )
