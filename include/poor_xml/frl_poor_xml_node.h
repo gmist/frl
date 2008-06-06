@@ -2,7 +2,7 @@
 #define frl_poor_xml_node_h_
 #include <map>
 #include <list>
-#include <boost/smart_ptr.hpp>
+#include <boost/shared_ptr.hpp>
 #include "frl_types.h"
 #include "frl_exception.h"
 

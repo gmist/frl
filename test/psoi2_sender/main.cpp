@@ -1,3 +1,6 @@
+#include <bitset>
+#include <time.h>
+#include <boost/scoped_array.hpp>
 #include "io/comm_ports/frl_comm_ports_serial.h"
 #include "poor_xml/frl_poor_xml_document.h"
 #include "io/fs/frl_fs_fn.h"
@@ -5,8 +8,6 @@
 #include "frl_smart_ptr.h"
 #include "frl_lexical_cast.h"
 #include "time/frl_time_sys_time.h"
-#include <bitset>
-#include <time.h>
 
 unsigned long getNumber()
 {
@@ -93,10 +94,10 @@ int main( int argc, char *argv[] )
 		port.setup( io::comm_ports::serial::BAUD_RATE_1200 );
 		
 		srand( (unsigned int) ::time( NULL ) );
-		SmartPtr< unsigned char, smart_ptr::OwnerRefCount, smart_ptr::ArrayStorage > buffer( new unsigned char[ ( numChannels * 2 ) + 2] );
+		boost::scoped_array< unsigned char > buffer( new unsigned char[ ( numChannels * 2 ) + 2] );
 		for( ; ; )
 		{
-			genSendingPacket( smart_ptr::GetPtr( buffer ), numChannels );
+			genSendingPacket( buffer.get(), numChannels );
 			io::fs::FileDescriptor file;
 			frl::time::SysTime tmpTime;
 			tmpTime.setTimeSeparator( FRL_STR("-") );
@@ -106,8 +107,8 @@ int main( int argc, char *argv[] )
 			fileName += FRL_STR(".gen");
 			io::fs::create( fileName );
 			io::fs::open( file, fileName );
-			io::fs::write( file, smart_ptr::GetPtr( buffer), ( numChannels * 2 ) + 2 );
-			port.write( smart_ptr::GetPtr( buffer ), ( numChannels * 2) + 2 );
+			io::fs::write( file, buffer.get(), ( numChannels * 2 ) + 2 );
+			port.write( buffer.get(), ( numChannels * 2) + 2 );
 			::Sleep( delay );
 		}
 	}

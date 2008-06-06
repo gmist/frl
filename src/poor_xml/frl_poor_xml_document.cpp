@@ -1,7 +1,7 @@
+#include <boost/scoped_array.hpp>
 #include "poor_xml/frl_poor_xml_document.h"
 #include "poor_xml/frl_poor_xml_parser.h"
 #include "io/fs/frl_fs_fn.h"
-#include "frl_smart_ptr.h"
 
 namespace frl
 {
@@ -26,13 +26,14 @@ void Document::LoadFromCurrenttDir( const String& fileName_ )
 	io::fs::FileOffset length = io::fs::length( fileName );
 	if( length <= 0 )
 		FRL_THROW_S_CLASS( Document::EmptyFile );
-	SmartPtr< char, smart_ptr::OwnerRefCount, smart_ptr::ArrayStorage > data( new char[ ( size_t )length + 1 ] );
+
+	boost::scoped_array< char > data( new char[ ( size_t )length + 1 ] );
 	io::fs::FileDescriptor file = io::fs::InvalidFileDescriptor;
 	size_t counts;
 	try
 	{
 		io::fs::open( file, fileName, io::fs::openReadOnly | io::fs::openBinary );
-		counts = io::fs::read( file, smart_ptr::GetPtr( data ), (io::fs::FileRWCount)length );
+		counts = io::fs::read( file, data.get(), (io::fs::FileRWCount)length );
 		if( counts == 0 )
 			FRL_THROW_S_CLASS( Document::UnknownError );
 	}

@@ -3,13 +3,13 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
+#include <map>
+#include <boost/shared_ptr.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
 #include "frl_non_copyable.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_serv_handle_counter.h"
-#include "frl_smart_ptr.h"
-#include <map>
 
 namespace frl
 {
@@ -63,7 +63,7 @@ public:
 	Float getDeadBand();
 }; // GroupItem
 
-typedef SmartPtr< GroupItem, smart_ptr::OwnerLinked > GroupItemElem;
+typedef boost::shared_ptr< GroupItem > GroupItemElem;
 typedef std::map< OPCHANDLE, GroupItemElem > GroupItemElemList;
 
 } // namespace opc
