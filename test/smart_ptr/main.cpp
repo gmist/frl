@@ -69,17 +69,17 @@ frl::Bool SimplyOwnerCOM()
 {
 	counter = 0;
 	{
-		frl::SmartPtr< X_COM, frl::smart_ptr::OwnerCOM > ptr1( new X_COM );
-		frl::SmartPtr< X_COM, frl::smart_ptr::OwnerCOM > ptr2 = ptr1;
-		frl::SmartPtr< X_COM, frl::smart_ptr::OwnerCOM > ptr3 = ptr2;
-		frl::SmartPtr< X_COM, frl::smart_ptr::OwnerCOM > ptr4 = ptr1;
+		frl::ComPtr< X_COM > ptr1( new X_COM );
+		frl::ComPtr< X_COM > ptr2 = ptr1;
+		frl::ComPtr< X_COM > ptr3 = ptr2;
+		frl::ComPtr< X_COM > ptr4 = ptr1;
 		if( comRefCounter != 4 || counter != 1 )
 			return frl::False;
-		frl::SmartPtr< X_COM, frl::smart_ptr::OwnerCOM > ptr5;
+		frl::ComPtr< X_COM > ptr5( new X_COM );
 		ptr4 = ptr5;
 		if( comRefCounter != 5 || counter != 2 )
 			return frl::False;
-		ptr4 = new X_COM();
+		ptr4 = frl::ComPtr< X_COM >( new X_COM() );
 		if( comRefCounter != 5 || counter != 3 )
 			return frl::False;
 	}

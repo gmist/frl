@@ -75,7 +75,7 @@ STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown **rgelt, ULONG *pceltFetched 
 	size_t i = currentIndex;
 	for( ; ( i < groupList.size() ) && ( *pceltFetched < celt ); ++i )
 	{
-		pGroup = smart_ptr::GetPtr( groupList[i] );
+		pGroup = groupList[i].get();
 		rgelt[*pceltFetched] = reinterpret_cast< IUnknown*>( pGroup );
 		if( pGroup != NULL  )
 			pGroup->AddRef();

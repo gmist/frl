@@ -393,7 +393,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGr
 	if( it == groupItem.end() )
 		return E_FAIL;
 
-	Group* grpItem = smart_ptr::GetPtr( (*it).second );
+	Group* grpItem = (*it).second.get();
 	groupItemIndex.erase( grpItem->getName() );
 	groupItem.erase( it );
 	grpItem->isDeleted( True );
@@ -504,8 +504,9 @@ HRESULT OPCServer::addNewGroup( Group **group )
 	if( (*group)->getName().empty() )
 		(*group)->setName( util::getUniqueName() );
 
-	groupItemIndex.insert( std::pair< String, GroupElem >( (*group)->getName(), (*group) ) );
-	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( (*group)->getServerHandle(), (*group ) ) );
+	GroupElem newGroup( *group );
+	groupItemIndex.insert( std::pair< String, GroupElem >( (*group)->getName(), newGroup ) );
+	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( (*group)->getServerHandle(), newGroup ) );
 	return S_OK;
 }
 

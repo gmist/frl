@@ -23,7 +23,7 @@ namespace frl
 namespace opc
 {
 class Group;
-typedef SmartPtr< Group, smart_ptr::OwnerCOM > GroupElem;
+typedef ComPtr< Group > GroupElem;
 typedef std::map< OPCHANDLE, GroupElem > GroupElemMap;
 typedef std::map< String, GroupElem > GroupElemIndexMap;
 

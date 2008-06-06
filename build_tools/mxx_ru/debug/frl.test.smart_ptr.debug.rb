@@ -3,7 +3,7 @@ require 'mxx_ru/cpp'
 MxxRu::Cpp::exe_target("frl.test.smart_ptr.debug.rb")\
 {
 	required_prj( "frl.lib.debug.rb" )
-	target("test_smart_ptr_cast_d")
+	target("test_smart_ptr_d")
 	include_path("../../../test/smart_ptr")
 	runtime_mode( MxxRu::Cpp::RUNTIME_DEBUG )
 	rtl_mode( MxxRu::Cpp::RTL_STATIC )

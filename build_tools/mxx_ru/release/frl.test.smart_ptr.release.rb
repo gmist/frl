@@ -3,7 +3,7 @@ require 'mxx_ru/cpp'
 MxxRu::Cpp::exe_target("frl.test.smart_ptr.release.rb")\
 {
 	required_prj( "frl.lib.release.rb" )
-	target("test_smart_ptr_cast")
+	target("test_smart_ptr")
 	include_path("../../../test/smart_ptr")
 	runtime_mode( MxxRu::Cpp::RUNTIME_RELEASE )
 	rtl_mode( MxxRu::Cpp::RTL_STATIC )

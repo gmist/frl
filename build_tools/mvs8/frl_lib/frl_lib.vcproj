@@ -953,11 +953,7 @@
 				Name="smart_ptr"
 				>
 				<File
-					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_owner_com.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\smart_ptr\frl_smart_ptr_simply_storage.h"
+					RelativePath="..\..\..\include\smart_ptr\frl_com_ptr.h"
 					>
 				</File>
 			</Filter>

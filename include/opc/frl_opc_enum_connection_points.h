@@ -14,7 +14,7 @@ namespace opc
 {
 
 class ConnectionPoint;
-typedef SmartPtr< ConnectionPoint, smart_ptr::OwnerCOM > ConnectionPointElem;
+typedef ComPtr< ConnectionPoint > ConnectionPointElem;
 typedef std::list< ConnectionPointElem > ConnectionPointList;
 
 class EnumConnectionPoints : public IEnumConnectionPoints, public os::win32::com::Allocator

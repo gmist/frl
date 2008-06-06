@@ -81,7 +81,7 @@ HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Next( /* [in] */ ULONG cConnecti
 			currentIndex = points.size();
 			return S_FALSE;
 		}
-		ppCP[i] = smart_ptr::GetPtr(*it);
+		ppCP[i] = (*it).get();
 		ppCP[i]->AddRef();
 	}
 	*pcFetched = i;
