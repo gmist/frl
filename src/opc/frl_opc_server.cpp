@@ -9,6 +9,7 @@
 #include "opc/frl_opc_server_factory.h"
 #include "frl_util_functors.h"
 #include "os/win32/com/frl_os_win32_com_uuidof.h"
+#include <boost/lambda/lambda.hpp>
 
 namespace frl
 {
@@ -60,11 +61,11 @@ OPCServer::OPCServer()
 OPCServer::~OPCServer()
 {
 	timerRead.tryStop();
-	readEvent.signal();
+	asyncReadSignal();
 	timerRead.stop();
 
 	timerWrite.tryStop();
-	writeEvent.signal();
+	asyncWriteSignal();
 	timerWrite.stop();
 
 	factory.LockServer( FALSE );
@@ -72,16 +73,16 @@ OPCServer::~OPCServer()
 
 void OPCServer::onReadTimer()
 {
-	readEvent.wait();
+	boost::mutex::scoped_lock lock( readMtx );
+	while( asyncReadList.empty() && ! timerRead.isStop() )
+		readCnd.wait( lock );
 
-	if ( timerRead.isStop() )
+	if( timerRead.isStop() )
 		return;
 
 	AsyncRequestList tmp;
 	{
 		boost::mutex::scoped_lock guard( readGuard );
-		if( ! asyncReadList.size() )
-			return;
 		asyncReadList.swap( tmp );
 	}
 
@@ -116,8 +117,10 @@ void OPCServer::onReadTimer()
 }
 
 void OPCServer::onWriteTimer()
-{
-	writeEvent.wait();
+{	
+	boost::mutex::scoped_lock lock( writeMtx );
+	while( asyncWriteList.empty() && ! timerWrite.isStop() )
+		writeCnd.wait( lock );
 
 	if( timerWrite.isStop() )
 		return;
@@ -125,8 +128,6 @@ void OPCServer::onWriteTimer()
 	AsyncRequestList tmp;
 	{
 		boost::mutex::scoped_lock guard( writeGuard );
-		if( ! asyncWriteList.size() )
-			return;
 		asyncWriteList.swap( tmp );
 	}
 
@@ -525,48 +526,52 @@ OPCSERVERSTATE OPCServer::getServerState()
 
 void OPCServer::asyncReadSignal()
 {
-	readEvent.signal();
+	boost::mutex::scoped_lock lock( readMtx );
+	readCnd.notify_one();
 }
 
 void OPCServer::asyncWriteSignal()
 {
-	writeEvent.signal();
+	boost::mutex::scoped_lock lock( writeMtx );
+	writeCnd.notify_one();
 }
 
 frl::Bool OPCServer::asyncRequestCancel( DWORD id )
 {
-	Bool isExistRead = False;
+	Bool isExistRead, isExistWrite = False;
 	AsyncRequestList::iterator it;
-	readGuard.lock();
-	AsyncRequestList::iterator end = asyncReadList.end();
-	for( it = asyncReadList.begin(); it != end; ++it )
+	AsyncRequestList::iterator end;
 	{
-		if( (*it)->getCancelID() == id )
+		boost::mutex::scoped_lock lock( readGuard );
+		end = asyncReadList.end();
+		for( it = asyncReadList.begin(); it != end; ++it )
 		{
-			isExistRead = True;
-			break;
+			if( (*it)->getCancelID() == id )
+			{
+				isExistRead = True;
+				break;
+			}
 		}
+		if( isExistRead )
+			(*it)->isCancelled( True );		
 	}
-	if( isExistRead )
-		(*it)->isCancelled( True );
-	readGuard.unlock();
 
-	writeGuard.lock();
-	Bool isExistWrite = False;
-	end =  asyncWriteList.end();
-	for( it = asyncWriteList.begin(); it != end; ++it )
 	{
-		if( (*it)->getCancelID() == id )
+		boost::mutex::scoped_lock lock( writeGuard );
+		end =  asyncWriteList.end();
+		for( it = asyncWriteList.begin(); it != end; ++it )
 		{
-			isExistWrite = True;
-			break;
+			if( (*it)->getCancelID() == id )
+			{
+				isExistWrite = True;
+				break;
+			}
 		}
+		if( isExistWrite )
+			(*it)->isCancelled( True );	
 	}
-	if( isExistWrite )
-		(*it)->isCancelled( True );
-	writeGuard.unlock();
 	
-	return  ( isExistRead || isExistWrite );
+	return ( isExistRead || isExistWrite );
 }
 
 void OPCServer::removeItemFromAsyncReadRequestList( OPCHANDLE handle_ )

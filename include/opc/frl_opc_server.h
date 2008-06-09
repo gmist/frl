@@ -4,6 +4,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "lock/frl_mutex.h"
 #include "opc/frl_opc_common.h"
@@ -56,16 +57,19 @@ private:
 	lock::Mutex scopeGuard;
 	OPCSERVERSTATUS serverStatus;
 	address_space::AddrSpaceCrawler crawler;
-	
+
 	AsyncRequestList asyncReadList;
 	AsyncRequestList asyncWriteList;
 
 	Timer< OPCServer > timerRead;
 	Timer< OPCServer > timerWrite;
 
-	lock::Event readEvent;
-	lock::Event writeEvent;
-	
+	boost::mutex readMtx;
+	boost::condition readCnd;
+
+	boost::mutex writeMtx;
+	boost::condition writeCnd;
+
 	boost::mutex readGuard;
 	boost::mutex writeGuard;
 public:
