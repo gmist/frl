@@ -164,30 +164,6 @@
 				>
 			</File>
 			<Filter
-				Name="lock"
-				>
-				<File
-					RelativePath="..\..\..\src\lock\frl_mutex.cpp"
-					>
-				</File>
-				<Filter
-					Name="linux"
-					>
-					<File
-						RelativePath="..\..\..\src\lock\linux\frl_mutex_fn_linux.cpp"
-						>
-					</File>
-				</Filter>
-				<Filter
-					Name="win32"
-					>
-					<File
-						RelativePath="..\..\..\src\lock\win32\frl_mutex_fn_win32.cpp"
-						>
-					</File>
-				</Filter>
-			</Filter>
-			<Filter
 				Name="console_std"
 				>
 				<File
@@ -446,10 +422,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\frl_lock.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\include\frl_non_copyable.h"
 				>
 			</File>
@@ -497,34 +469,6 @@
 				RelativePath="..\..\..\include\frl_util_functors.h"
 				>
 			</File>
-			<Filter
-				Name="lock"
-				>
-				<File
-					RelativePath="..\..\..\include\lock\frl_lock_mutex_i.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_mutex.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_mutex_fn.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_scope_guard.h"
-					>
-				</File>
-				<Filter
-					Name="win32"
-					>
-					<File
-						RelativePath="..\..\..\include\lock\win32\frl_mutex_fn_win32.h"
-						>
-					</File>
-				</Filter>
-			</Filter>
 			<Filter
 				Name="stream_std"
 				>
@@ -854,26 +798,6 @@
 				>
 				<File
 					RelativePath="..\..\..\include\smart_ptr\frl_com_ptr.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="function"
-				>
-				<File
-					RelativePath="..\..\..\include\function\frl_function0.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\function\frl_function1.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\function\frl_function2.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\function\frl_function_base.h"
 					>
 				</File>
 			</Filter>

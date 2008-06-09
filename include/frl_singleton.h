@@ -1,7 +1,5 @@
 #ifndef frl_singleton_h_
 #define frl_singleton_h_
-#include "lock/frl_mutex.h"
-#include "lock/frl_scope_guard.h"
 
 namespace frl
 {

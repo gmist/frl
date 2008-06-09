@@ -24,6 +24,7 @@ private:
 	boost::condition cnd;
 	volatile bool stopIt;
 	volatile bool isRunning;
+	boost::mutex opMtx;
 
 	boost::function< void() > functionBoost;
 	typedef void ( T::*FunctionDef )( void );
@@ -95,6 +96,7 @@ public:
 
 	void init( T *ptr, typename Timer::FunctionDef function_ )
 	{		
+		boost::mutex::scoped_lock lock( opMtx );
 		functionBoost = boost::bind( function_, ptr );
 	}
 
@@ -114,6 +116,7 @@ public:
 
 	void start()
 	{
+		boost::mutex::scoped_lock lock( opMtx );
 		if( ! isRunning )
 		{
 			stopIt = false;			
@@ -124,12 +127,13 @@ public:
 
 	void stop()
 	{
+		boost::mutex::scoped_lock lock( opMtx );
 		if( isRunning )
 		{
-			isRunning = false;
 			stopIt = true;
 			cnd.notify_one();
 			process.join();
+			isRunning = false;
 		}
 	}
 
@@ -140,6 +144,7 @@ public:
 
 	void tryStop()
 	{
+		boost::mutex::scoped_lock lock( opMtx );
 		if( isRunning )
 		{
 			stopIt = true;

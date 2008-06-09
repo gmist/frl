@@ -2,7 +2,6 @@
 #define frl_opc_item_mgt_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include "frl_lock.h"
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_enum_item_attributes.h"

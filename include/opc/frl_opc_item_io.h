@@ -2,6 +2,7 @@
 #define frl_opc_item_io_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/thread/mutex.hpp>
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
@@ -23,7 +24,7 @@ public:
 		/* [size_is][size_is][out] */ HRESULT **ppErrors)
 	{
 		T* pT = static_cast< T* >( this );
-		lock::ScopeGuard guard( pT->scopeGuard );
+		boost::mutex::scoped_lock guard( pT->scopeGuard );
 
 		if( pszItemIDs == NULL || pdwMaxAge == NULL ||
 			ppvValues == NULL || ppwQualities == NULL ||
@@ -97,7 +98,7 @@ public:
 		/* [size_is][size_is][out] */ HRESULT **ppErrors)
 	{
 		T* pT = static_cast< T* >( this );
-		lock::ScopeGuard guard( pT->scopeGuard );
+		boost::mutex::scoped_lock guard( pT->scopeGuard );
 
 		if( pszItemIDs == NULL || pItemVQT == NULL || ppErrors == NULL )
 			return E_INVALIDARG;

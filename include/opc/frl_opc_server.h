@@ -6,7 +6,6 @@
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/condition.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
-#include "lock/frl_mutex.h"
 #include "opc/frl_opc_common.h"
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
@@ -54,7 +53,7 @@ private:
 
 	GroupElemMap groupItem;
 	GroupElemIndexMap groupItemIndex;
-	lock::Mutex scopeGuard;
+	boost::mutex scopeGuard;
 	OPCSERVERSTATUS serverStatus;
 	address_space::AddrSpaceCrawler crawler;
 

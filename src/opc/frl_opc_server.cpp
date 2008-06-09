@@ -89,7 +89,7 @@ void OPCServer::onReadTimer()
 	IOPCDataCallback* ipCallback = NULL;
 	HRESULT hResult;
 	
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 	GroupElemMap::iterator group;
 	GroupElemMap::iterator groupEnd = groupItem.end();
 	
@@ -134,7 +134,7 @@ void OPCServer::onWriteTimer()
 	IOPCDataCallback* ipCallback = NULL;
 	HRESULT hResult;
 
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 	GroupElemMap::iterator group;
 	GroupElemMap::iterator groupEnd = groupItem.end();
 
@@ -266,7 +266,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 
 	String name;
 
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 	if( szName == NULL || wcslen( szName ) == 0 )
 	{
 		name = util::getUniqueName();
@@ -347,7 +347,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR 
 	if( szName == NULL || wcslen( szName ) == 0  )
 		return E_INVALIDARG;
 
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	String name = szName;
@@ -373,7 +373,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **pp
 	if(ppServerStatus == NULL)
 		return E_INVALIDARG;
 
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 	OPCSERVERSTATUS *stat = os::win32::com::allocMemory<OPCSERVERSTATUS>();
 	memcpy( stat, &serverStatus, sizeof(OPCSERVERSTATUS) );
 	CoFileTimeNow(&( stat->ftCurrentTime));
@@ -388,7 +388,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **pp
 
 HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
 {
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 
 	GroupElemMap::iterator it = groupItem.find( hServerGroup );
 	if( it == groupItem.end() )
@@ -407,7 +407,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGr
 
 HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 
 	if( riid == IID_IEnumUnknown )
 	{
@@ -458,7 +458,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 
 HRESULT OPCServer::setGroupName( const String &oldName, const String &newName )
 {
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 
 	GroupElemIndexMap::iterator it =  groupItemIndex.find( newName );
 	if( it != groupItemIndex.end() )
@@ -479,7 +479,7 @@ HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Grou
 	if ( ppClone == NULL )
 		return E_INVALIDARG;
 
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 
 	GroupElemIndexMap::iterator it = groupItemIndex.find( cloneName );
 	if( it != groupItemIndex.end() )

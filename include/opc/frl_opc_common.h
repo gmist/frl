@@ -4,7 +4,6 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_types.h"
 #include "../dependency/vendors/opc_foundation/opccomn.h"
-#include "frl_lock.h"
 
 namespace frl
 {

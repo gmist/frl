@@ -3,7 +3,6 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
-#include "frl_lock.h"
 
 namespace frl
 {
