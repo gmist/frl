@@ -1,10 +1,10 @@
 #ifndef FRL_THREAD_H_
 #define FRL_THREAD_H_
 
+#include <boost/thread/mutex.hpp>
 #include "thread/frl_thread_fn.h"
 #include "frl_empty_type.h"
 #include "frl_non_copyable.h"
-#include "lock/frl_mutex.h"
 #include "lock/frl_event.h"
 #include "frl_exception.h"
 #include "frl_empty_type.h"
@@ -115,7 +115,7 @@ template< class T >
 class MasterThreadBase
 {
 protected:
-lock::Mutex scopeGuard;
+boost::mutex scopeGuard;
 volatile Bool created;
 volatile Bool running;
 frl::lock::Event startWait;
@@ -133,12 +133,11 @@ virtual ~MasterThreadBase( void )
 	scopeGuard.lock();
 	FRL_EXCEPT_GUARD();
 	this->kill();
-	scopeGuard.unLock();
+	scopeGuard.unlock();
 }
 
 void create( Bool isDetached_ = False , UInt stackSize_ = 0 )
-{
-	lock::ScopeGuard guard( scopeGuard );
+{	
 	FRL_EXCEPT_GUARD();
 	if ( created )
 		FRL_THROW( FRL_STR( "Thread already created." ) );
@@ -186,7 +185,7 @@ void yield( void )
 
 void join( void )
 {
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if ( created && running )
 		thread::join( descriptor );
@@ -204,7 +203,7 @@ void join( void )
 
 Bool join( frl::TimeOut msec_ )
 {
-	lock::ScopeGuard guard( scopeGuard );
+	boost::mutex::scoped_lock guard( scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if ( created && running )
 		return thread::join( descriptor, msec_ );
@@ -284,7 +283,7 @@ void create( typename private_::FuncSelect<ResultType,
 				Bool isDetached_  = False ,
 				UInt stackSize_  = 0 )
 {
-	lock::ScopeGuard guard(  MasterThreadBase< ThreadBase< ResultType, ParameterType, Type > >::scopeGuard );
+	boost::mutex::scoped_lock guard(  MasterThreadBase< ThreadBase< ResultType, ParameterType, Type > >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	type = &type_in;
 	function = function_;
@@ -359,7 +358,7 @@ Thread( FRL_THREAD_FUNC function_, ParameterType parameter_, const Type &type_ )
 
 void start( ParameterType parameter_ )
 {
-	lock::ScopeGuard guard( ThreadBase< ResultType, ParameterType, Type >::scopeGuard );
+	boost::mutex::scoped_lock guard( ThreadBase< ResultType, ParameterType, Type >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if( ! ThreadBase< ResultType, ParameterType, Type >::created )
 		FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
@@ -394,7 +393,7 @@ Thread( FRL_THREAD_FUNC function_, const Type &type_ )
 
 void start( void )
 {
-	lock::ScopeGuard guard( ThreadBase< void, void, Type >::scopeGuard );
+	boost::mutex::scoped_lock guard( ThreadBase< void, void, Type >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if( ! ThreadBase< void, void, Type >::created )
 		FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
@@ -426,7 +425,7 @@ Thread( FRL_THREAD_FUNC function_,  const Type &type_ )
 
 void start( void )
 {
-	lock::ScopeGuard guard( ThreadBase< ResultType, void, Type >::scopeGuard );
+	boost::mutex::scoped_lock guard( ThreadBase< ResultType, void, Type >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if( ! ThreadBase< ResultType, void, Type >::created )
 		FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
@@ -465,7 +464,7 @@ Thread( FRL_THREAD_FUNC function_, ParameterType parameter_,  const Type &type_ 
 
 void start( ParameterType parameter_ )
 {
-	lock::ScopeGuard guard( ThreadBase< void, ParameterType, Type >::scopeGuard );
+	boost::mutex::scoped_lock guard( ThreadBase< void, ParameterType, Type >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if( ! ThreadBase< void, ParameterType, Type >::created )
 		FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
@@ -551,7 +550,7 @@ virtual ~Thread( void ) {}
 
 void start( void )
 {
-	lock::ScopeGuard guard( ThreadBase< ResultType, void,  EmptyType >::scopeGuard );
+	boost::mutex::scoped_lock guard( ThreadBase< ResultType, void,  EmptyType >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if( ! ThreadBase< ResultType, void,  EmptyType >::created )
 		FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
@@ -584,7 +583,7 @@ Thread( FRL_THREAD_FUNC function_ )
 
 void start( void )
 {
-	lock::ScopeGuard guard( ThreadBase< void, void, EmptyType >::scopeGuard );
+	boost::mutex::scoped_lock guard( ThreadBase< void, void, EmptyType >::scopeGuard );
 	FRL_EXCEPT_GUARD();
 	if( ! ThreadBase< void, void, EmptyType >::created )
 		FRL_THROW( FRL_STR( "Thread not created. create thread before use function Thread::start()" ) );
