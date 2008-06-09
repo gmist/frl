@@ -418,10 +418,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\frl_non_copyable.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\include\frl_null_type.h"
 				>
 			</File>

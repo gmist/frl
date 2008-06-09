@@ -1,11 +1,11 @@
 #ifndef frl_logging_h_
 #define frl_logging_h_
 #include "logging/frl_logging_writers.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 
 namespace frl { namespace logging {
 
-class Logger : private frl::NonCopyable
+class Logger : private boost::noncopyable
 {
 private:
 	ListLogElements formaters;

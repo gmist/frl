@@ -57,7 +57,7 @@ namespace console_std
 	}
 #endif
 
-class ColorOut : private frl::NonCopyable
+class ColorOut : private boost::noncopyable
 {
 private:
 	frl::Long defaultAttributes;

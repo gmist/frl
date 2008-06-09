@@ -1,7 +1,7 @@
 #ifndef frl_comm_ports_serial_win32_h_
 #define frl_comm_ports_serial_win32_h_
 #include "io/comm_ports/frl_comm_ports_serial_fh.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 
 namespace frl
 {
@@ -10,7 +10,7 @@ namespace io
 namespace comm_ports
 {
 
-class Serial : private NonCopyable
+class Serial : private boost::noncopyable
 {
 private:
 	String name;

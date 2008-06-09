@@ -1,14 +1,14 @@
 #ifndef psoi2_device_manager_h_
 #define psoi2_device_manager_h_
 #include "poor_xml/frl_poor_xml_document.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "frl_opc.h"
 #include <vector>
 
 using namespace frl;
 class Psoi2Device;
 
-class DeviceManager : private NonCopyable
+class DeviceManager : private boost::noncopyable
 {
 private:
 	void initializeAddressSpace();

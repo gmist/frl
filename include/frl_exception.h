@@ -6,7 +6,7 @@
 #include "frl_config.h"
 #include "frl_types.h"
 #include "frl_string.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "frl_auto_value.h"
 #include "sys/frl_sys_util.h"
 
@@ -96,7 +96,7 @@ public:
 	
 	// Class for automatically push/pop the function name for unwinding stack.
 	class ExceptionGuard
-		:	private NonCopyable
+		:	private boost::noncopyable
 	{
 	public:
 		ExceptionGuard(const String& funcName) throw()

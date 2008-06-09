@@ -11,7 +11,7 @@
 #include "opc/frl_opc_browse_server_address_space.h"
 #include "opc/frl_opc_connection_point_container.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "opc/address_space/frl_opc_addr_space_crawler.h"
 #include "opc/frl_opc_browse.h"
 #include "opc/frl_opc_item_io.h"
@@ -34,7 +34,7 @@ class OPCServer
 		public ItemProperties,
 		public BrowseServerAddressSpace< OPCServer >,
 		public ConnectionPointContainer,
-		private NonCopyable,
+		private boost::noncopyable,
 		public os::win32::com::Allocator,
 		public BrowseImpl< OPCServer >,
 		public ItemIO< OPCServer >

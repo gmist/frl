@@ -16,7 +16,7 @@ namespace opc
 {
 
 template< class T >
-class Timer : private NonCopyable
+class Timer : private boost::noncopyable
 {
 private:
 	frl::TimeOut time_ms;

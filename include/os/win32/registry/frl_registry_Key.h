@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include <vector>
 #include "frl_string.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "os/win32/registry/frl_registry_RootKey.h"
 #include "os/win32/registry/frl_registry_RootKeys.h"
 
@@ -17,7 +17,7 @@ namespace win32
 {
 namespace registry
 {
-class Key : private frl::NonCopyable
+class Key : private boost::noncopyable
 {
 private:
 	frl::String name;

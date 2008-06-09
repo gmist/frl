@@ -7,7 +7,7 @@
 #include <boost/shared_ptr.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "frl_types.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_serv_handle_counter.h"
 
@@ -23,7 +23,7 @@ namespace address_space
 static const Float invalidDeadBand = -1.0;
 
 class GroupItem
-	:	private NonCopyable,
+	:	private boost::noncopyable,
 		public ServerHandleCounter
 {
 private:

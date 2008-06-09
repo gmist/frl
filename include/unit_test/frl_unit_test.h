@@ -6,7 +6,7 @@
 #include "frl_string.h"
 #include "unit_test/frl_unit_test_statistics.h"
 #include "unit_test/frl_console_out_policy.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include <conio.h>
 
 namespace frl
@@ -19,7 +19,7 @@ typedef frl::Bool ( *CHECK_FUNC ) ( void  );
 // class for unit testing
 template < class OutPolicy >
 class UnitTest
-	:	private NonCopyable
+	:	private boost::noncopyable
 {
 private:
 	frl::String name; // test name

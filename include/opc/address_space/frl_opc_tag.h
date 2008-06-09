@@ -7,7 +7,7 @@
 #include "frl_types.h"
 #include "frl_exception.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 
 namespace frl
 {
@@ -25,7 +25,7 @@ struct TagBrowseInfo
 	Tag* tagPtr;
 };
 
-class Tag : private NonCopyable
+class Tag : private boost::noncopyable
 {
 private:
 	String id;

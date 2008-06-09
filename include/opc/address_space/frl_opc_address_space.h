@@ -6,7 +6,7 @@
 #include <map>
 #include "opc/address_space/frl_opc_tag.h"
 #include "frl_exception.h"
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "frl_singleton.h"
 
 namespace frl
@@ -15,7 +15,7 @@ namespace opc
 {
 namespace address_space
 {
-class AddressSpace : private NonCopyable
+class AddressSpace : private boost::noncopyable
 {
 private:
 	String delimiter;

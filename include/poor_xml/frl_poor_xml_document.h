@@ -1,6 +1,6 @@
 #ifndef frl_poor_xml_document_h_
 #define frl_poor_xml_document_h_
-#include "frl_non_copyable.h"
+#include <boost/noncopyable.hpp>
 #include "frl_types.h"
 #include "frl_exception.h"
 #include "poor_xml/frl_poor_xml_node.h"
@@ -9,7 +9,7 @@ namespace frl
 {
 namespace poor_xml
 {
-class Document : private NonCopyable
+class Document : private boost::noncopyable
 {
 private:
 	boost::shared_ptr< Node > root;
