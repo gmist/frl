@@ -3,6 +3,7 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
+#include <boost/thread/mutex.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "lock/frl_mutex.h"
 #include "opc/frl_opc_common.h"
@@ -65,8 +66,8 @@ private:
 	lock::Event readEvent;
 	lock::Event writeEvent;
 	
-	lock::Mutex readGuard;
-	lock::Mutex writeGuard;
+	boost::mutex readGuard;
+	boost::mutex writeGuard;
 public:
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 
