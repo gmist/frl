@@ -8,29 +8,39 @@
 #include <boost/thread/xtime.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
-#include "thread/frl_thread.h"
+#include <boost/thread/thread.hpp>
 
 namespace frl
 {
 namespace opc
 {
+
 template< class T >
-class TimerProxy
+class Timer : private NonCopyable
 {
-protected:
+private:
 	frl::TimeOut time_ms;
 	boost::mutex mtx;
 	boost::condition cnd;
 	volatile bool stopIt;
+	volatile bool isRunning;
 
 	boost::function< void() > functionBoost;
 	typedef void ( T::*FunctionDef )( void );
+
+	boost::thread process;
 public:
 
-	TimerProxy()
+	Timer()
 	:	time_ms( 100 ),
-		stopIt( false )
+		stopIt( false ),
+		isRunning( false )
 	{
+	}
+
+	~Timer()
+	{
+		stop();
 	}
 
 	void func( void )
@@ -62,7 +72,7 @@ public:
 					return;
 
 				functionBoost();
-				
+
 				if( stopIt ) // for fast exit if condition entry in function()
 					return;
 
@@ -82,71 +92,58 @@ public:
 			}
 		}
 	}
-};
 
-template< class T >
-class Timer : protected TimerProxy< T >, private NonCopyable
-{
-private:
-	thread::Thread< void, void, TimerProxy<T> > process;
-public:
-
-	Timer()
-	:	TimerProxy< T >()
-	{
-	}
-
-	~Timer()
-	{
-		stop();
-	}
-
-	void init( T *ptr, typename TimerProxy< T >::FunctionDef function_ )
+	void init( T *ptr, typename FunctionDef function_ )
 	{		
-		TimerProxy< T >::functionBoost = boost::bind( function_, ptr );
+		functionBoost = boost::bind( function_, ptr );
 	}
 
 	void setTimer( int time_ )
 	{
-		TimerProxy< T >::time_ms = time_;
-		if( process.isRunning() )
+		if( isRunning )
 		{
 			stop();
+			time_ms = time_;
 			start();
 		}
+		else
+		{
+			time_ms = time_;
+		}		
 	}
 
 	void start()
 	{
-		if( ! process.isRunning() )
+		if( ! isRunning )
 		{
-			process.create( &TimerProxy<T>::func, *this );
-			TimerProxy< T >::stopIt = false;
-			process.start();
+			stopIt = false;			
+			process = boost::thread(  boost::bind( &Timer::func, this ) );
+			isRunning = true;
 		}
 	}
 
 	void stop()
 	{
-		if( process.isRunning() )
+		if( isRunning )
 		{
-			TimerProxy< T >::stopIt = true;
-			TimerProxy< T >::cnd.notify_one();
+			isRunning = false;
+			stopIt = true;
+			cnd.notify_one();
 			process.join();
 		}
 	}
 
 	Bool isStop()
 	{
-		return TimerProxy< T >::stopIt;
+		return stopIt;
 	}
 
 	void tryStop()
 	{
-		if( process.isRunning() )
+		if( isRunning )
 		{
-			TimerProxy< T >::stopIt = True;
-			TimerProxy< T >::cnd.notify_one();
+			stopIt = true;
+			cnd.notify_one();
 		}
 	}
 };
