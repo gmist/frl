@@ -3,7 +3,6 @@ ruby frl.dependency.vendors.opc_foundation.debug.rb
 ruby frl.lib.debug.rb
 ruby frl.test.bind.debug.rb
 ruby frl.test.fs_fn.debug.rb
-ruby frl.test.function.debug.rb
 ruby frl.test.io_win32_registry.debug.rb
 ruby frl.test.lexical_cast.debug.rb
 ruby frl.test.logging.debug.rb

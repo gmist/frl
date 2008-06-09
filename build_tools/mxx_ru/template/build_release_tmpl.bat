@@ -3,7 +3,6 @@ ruby frl.dependency.vendors.opc_foundation.release.rb
 ruby frl.lib.release.rb
 ruby frl.test.bind.release.rb
 ruby frl.test.fs_fn.release.rb
-ruby frl.test.function.release.rb
 ruby frl.test.io_win32_registry.release.rb
 ruby frl.test.lexical_cast.release.rb
 ruby frl.test.logging.release.rb

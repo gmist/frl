@@ -58,11 +58,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_smart_ptr", "test\test
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_function", "test\test_function\test_function.vcproj", "{0CEB67A7-512C-4D48-A6DE-4E3F688A04A3}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dependency_opc_foundation", "dependency\vendors\opc_foundation.vcproj", "{9B04246C-95F5-45C4-B1BA-A47DECAFE102}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_psoi2_sender", "test\tes_psoi2_sender\test_psoi2_sender.vcproj", "{99B9F16F-A45B-47AE-A10E-8DDB4CF9AEDF}"
@@ -120,10 +115,6 @@ Global
 		{74484420-2563-4A92-A990-56BD68F6AB11}.Debug|Win32.Build.0 = Debug|Win32
 		{74484420-2563-4A92-A990-56BD68F6AB11}.Release|Win32.ActiveCfg = Release|Win32
 		{74484420-2563-4A92-A990-56BD68F6AB11}.Release|Win32.Build.0 = Release|Win32
-		{0CEB67A7-512C-4D48-A6DE-4E3F688A04A3}.Debug|Win32.ActiveCfg = Debug|Win32
-		{0CEB67A7-512C-4D48-A6DE-4E3F688A04A3}.Debug|Win32.Build.0 = Debug|Win32
-		{0CEB67A7-512C-4D48-A6DE-4E3F688A04A3}.Release|Win32.ActiveCfg = Release|Win32
-		{0CEB67A7-512C-4D48-A6DE-4E3F688A04A3}.Release|Win32.Build.0 = Release|Win32
 		{9B04246C-95F5-45C4-B1BA-A47DECAFE102}.Debug|Win32.ActiveCfg = Debug|Win32
 		{9B04246C-95F5-45C4-B1BA-A47DECAFE102}.Debug|Win32.Build.0 = Debug|Win32
 		{9B04246C-95F5-45C4-B1BA-A47DECAFE102}.Release|Win32.ActiveCfg = Release|Win32

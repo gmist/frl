@@ -406,10 +406,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\frl_function.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\include\frl_int_to_type.h"
 				>
 			</File>
