@@ -538,7 +538,8 @@ void OPCServer::asyncWriteSignal()
 
 frl::Bool OPCServer::asyncRequestCancel( DWORD id )
 {
-	Bool isExistRead, isExistWrite = False;
+	Bool isExistRead = False;
+	Bool isExistWrite = False;
 	AsyncRequestList::iterator it;
 	AsyncRequestList::iterator end;
 	{

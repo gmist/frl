@@ -6,9 +6,9 @@
 #include <boost/thread/condition.hpp>
 #include <libs/thread/src/win32/timeconv.inl>
 #include <boost/thread/xtime.hpp>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include "thread/frl_thread.h"
-#include "frl_function.h"
-#include "frl_auto_value.h"
 
 namespace frl
 {
@@ -23,8 +23,8 @@ protected:
 	boost::condition cnd;
 	volatile bool stopIt;
 
-	frl::Function0< void, T > function;
-	typedef typename Function0< void, T>::FunctionDef FuncDef;
+	boost::function< void() > functionBoost;
+	typedef void ( T::*FunctionDef )( void );
 public:
 
 	TimerProxy()
@@ -33,18 +33,13 @@ public:
 	{
 	}
 
-	void init( Function0< void, T > function_ )
-	{
-		function = function_;
-	}
-
 	void func( void )
 	{
 		if( time_ms < 50 )
 		{
 			while( ! stopIt )
 			{
-				function();
+				functionBoost();
 			}
 		}
 		else
@@ -66,7 +61,7 @@ public:
 				if( cnd.timed_wait(lock, xdelay) && stopIt ) 
 					return;
 
-				function();
+				functionBoost();
 				
 				if( stopIt ) // for fast exit if condition entry in function()
 					return;
@@ -106,9 +101,9 @@ public:
 		stop();
 	}
 
-	void init( T *ptr, typename TimerProxy< T >::FuncDef function_ )
-	{
-		TimerProxy< T >::init( Function0< void, T > ( *ptr, function_ ) );
+	void init( T *ptr, typename TimerProxy< T >::FunctionDef function_ )
+	{		
+		TimerProxy< T >::functionBoost = boost::bind( function_, ptr );
 	}
 
 	void setTimer( int time_ )
