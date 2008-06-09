@@ -2,8 +2,11 @@
 #define frl_opc_timer_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/condition.hpp>
+#include <libs/thread/src/win32/timeconv.inl>
+#include <boost/thread/xtime.hpp>
 #include "thread/frl_thread.h"
-#include "lock/frl_event.h"
 #include "frl_function.h"
 #include "frl_auto_value.h"
 
@@ -16,21 +19,23 @@ class TimerProxy
 {
 protected:
 	frl::TimeOut time_ms;
-	lock::Event stopEvent;
+	boost::mutex mtx;
+	boost::condition cnd;
+	volatile bool stopIt;
+
 	frl::Function0< void, T > function;
-	volatile Bool stopIt;
 	typedef typename Function0< void, T>::FunctionDef FuncDef;
-	AutoValue< Bool, False > isInit;
 public:
 
 	TimerProxy()
+	:	time_ms( 100 ),
+		stopIt( false )
 	{
 	}
 
 	void init( Function0< void, T > function_ )
 	{
 		function = function_;
-		isInit = True;
 	}
 
 	void func( void )
@@ -48,14 +53,23 @@ public:
 			LONGLONG timeStart = 0;
 			LONGLONG timeEnd   = 0;
 			LONGLONG frequency  = 0;
+			boost::xtime xdelay;
 			QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
 			QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
-			while( ! stopEvent.timedWait( tmp_time ) )
+			for( ; ; )
 			{
 				if( stopIt )
 					return;
 
+				to_time( tmp_time, xdelay );
+				boost::mutex::scoped_lock lock( mtx );
+				if( cnd.timed_wait(lock, xdelay) && stopIt ) 
+					return;
+
 				function();
+				
+				if( stopIt ) // for fast exit if condition entry in function()
+					return;
 
 				QueryPerformanceCounter( (LARGE_INTEGER*)&timeEnd );
 				double delay = ( ( ( double )( timeEnd - timeStart ) ) / ( (double) frequency ) ) * 1000;
@@ -69,7 +83,7 @@ public:
 					else
 						tmp_time = time_ms;
 				}
-				QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
+				QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );	
 			}
 		}
 	}
@@ -83,11 +97,9 @@ private:
 public:
 
 	Timer()
+	:	TimerProxy< T >()
 	{
-		TimerProxy< T >::time_ms = 100;
-		TimerProxy< T >::stopIt = True;
 	}
-
 
 	~Timer()
 	{
@@ -114,7 +126,7 @@ public:
 		if( ! process.isRunning() )
 		{
 			process.create( &TimerProxy<T>::func, *this );
-			TimerProxy< T >::stopIt = False;
+			TimerProxy< T >::stopIt = false;
 			process.start();
 		}
 	}
@@ -123,8 +135,8 @@ public:
 	{
 		if( process.isRunning() )
 		{
-			TimerProxy< T >::stopIt = True;
-			TimerProxy< T >::stopEvent.signal();
+			TimerProxy< T >::stopIt = true;
+			TimerProxy< T >::cnd.notify_one();
 			process.join();
 		}
 	}
@@ -139,7 +151,7 @@ public:
 		if( process.isRunning() )
 		{
 			TimerProxy< T >::stopIt = True;
-			TimerProxy< T >::stopEvent.signal();
+			TimerProxy< T >::cnd.notify_one();
 		}
 	}
 };
