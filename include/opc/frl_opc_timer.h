@@ -93,7 +93,7 @@ public:
 		}
 	}
 
-	void init( T *ptr, typename FunctionDef function_ )
+	void init( T *ptr, typename Timer::FunctionDef function_ )
 	{		
 		functionBoost = boost::bind( function_, ptr );
 	}
