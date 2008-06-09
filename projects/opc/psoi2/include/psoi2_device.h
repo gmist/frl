@@ -3,10 +3,10 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <vector>
+#include <boost/thread/thread.hpp>
 #include "frl_io.h"
 #include "frl_types.h"
 #include "frl_opc.h"
-#include "thread/frl_thread.h"
 #include "logging/frl_logging.h"
 #include <bitset>
 
@@ -29,7 +29,7 @@ private:
 	frl::Bool simulation;
 	frl::UInt channelsNumber;
 	frl::io::comm_ports::Serial comPort;
-	frl::thread::Thread< void, void, Psoi2Device > processThread;
+	boost::thread processThread;
 	frl::logging::Logger log;
 
 	void setUpValues( const frl::String &low, const frl::String &hight );

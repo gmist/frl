@@ -2,6 +2,8 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <time.h>
 #include <bitset>
+#include <boost/function.hpp>
+#include <boost/bind.hpp>
 #include "psoi2_device.h"
 #include "frl_types.h"
 #include "frl_lexical_cast.h"
@@ -99,6 +101,7 @@ Psoi2Device::Psoi2Device(	frl::UInt portNumber_,
 		}
 	}
 }
+
 Psoi2Device::~Psoi2Device()
 {
 
@@ -212,10 +215,14 @@ void Psoi2Device::setUpPPC( const frl::String &low, const frl::String &hight )
 void Psoi2Device::startProcess()
 {
 	if( simulation )
-		processThread.create( &Psoi2Device::simulationProcess, *this );
+	{
+		processThread = boost::thread( boost::function< void() >( boost::bind( &Psoi2Device::simulationProcess, this ) ) );
+	}
 	else
-		processThread.create( &Psoi2Device::workProcess, *this );
-	processThread.start();
+	{
+		processThread = boost::thread( boost::function< void() >( boost::bind( &Psoi2Device::workProcess, this ) ) );
+	}
+
 }
 
 void Psoi2Device::simulationProcess()
