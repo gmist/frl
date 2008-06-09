@@ -324,18 +324,6 @@
 				</File>
 			</Filter>
 			<Filter
-				Name="thread"
-				>
-				<File
-					RelativePath="..\..\..\src\thread\frl_thread_fn_linux.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\thread\frl_thread_fn_win32.cpp"
-					>
-				</File>
-			</Filter>
-			<Filter
 				Name="os"
 				>
 				<Filter
@@ -826,18 +814,6 @@
 				>
 				<File
 					RelativePath="..\..\..\include\sys\frl_sys_util.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="thread"
-				>
-				<File
-					RelativePath="..\..\..\include\thread\frl_thread.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\thread\frl_thread_fn.h"
 					>
 				</File>
 			</Filter>

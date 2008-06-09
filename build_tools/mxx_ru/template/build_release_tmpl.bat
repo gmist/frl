@@ -11,7 +11,6 @@ ruby frl.test.opc_address_space.release.rb
 ruby frl.test.opc_test.release.rb
 ruby frl.test.poor_xml.release.rb
 ruby frl.test.smart_ptr.release.rb
-ruby frl.test.thread.release.rb
 ruby frl.test.psoi2_sender.debug.rb
 ruby frl.projects.psoi2.release.rb
 cd ..
