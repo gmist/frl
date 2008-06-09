@@ -39,7 +39,7 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in]
 	if( ppCP == NULL )
 		return E_POINTER;
 
-	lock::ScopeGuard guard( cpGuard );
+	boost::mutex::scoped_lock guard( cpGuard );
 	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == riid )
@@ -51,7 +51,7 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in]
 
 frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 {
-	lock::ScopeGuard guard( cpGuard );
+	boost::mutex::scoped_lock guard( cpGuard );
 	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
@@ -62,7 +62,7 @@ frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 
 void ConnectionPointContainer::registerInterface( const IID& interface_ )
 {
-	lock::ScopeGuard guard( cpGuard );
+	boost::mutex::scoped_lock guard( cpGuard );
 	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
@@ -73,7 +73,7 @@ void ConnectionPointContainer::registerInterface( const IID& interface_ )
 
 void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 {
-	lock::ScopeGuard guard( cpGuard );
+	boost::mutex::scoped_lock guard( cpGuard );
 	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
@@ -86,7 +86,7 @@ void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 
 HRESULT ConnectionPointContainer::getCallback( const IID& interface_, IUnknown** callBack_ )
 {
-	lock::ScopeGuard guard( cpGuard );
+	boost::mutex::scoped_lock guard( cpGuard );
 	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
 	{
 		if( (*it)->getInterface() == interface_ )

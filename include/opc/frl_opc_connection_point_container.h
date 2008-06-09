@@ -4,8 +4,8 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #include <list>
+#include <boost/thread/mutex.hpp>
 #include "frl_types.h"
-#include "frl_lock.h"
 #include "frl_smart_ptr.h"
 
 namespace frl
@@ -21,7 +21,7 @@ class ConnectionPointContainer : public IConnectionPointContainer
 {
 private:
 	ConnectionPointList points;
-	lock::Mutex cpGuard;
+	boost::mutex cpGuard;
 
 protected:
 	void registerInterface( const IID& interface_ );
