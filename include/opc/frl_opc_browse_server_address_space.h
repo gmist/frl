@@ -2,10 +2,10 @@
 #define frl_opc_browse_server_address_space_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/thread/mutex.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_enum_string.h"
 #include "opc/address_space/frl_opc_address_space.h"
-#include "frl_lock.h"
 #include "frl_string.h"
 
 namespace frl
@@ -17,7 +17,7 @@ class BrowseServerAddressSpace
 	:	public IOPCBrowseServerAddressSpace
 {
 private:
-	frl::lock::Mutex bsaScopeGuard;
+	boost::mutex bsaScopeGuard;
 public:
 
 	virtual ~BrowseServerAddressSpace(){}
@@ -35,7 +35,7 @@ public:
 		/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 		/* [string][in] */ LPCWSTR szString )
 	{
-		frl::lock::ScopeGuard guard( bsaScopeGuard );
+		boost::mutex::scoped_lock guard( bsaScopeGuard );
 		T* pT = static_cast<T*> (this);
 		switch( dwBrowseDirection )
 		{
@@ -123,7 +123,7 @@ public:
 			return E_POINTER;
 		*ppIEnumString = NULL;
 
-		frl::lock::ScopeGuard guard( bsaScopeGuard );
+		boost::mutex::scoped_lock guard( bsaScopeGuard );
 		T* pT = static_cast<T*> (this);
 		EnumString *pEnum = new EnumString();
 		if( pEnum == NULL )
@@ -193,7 +193,7 @@ public:
 		String itemDataID = wstring2string( szItemDataID );
 		#endif
 
-		frl::lock::ScopeGuard guard( bsaScopeGuard );
+		boost::mutex::scoped_lock guard( bsaScopeGuard );
 		T* pT = static_cast<T*> (this);
 
 		if( itemDataID.empty() )
