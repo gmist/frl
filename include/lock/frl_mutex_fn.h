@@ -3,7 +3,6 @@
 
 #include "frl_types.h"
 #include "lock/win32/frl_mutex_fn_win32.h"
-#include "lock/linux/frl_mutex_fn_linux.h"
 
 namespace frl
 {

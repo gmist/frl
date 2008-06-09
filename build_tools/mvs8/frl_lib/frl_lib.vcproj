@@ -167,15 +167,7 @@
 				Name="lock"
 				>
 				<File
-					RelativePath="..\..\..\src\lock\frl_event.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\lock\frl_mutex.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\lock\frl_semaphore.cpp"
 					>
 				</File>
 				<Filter
@@ -185,28 +177,12 @@
 						RelativePath="..\..\..\src\lock\linux\frl_mutex_fn_linux.cpp"
 						>
 					</File>
-					<File
-						RelativePath="..\..\..\src\lock\linux\frl_recursive_mutex_linux.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\lock\linux\frl_rw_mutex_linux.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\lock\linux\frl_semaphore_fn_linux.cpp"
-						>
-					</File>
 				</Filter>
 				<Filter
 					Name="win32"
 					>
 					<File
 						RelativePath="..\..\..\src\lock\win32\frl_mutex_fn_win32.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\src\lock\win32\frl_semaphore_fh_win32.cpp"
 						>
 					</File>
 				</Filter>
@@ -525,10 +501,6 @@
 				Name="lock"
 				>
 				<File
-					RelativePath="..\..\..\include\lock\frl_event.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\lock\frl_lock_mutex_i.h"
 					>
 				</File>
@@ -541,58 +513,14 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\lock\frl_null_mutex.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_recursive_mutex.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_rw_mutex.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\lock\frl_scope_guard.h"
 					>
 				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_semaphore.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\lock\frl_semaphore_fn.h"
-					>
-				</File>
-				<Filter
-					Name="linux"
-					>
-					<File
-						RelativePath="..\..\..\include\lock\linux\frl_mutex_fn_linux.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\include\lock\linux\frl_recursive_mutex_linux.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\include\lock\linux\frl_rw_mutex_linux.h"
-						>
-					</File>
-				</Filter>
 				<Filter
 					Name="win32"
 					>
 					<File
 						RelativePath="..\..\..\include\lock\win32\frl_mutex_fn_win32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\include\lock\win32\frl_recursive_mutex_win32.h"
-						>
-					</File>
-					<File
-						RelativePath="..\..\..\include\lock\win32\frl_rw_mutex_win32.h"
 						>
 					</File>
 				</Filter>
