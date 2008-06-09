@@ -4,6 +4,7 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 {
 	runtime_mode( Mxx_ru::Cpp::RUNTIME_DEBUG )
 	threading_mode( MxxRu::Cpp::THREADING_MULTI )
+	rtl_mode( MxxRu::Cpp::RTL_STATIC )
 
 	if "vc" == toolset.name
 	global_cpp_compiler_option( "-W4" )
@@ -21,6 +22,13 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 	# set path to boost library (please modify to you local copy ot boost)
 	global_include_path( "../../../../../../../../src/lib/boost/trunk" )
 	lib_path( "../../../../../../../../src/lib/boost/trunk/stage/lib" )
+
+	# if you using version MinGW != 3.4.5, you maybe need correct libs name
+	if "vc" != toolset.name
+	lib("libboost_thread-mgw34-mt-sd.lib")
+	else
+	# Visual C++ compiler supports auto-linking
+	end
 
 	lib( "shell32" )
 	lib( "oleaut32" )

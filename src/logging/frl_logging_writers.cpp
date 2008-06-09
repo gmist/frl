@@ -16,7 +16,7 @@ String getStr( const logging::ListLogElements &elements, const frl::logging::Log
 }
 }
 
-lock::SemaphoreMutex ConsoleWriter::guard;
+boost::mutex ConsoleWriter::guard;
 
 ConsoleWriter::~ConsoleWriter()
 {
@@ -24,7 +24,7 @@ ConsoleWriter::~ConsoleWriter()
 
 void ConsoleWriter::write( const ListLogElements &elements, const LogParameter &param )
 {
-	lock::ScopeGuard scopeGuard( guard );
+	boost::mutex::scoped_lock scopeGuard( guard );
 	console_std::Out << private_::getStr( elements, param );
 }
 
@@ -93,7 +93,7 @@ void FileWriter::write( const ListLogElements &elements, const LogParameter &par
 {
 	if( desc != io::fs::InvalidFileDescriptor )
 	{
-		lock::ScopeGuard guard( writeGuard );
+		boost::mutex::scoped_lock guard( writeGuard );
 		String tmp = private_::getStr( elements, param );
 		if( tmp.length() )
 			io::fs::write( desc, tmp.c_str(), ( io::fs::FileRWCount )( tmp.length() * sizeof(Char) ) );

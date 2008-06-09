@@ -4,13 +4,14 @@ MxxRu::Cpp::lib_target("frl.lib.release.rb")\
 {
 	runtime_mode( Mxx_ru::Cpp::RUNTIME_RELEASE )
 	threading_mode( MxxRu::Cpp::THREADING_MULTI )
+	rtl_mode( MxxRu::Cpp::RTL_STATIC )
 
 	if "vc" == toolset.name
 	global_cpp_compiler_option( "-W3" )
 	global_cpp_compiler_option( "/MP" )
 	global_cpp_compiler_option( "/D UNICODE" )
 	else
-	global_cpp_compiler_option( "-W6" )
+	global_cpp_compiler_option( "-W" )
 	end
 
 	required_prj( "frl.dependency.vendors.opc_foundation.release.rb" )
@@ -21,6 +22,13 @@ MxxRu::Cpp::lib_target("frl.lib.release.rb")\
 	# set path to boost library (please modify to you local copy ot boost)
 	global_include_path( "../../../../../../../../src/lib/boost/trunk" )
 	lib_path( "../../../../../../../../src/lib/boost/trunk/stage/lib" )
+
+	# if you using version MinGW != 3.4.5, you maybe need correct libs name
+	if "vc" != toolset.name
+	lib("libboost_thread-mgw34-mt-s.lib")
+	else
+	# Visual C++ compiler supports auto-linking
+	end
 
 	lib( "shell32" )
 	lib( "oleaut32" )
