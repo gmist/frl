@@ -43,7 +43,7 @@ virtual HRESULT STDMETHODCALLTYPE SetItemDeadband(
 		}
 
 		HRESULT result = S_OK;			
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
@@ -106,7 +106,7 @@ virtual HRESULT STDMETHODCALLTYPE GetItemDeadband(
 		}
 		
 		HRESULT result = S_OK;
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		Float tmpDeadBand;
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
@@ -160,7 +160,7 @@ virtual HRESULT STDMETHODCALLTYPE ClearItemDeadband(
 			return E_OUTOFMEMORY;
 		}
 		HRESULT result = S_OK;
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		Float tmpDeadBand;
 		for( DWORD i = 0; i < dwCount; ++i )
 		{

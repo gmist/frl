@@ -51,7 +51,7 @@ public:
 
 		HRESULT result = S_OK;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
@@ -123,7 +123,7 @@ public:
 		os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 		HRESULT result = S_OK;
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
@@ -193,7 +193,7 @@ public:
 		
 		HRESULT result = S_OK;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );

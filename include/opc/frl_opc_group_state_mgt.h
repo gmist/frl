@@ -68,7 +68,7 @@ public:
 			pT->deadband = *pPercentDeadband;
 		}
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		pT->timerUpdate.stop();
 
 		if( pRequestedUpdateRate != NULL )
@@ -171,7 +171,7 @@ public:
 
 		T* group = NULL;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			String name = szName;

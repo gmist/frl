@@ -129,7 +129,7 @@ Group::~Group()
 	groupGuard.lock();
 	timerUpdate.stop();
 	unregisterInterface(IID_IOPCDataCallback);
-	groupGuard.unLock();
+	groupGuard.unlock();
 }
 
 void Group::Init()
@@ -187,7 +187,7 @@ void Group::onUpdateTimer()
 	if( timerUpdate.isStop() || ! actived )
 		return;
 
-	lock::ScopeGuard guard( groupGuard );
+	boost::mutex::scoped_lock guard( groupGuard );
 
 	if( ! isConnected( IID_IOPCDataCallback ) )
 		return;
@@ -537,8 +537,6 @@ Group* Group::clone()
 {
 	Group *newGroup = new Group();
 	newGroup->registerInterface(IID_IOPCDataCallback);
-
-	lock::ScopeGuard guard( groupGuard );
 
 	newGroup->name = name;
 	newGroup->actived = False;

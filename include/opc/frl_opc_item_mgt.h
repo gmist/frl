@@ -51,7 +51,7 @@ HRESULT STDMETHODCALLTYPE AddItems(
 	}
 
 	HRESULT res = S_OK;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen( pItemArray[i].szItemID ) == 0 )
@@ -128,7 +128,7 @@ HRESULT STDMETHODCALLTYPE ValidateItems(
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0 )
@@ -191,7 +191,7 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
@@ -233,7 +233,7 @@ HRESULT STDMETHODCALLTYPE SetActiveState(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
@@ -271,7 +271,7 @@ HRESULT STDMETHODCALLTYPE SetClientHandles(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
@@ -310,7 +310,7 @@ HRESULT STDMETHODCALLTYPE SetDatatypes(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
@@ -338,7 +338,7 @@ HRESULT STDMETHODCALLTYPE CreateEnumerator(
 	T* pT = static_cast<T*> (this);
 	if( pT->deleted )
 		return E_FAIL;
-	lock::ScopeGuard guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( pT->groupGuard );
 	if (ppUnk == NULL)
 		return E_INVALIDARG;
 

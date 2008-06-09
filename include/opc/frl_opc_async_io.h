@@ -44,7 +44,7 @@ public:
 		HRESULT result = S_OK;
 		std::list<OPCHANDLE> handles;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
@@ -100,7 +100,7 @@ public:
 		HRESULT result = S_OK;
 		std::list< OPCHANDLE > handles;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
@@ -143,7 +143,7 @@ public:
 
 		*pdwCancelID = 0;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 
 		if( ! pT->isConnected( IID_IOPCDataCallback ) )
 			return CONNECT_E_NOCONNECTION;
@@ -195,7 +195,7 @@ public:
 		if( pT->deleted )
 			return E_FAIL;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 
 		if( ! pT->isConnected( IID_IOPCDataCallback ) )
 			return CONNECT_E_NOCONNECTION;
@@ -217,7 +217,7 @@ public:
 		if( pbEnable == NULL )
 			return E_INVALIDARG;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 
 		if( ! pT->isConnected( IID_IOPCDataCallback ) )
 			return CONNECT_E_NOCONNECTION;
@@ -269,7 +269,7 @@ public:
 		HRESULT result = S_OK;
 		std::list< ItemHVQT > itemsHVQTList;
 
-		lock::ScopeGuard guard( pT->groupGuard );
+		boost::mutex::scoped_lock guard( pT->groupGuard );
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );

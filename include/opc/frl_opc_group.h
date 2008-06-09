@@ -3,6 +3,7 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
+#include <boost/thread/mutex.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_item_mgt.h"
 #include "opc/frl_opc_group_state_mgt.h"
@@ -12,7 +13,6 @@
 #include "opc/frl_opc_connection_point_container.h"
 #include "opc/frl_opc_timer.h"
 #include "opc/frl_opc_async_request.h"
-#include "frl_lock.h"
 #include "frl_non_copyable.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "opc/frl_opc_item_deadband_mgt.h"
@@ -63,7 +63,7 @@ private:
 	FILETIME lastUpdate;
 	LONGLONG tickOffset;
 
-	lock::Mutex groupGuard;
+	boost::mutex groupGuard;
 	GroupItemElemList itemList;
 
 	Timer< Group > timerUpdate;
