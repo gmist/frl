@@ -92,8 +92,8 @@ public:
 	void removeItemFromAsyncWriteRequestList( OPCHANDLE handle_ );
 
 	HRESULT setGroupName( const String &oldName, const String &newName );
-	HRESULT cloneGroup( const String &name, const String &cloneName, Group **group );
-	HRESULT addNewGroup( Group **group );
+	HRESULT cloneGroup( const String &name, const String &cloneName, GroupElem &group );
+	HRESULT addNewGroup( GroupElem &group );
 	void setServerState( OPCSERVERSTATE newState );
 	OPCSERVERSTATE getServerState();
 

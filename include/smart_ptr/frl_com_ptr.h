@@ -78,6 +78,7 @@ public:
 	{
 		std::swap( ptr, other.ptr );
 	}
+
 }; // class ComPtr
 
 } // FatRat Library

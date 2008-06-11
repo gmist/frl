@@ -95,9 +95,9 @@ public:
 		if( phClientGroup != NULL )
 			pT->clientHandle = *phClientGroup; 
 
-		Bool oldState = pT->actived;
 		if( pActive != NULL )
 		{
+			Bool oldState = pT->actived;
 			if( (*pActive == TRUE ) || (*pActive == VARIANT_TRUE ) )
 				pT->actived = True;
 			else
@@ -130,7 +130,12 @@ public:
 			}
 			else
 			{
-				// TODO add clear read and write async requests
+				GroupItemElemList::iterator end = pT->itemList.end();
+				for( GroupItemElemList::iterator it = pT->itemList.begin(); it != end; ++it )
+				{
+					pT->server->removeItemFromAsyncReadRequestList( (*it).first );
+					pT->server->removeItemFromAsyncWriteRequestList( (*it).first );
+				}
 			}
 		}
 		return hResult;
@@ -167,26 +172,22 @@ public:
 		T* pT = static_cast<T*> (this);
 		if( pT->deleted )
 			return E_FAIL;
-		
+
 		if( ppUnk == NULL )
 			return E_INVALIDARG;
-
-		T* group = NULL;
-
-		boost::mutex::scoped_lock guard( pT->groupGuard );
 
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			String name = szName;
 		#else
 			String name = wstring2string( szName );
 		#endif
-
-		HRESULT result = pT->server->cloneGroup( pT->name, name, &group );
+		GroupElem group;
+		HRESULT result = pT->server->cloneGroup( pT->name, name, group );
 		if( FAILED( result ) )
 			return result;
 
 		result = group->QueryInterface( riid, (void**)ppUnk );
-		
+
 		if( FAILED( result ) )
 			pT->server->RemoveGroup( group->getServerHandle(), FALSE );
 
@@ -201,6 +202,8 @@ public:
 			return E_INVALIDARG;
 		
 		T* pT = static_cast<T*> (this);
+		if( pT->deleted )
+			return E_FAIL;
 
 		if( dwKeepAliveTime == 0 )
 		{
@@ -229,6 +232,9 @@ public:
 			return E_INVALIDARG;
 
 		T* pT = static_cast<T*> (this);
+		if( pT->deleted )
+			return E_FAIL;
+
 		*pdwKeepAliveTime = pT->keepAlive;
 		return S_OK;
 	}

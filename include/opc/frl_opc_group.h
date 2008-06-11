@@ -91,7 +91,7 @@ public:
 	void doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem &request );
 	void doAsyncRefresh( const AsyncRequestListElem &request );
 	void doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem &request );
-	Group* clone();
+	GroupElem clone();
 	OPCHANDLE getClientHandle();
 }; // class Group
 

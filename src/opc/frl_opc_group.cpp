@@ -533,9 +533,9 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 	os::win32::com::freeMemory( pErrors );
 }
 
-Group* Group::clone()
+GroupElem Group::clone()
 {
-	Group *newGroup = new Group();
+	GroupElem newGroup( new Group() );
 	newGroup->registerInterface(IID_IOPCDataCallback);
 
 	newGroup->name = name;

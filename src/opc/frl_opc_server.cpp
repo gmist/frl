@@ -492,11 +492,8 @@ HRESULT OPCServer::setGroupName( const String &oldName, const String &newName )
 	return S_OK;
 }
 
-HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Group **ppClone )
+HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, GroupElem &group )
 {
-	if ( ppClone == NULL )
-		return E_INVALIDARG;
-
 	boost::mutex::scoped_lock guard( scopeGuard );
 
 	GroupElemIndexMap::iterator end = groupItemIndex.end();
@@ -508,27 +505,21 @@ HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Grou
 	if( it == end )
 		return E_INVALIDARG;
 
-	*ppClone = (*it).second->clone();
-	if ( *ppClone == NULL )
-		return E_OUTOFMEMORY;
-	(*ppClone)->AddRef();
-	(*ppClone)->setName( cloneName );
-	return addNewGroup( ppClone );
+	group = (*it).second->clone();	
+	group->setName( cloneName );
+	return addNewGroup( group );
 }
 
-HRESULT OPCServer::addNewGroup( Group **group )
+HRESULT OPCServer::addNewGroup( GroupElem &group )
 {
-	if( *group == NULL )
-		FRL_THROW( FRL_STR("Invalid argument") );
-
-	if( (*group)->getName().empty() )
+	if( group->getName().empty() )
 	{
-		(*group)->setName( util::getUniqueName() );
+		group->setName( util::getUniqueName() );
 	}
 
-	GroupElem newGroup( *group );
-	groupItemIndex.insert( std::pair< String, GroupElem >( (*group)->getName(), newGroup ) );
-	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( (*group)->getServerHandle(), newGroup ) );
+	groupItemIndex.insert( std::pair< String, GroupElem >( group->getName(), group ) );
+	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( group->getServerHandle(), group ) );
+	group->AddRef(); // for detecting using group in OPCServer::RemoveGroup
 	return S_OK;
 }
 
