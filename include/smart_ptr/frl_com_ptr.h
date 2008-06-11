@@ -36,7 +36,12 @@ public:
 	~ComPtr()
 	{
 		if( ptr != NULL )
-			ptr->Release();
+		{
+			if( ptr->Release() == 0 )
+			{
+				ptr = NULL;
+			}
+		}
 	}
 	
 	ComPtr& operator = ( const ComPtr< T > &rhv )
@@ -64,6 +69,8 @@ public:
 	
 	T* get() const
 	{
+		if( ptr == NULL )
+			FRL_THROW_S_CLASS( NullPtr );
 		return ptr;
 	}
 	

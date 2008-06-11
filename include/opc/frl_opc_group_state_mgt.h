@@ -87,9 +87,11 @@ public:
 		}
 
 		if( pTimeBias != NULL )
-			pT->timeBias   = *pTimeBias;
-		if (pLCID != NULL)
+			pT->timeBias = *pTimeBias;
+
+		if( pLCID != NULL )
 			pT->localeID = *pLCID;
+
 		if( phClientGroup != NULL )
 			pT->clientHandle = *phClientGroup; 
 

@@ -18,24 +18,33 @@ namespace opc
 
 namespace private_
 {
+
+class RemoveItemFunctor
+{
+	OPCHANDLE handle;
+public:
+	RemoveItemFunctor( OPCHANDLE handle_  )
+		:	handle( handle_ )
+	{
+	}
+
+	bool operator()( const AsyncRequestListElem& el )
+	{
+		el->removeHandle( handle );
+		return el->getCounts() == 0;
+	}
+};
+
 inline
-void clearAyncRequestList( const OPCHANDLE &handle, AsyncRequestList &requestList )
+void RemoveItemFromAyncRequestList( const OPCHANDLE &handle, AsyncRequestList &requestList )
 {
-for( AsyncRequestList::iterator iter = requestList.begin(), remIt;
-	iter != requestList.end(); 
-	iter = remIt )
-{
-	remIt = iter;
-	++remIt;
-	(*iter)->removeHandle( handle );
-	if( (*iter)->getCounts() == 0 )
-		requestList.erase( iter );
-}
-}
+	requestList.remove_if( RemoveItemFunctor( handle ) );
 }
 
+} // namespace private_
+
 OPCServer::OPCServer()
-	: refCount( 0 )
+	:	refCount( 0 )
 {
 	// call opcAddressSpace::getInstance().finalConstruct first !
 	if( ! opcAddressSpace::getInstance().isInit() )
@@ -47,9 +56,9 @@ OPCServer::OPCServer()
 	serverStatus.dwServerState = OPC_STATUS_NOCONFIG;
 	serverStatus.dwBandWidth = 0xFFFFFFFF;
 	serverStatus.wMajorVersion = 2;
-	registerInterface(IID_IOPCShutdown);
+	registerInterface( IID_IOPCShutdown );
 	factory.LockServer( TRUE );
-	
+
 	timerRead.init( this, &OPCServer::onReadTimer );
 	timerWrite.init( this, &OPCServer::onWriteTimer );
 	timerRead.setTimer( 1 );
@@ -92,7 +101,7 @@ void OPCServer::onReadTimer()
 	boost::mutex::scoped_lock guard( scopeGuard );
 	GroupElemMap::iterator group;
 	GroupElemMap::iterator groupEnd = groupItem.end();
-	
+
 	AsyncRequestList::iterator end = tmp.end();
 	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
 	{
@@ -257,7 +266,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 																					/* [in] */ REFIID riid,
 																					/* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
-	if (phServerGroup == NULL || pRevisedUpdateRate == NULL || ppUnk == NULL)
+	if( phServerGroup == NULL || pRevisedUpdateRate == NULL || ppUnk == NULL )
 		return E_INVALIDARG;
 
 	*phServerGroup = 0;
@@ -285,14 +294,19 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 	}
 
 	if( pPercentDeadband )
+	{
 		if( *pPercentDeadband < 0 || *pPercentDeadband > 100 )
+		{
 			return E_INVALIDARG;
-	Group *newGroup = new Group( name );
-
-	if( newGroup == NULL )
+		}
+	}
+	
+	Group *forcePtr = new Group( name );
+	if( forcePtr == NULL )
+	{
 		return E_OUTOFMEMORY;
-
-	((IOPCItemMgt*)(newGroup))->AddRef();
+	}
+	frl::ComPtr< Group > newGroup( forcePtr );	
 
 	LONG lTimeBias = 0;
 	if (pTimeBias == NULL)
@@ -311,29 +325,31 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 		&lTimeBias, pPercentDeadband, &dwLCID, &hClientGroup);
 	if( FAILED(res) )
 	{
-		delete newGroup;
 		return res;
 	}
 	HRESULT queryResult = newGroup->QueryInterface( riid, (void**)ppUnk );
 	if( FAILED( queryResult ) || *ppUnk == NULL)
 	{
-		delete newGroup;
 		return E_NOINTERFACE;
 	}
 
 	newGroup->setServerPtr( this );
-	groupItemIndex.insert( std::pair< String, Group* >( newGroup->getName(), newGroup ) );
-	groupItem.insert( std::pair< OPCHANDLE, Group* >( newGroup->getServerHandle(), newGroup ) );
+	groupItemIndex.insert( std::pair< String, GroupElem >( newGroup->getName(), newGroup ) );
+	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( newGroup->getServerHandle(), newGroup ) );
 	if( phServerGroup )
+	{
 		*phServerGroup = newGroup->getServerHandle();
+	}
+	newGroup->AddRef(); // for detecting using group in OPCServer::RemoveGroup
 	return res;
 }
 
 HRESULT STDMETHODCALLTYPE OPCServer::GetErrorString( /* [in] */ HRESULT dwError, /* [in] */ LCID dwLocale, /* [string][out] */ LPWSTR *ppString )
 {
-	if (ppString == NULL)
+	if( ppString == NULL )
+	{
 		return E_INVALIDARG;
-
+	}
 	*ppString = NULL;
 	return util::getErrorString( dwError, dwLocale, &ppString );
 }
@@ -395,10 +411,11 @@ HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGr
 		return E_FAIL;
 
 	Group* grpItem = (*it).second.get();
+	grpItem->isDeleted( True );
 	groupItemIndex.erase( grpItem->getName() );
 	groupItem.erase( it );
-	grpItem->isDeleted( True );
-	if( grpItem->Release() != 0 && ! bForce )
+
+	if( grpItem->Release() != 0 && ! bForce ) // detecting using group
 	{
 		return OPC_S_INUSE;
 	}
@@ -408,14 +425,14 @@ HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGr
 HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
-
 	if( riid == IID_IEnumUnknown )
 	{
 		std::vector< GroupElem > unkn;
 		if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
 		{
+			GroupElemMap::iterator end = groupItem.end();
 			unkn.reserve( groupItem.size() );
-			for( GroupElemMap::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+			for( GroupElemMap::iterator it = groupItem.begin(); it != end; ++it )
 				unkn.push_back( (*it).second );
 		}
 
@@ -438,8 +455,9 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 		std::vector< String > nameList;
 		if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
 		{
+			GroupElemMap::iterator end = groupItem.end();
 			nameList.reserve( groupItem.size() );
-			for( GroupElemMap::iterator it = groupItem.begin(); it != groupItem.end(); ++it )
+			for( GroupElemMap::iterator it = groupItem.begin(); it != end; ++it )
 				nameList.push_back( (*it).second->getName() );
 		}
 
@@ -481,29 +499,32 @@ HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, Grou
 
 	boost::mutex::scoped_lock guard( scopeGuard );
 
+	GroupElemIndexMap::iterator end = groupItemIndex.end();
 	GroupElemIndexMap::iterator it = groupItemIndex.find( cloneName );
-	if( it != groupItemIndex.end() )
+	if( it != end )
 		return OPC_E_DUPLICATENAME;
 
 	it = groupItemIndex.find( name );
-	if( it == groupItemIndex.end() )
+	if( it == end )
 		return E_INVALIDARG;
 
 	*ppClone = (*it).second->clone();
-	if ( ppClone == NULL )
+	if ( *ppClone == NULL )
 		return E_OUTOFMEMORY;
-	((IOPCItemMgt*)(*ppClone))->AddRef();
+	(*ppClone)->AddRef();
 	(*ppClone)->setName( cloneName );
 	return addNewGroup( ppClone );
 }
 
 HRESULT OPCServer::addNewGroup( Group **group )
 {
-	if ( group == NULL )
-		FRL_THROW( FRL_STR("Invalid agrument") );
+	if( *group == NULL )
+		FRL_THROW( FRL_STR("Invalid argument") );
 
 	if( (*group)->getName().empty() )
+	{
 		(*group)->setName( util::getUniqueName() );
+	}
 
 	GroupElem newGroup( *group );
 	groupItemIndex.insert( std::pair< String, GroupElem >( (*group)->getName(), newGroup ) );
@@ -578,13 +599,13 @@ frl::Bool OPCServer::asyncRequestCancel( DWORD id )
 void OPCServer::removeItemFromAsyncReadRequestList( OPCHANDLE handle_ )
 {
 	boost::mutex::scoped_lock guar( readGuard );
-	private_::clearAyncRequestList( handle_, asyncReadList );
+	private_::RemoveItemFromAyncRequestList( handle_, asyncReadList );
 }
 
 void OPCServer::removeItemFromAsyncWriteRequestList( OPCHANDLE handle_ )
 {
 	boost::mutex::scoped_lock guar( writeGuard );
-	private_::clearAyncRequestList( handle_, asyncWriteList );
+	private_::RemoveItemFromAyncRequestList( handle_, asyncWriteList );
 }
 
 } // namespace opc
