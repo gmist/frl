@@ -12,6 +12,36 @@
 using namespace frl;
 using namespace frl::opc;
 
+namespace{ struct MyHack{}; }
+namespace boost
+{
+	namespace my_hack
+	{ detail::thread_data_ptr tmp; }
+
+	template<>
+	inline bool thread::timed_join( MyHack const& tmp)
+	{
+		my_hack::tmp = thread::thread_info;
+		return true;
+	}
+}
+
+struct thread_killer
+{
+	boost::detail::thread_data_ptr info;
+
+	thread_killer( boost::thread &thr )
+	{
+		thr.timed_join( MyHack() );
+		info = boost::my_hack::tmp;
+		info->thread_handle;
+	}
+	void operator()()
+	{
+		::TerminateThread( info->thread_handle, 0 );
+	}
+};
+
 Psoi2Device::Psoi2Device(	frl::UInt portNumber_,
 										frl::UInt channelsNumber_,
 										frl::Bool simulation_,
@@ -439,5 +469,12 @@ void Psoi2Device::setGoodMGC( frl::UInt number, frl::Bool goodFlag )
 void Psoi2Device::setThresholdExceeding( frl::UInt number, frl::Bool thresholdExceedingFlag )
 {
 	channels[ number ].thresholdExceeding->write( thresholdExceedingFlag );
+}
+
+void Psoi2Device::stopProcess() // WARNING - hack!
+{
+	thread_killer killer( processThread );
+	boost::thread thrKill( killer );
+	thrKill.join();
 }
 #endif // FRL_PLATFORM_WIN32

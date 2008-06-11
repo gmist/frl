@@ -66,6 +66,7 @@ DeviceManager::~DeviceManager()
 	{
 		for( std::vector< Psoi2Device* >::iterator it = devices.begin(); it != devices.end(); ++it )
 		{
+			(*it)->stopProcess();
 			delete (*it);
 		}
 	}

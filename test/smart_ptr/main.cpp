@@ -55,12 +55,13 @@ public:
 		++refCount;
 	}
 	
-	void Release()
+	long Release()
 	{
 		--comRefCounter;
 		--refCount;
 		if( refCount == 0 )
 			delete this;
+		return refCount;
 	}
 	
 };

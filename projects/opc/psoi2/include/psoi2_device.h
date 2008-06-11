@@ -56,6 +56,7 @@ public:
 	void startProcess();
 	frl::UInt getChannelsNumber();
 	frl::UInt getBytesNumber();
+	void stopProcess();
 	~Psoi2Device();
 }; // class Psoi2Device
 
