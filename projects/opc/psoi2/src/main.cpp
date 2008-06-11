@@ -1,10 +1,64 @@
 #include <Windows.h>
+#include "console_std/frl_iostream.h"
 #include "psoi2_device_manager.h"
 #include "psoi2_device.h"
 #include <WinCon.h>
 
 int main( int argc, char *argv[] )
 {
+	if( argc >= 2 )
+	{
+		using namespace frl::console_std;
+		if( std::string( "-r" ) == std::string( argv[1] ) )
+		{
+			try
+			{
+				psoi2util::regServer();
+				ColorOut( foregroundColor::iGreen )
+				<< "Registration success!" << std::endl;
+			}
+			catch( std::exception &ex )
+			{
+				ColorOut( foregroundColor::iRed )
+				<< "Registration fail! " << std::endl;
+				ColorOut( foregroundColor::iDefault )
+				<< ex.what() << std::endl;
+			}
+			exit( 0 );
+		}
+
+		if( std::string("-u") == std::string( argv[1] ) )
+		{
+			try
+			{
+				psoi2util::unregServer();
+				ColorOut( foregroundColor::iGreen )
+					<< "Removing registration success!" << std::endl;
+			}
+			catch( std::exception &ex )
+			{
+				ColorOut( foregroundColor::iRed )
+					<< "Unregistration fail! " << std::endl;
+				ColorOut( foregroundColor::iDefault )
+					<< ex.what() << std::endl;
+			}
+			exit( 0 );
+		}
+
+		if( std::string("-Embedding") != std::string( argv[1] ) )
+		{
+			ColorOut( foregroundColor::iGreen )
+				<< "Available parameters:" << std::endl;
+			ColorOut( foregroundColor::iDefault ) << "-r";
+			ColorOut( foregroundColor::onDefault )
+				<< " - registration server." << std::endl;
+			ColorOut( foregroundColor::iDefault ) << "-u";
+			ColorOut( foregroundColor::onDefault )
+				<< " - Unregistration server." << std::endl;
+			exit( 0 );
+		}
+	}
+	
 	Bool exitOnAllClientDisconnected = True;
 	{
 		frl::poor_xml::Document config;

@@ -84,11 +84,32 @@ void DeviceManager::initializeAddressSpace()
 void DeviceManager::initializeDAServer()
 {
 	server = new frl::opc::DAServer( frl::opc::ServerTypes::localSever32 );
-	server->setCLSID( FRL_STR("{77841F96-2135-4293-8BEF-A288AAD2DBBC}") );
-	server->setVendor( FRL_STR("Serg Baburin") );
-	server->setDriverName( FRL_STR("PSOI2 device") );
-	server->setDescription( FRL_STR("OPC server for PSOI2 device from Serg Baburin"));
-	server->setVersion( 0.1 );
-	server->registrerServer();
+	psoi2util::setServerInfo( *server );
 	server->init();
+}
+
+namespace psoi2util
+{
+	void regServer()
+	{
+		opc::DAServer tmp( frl::opc::ServerTypes::localSever32 );
+		setServerInfo( tmp );
+		tmp.registrerServer();
+	}
+	
+	void unregServer()
+	{
+		opc::DAServer tmp( frl::opc::ServerTypes::localSever32 );
+		setServerInfo( tmp );
+		tmp.unregisterServer();
+	}
+	
+	void setServerInfo( opc::DAServer &toServer )
+	{
+		toServer.setCLSID( FRL_STR("{77841F96-2135-4293-8BEF-A288AAD2DBBC}") );
+		toServer.setVendor( FRL_STR("Serg Baburin") );
+		toServer.setDriverName( FRL_STR("PSOI2 device") );
+		toServer.setDescription( FRL_STR("OPC server for PSOI2 device from Serg Baburin"));
+		toServer.setVersion( 0.1 );
+	}		
 }

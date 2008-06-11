@@ -68,6 +68,11 @@ frl::Bool DAServer::init()
 	return True;
 }
 
+void DAServer::unregisterServer()
+{
+	ServerKind::unregisterServer();
+}
+
 } // namespace opc
 } // FatRat Library
 

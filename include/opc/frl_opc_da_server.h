@@ -21,6 +21,7 @@ public:
 	~DAServer();
 	void registrerServer();
 	void registrerServer3();
+	void unregisterServer();
 	Bool init();
 };
 
