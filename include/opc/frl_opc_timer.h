@@ -23,7 +23,6 @@ private:
 	boost::mutex mtx;
 	boost::condition cnd;
 	volatile bool stopIt;
-	volatile bool isRunning;
 	boost::mutex opMtx;
 
 	boost::function< void() > functionBoost;
@@ -34,8 +33,7 @@ public:
 
 	Timer()
 	:	time_ms( 100 ),
-		stopIt( false ),
-		isRunning( false )
+		stopIt( false )		
 	{
 	}
 
@@ -55,6 +53,7 @@ public:
 		}
 		else
 		{
+			frl::TimeOut time_ms_local = time_ms;
 			frl::TimeOut tmp_time = time_ms;
 			LONGLONG timeStart = 0;
 			LONGLONG timeEnd   = 0;
@@ -80,14 +79,14 @@ public:
 				QueryPerformanceCounter( (LARGE_INTEGER*)&timeEnd );
 				double delay = ( ( ( double )( timeEnd - timeStart ) ) / ( (double) frequency ) ) * 1000;
 				unsigned int delta = (unsigned int)delay;
-				if( delta > ( time_ms + 100 ) )
-					tmp_time = time_ms - (delta - time_ms);
+				if( delta > ( time_ms_local + 100 ) )
+					tmp_time = time_ms_local - (delta - time_ms_local);
 				else
 				{
-					if( delta > 100 && delta < time_ms )
-						tmp_time = time_ms - ( time_ms -delta );
+					if( delta > 100 && delta < time_ms_local )
+						tmp_time = time_ms_local - ( time_ms_local -delta );
 					else
-						tmp_time = time_ms;
+						tmp_time = time_ms_local;
 				}
 				QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );	
 			}
@@ -102,38 +101,39 @@ public:
 
 	void setTimer( int time_ )
 	{
-		if( isRunning )
 		{
-			stop();
-			time_ms = time_;
-			start();
+			boost::mutex::scoped_lock lock( mtx );
+			if( stopIt )
+			{
+				time_ms = time_;
+				return;
+			}
 		}
-		else
-		{
-			time_ms = time_;
-		}		
+
+		stop();
+		time_ms = time_;
+		start();
 	}
 
 	void start()
 	{
 		boost::mutex::scoped_lock lock( opMtx );
-		if( ! isRunning )
+		if( stopIt )
 		{
-			stopIt = false;			
+			boost::mutex::scoped_lock lock( mtx );	
 			process = boost::thread(  boost::bind( &Timer::func, this ) );
-			isRunning = true;
+			stopIt = false;
 		}
 	}
 
 	void stop()
 	{
 		boost::mutex::scoped_lock lock( opMtx );
-		if( isRunning )
+		if( ! stopIt )
 		{
 			stopIt = true;
 			cnd.notify_one();
 			process.join();
-			isRunning = false;
 		}
 	}
 
@@ -145,7 +145,7 @@ public:
 	void tryStop()
 	{
 		boost::mutex::scoped_lock lock( opMtx );
-		if( isRunning )
+		if( ! stopIt )
 		{
 			stopIt = true;
 			cnd.notify_one();
