@@ -23,7 +23,7 @@ frl::Bool testGetNodeName()
 			node4 != FRL_STR("node4") )
 			return frl::False;
 	}
-	catch( frl::Exception )
+	catch( frl::Exception& )
 	{
 		return frl::False;
 	}
@@ -31,7 +31,7 @@ frl::Bool testGetNodeName()
 	{
 		frl::String node5 = frl::poor_xml::Parser::getFirstNodeName( node5Str, start, end );
 	}
-	catch( frl::poor_xml::Parser::BadNodeName )
+	catch( frl::poor_xml::Parser::BadNodeName& )
 	{
 		return frl::True;
 	}
@@ -76,7 +76,7 @@ frl::Bool openNotExistFile()
 	{
 		doc.LoadFromCurrenttDir( FRL_STR("12345") );
 	}
-	catch( frl::poor_xml::Document::FileNotFound )
+	catch( frl::poor_xml::Document::FileNotFound& )
 	{
 		return frl::True;
 	}
@@ -94,7 +94,7 @@ frl::Bool openEmptyFile()
 	{
 		doc.LoadFromCurrenttDir( FRL_STR("empty_file.xml") );
 	}
-	catch( frl::poor_xml::Document::EmptyFile )
+	catch( frl::poor_xml::Document::EmptyFile& )
 	{
 		return frl::True;
 	}
@@ -123,7 +123,7 @@ frl::Bool openNotEmptyFile()
 		if( node->getProprtyVal( FRL_STR("ConfigurationType") ) != FRL_STR("1") )
 			return frl::False;
 	}
-	catch( frl::Exception )
+	catch( frl::Exception& )
 	{
 		return frl::False;
 	}
@@ -143,7 +143,7 @@ frl::Bool openLargeFile()
 					FRL_STR("name"),
 					FRL_STR("T:Microsoft.VisualStudio.Package.AuthoringScope") );
 	}
-	catch( frl::Exception )
+	catch( frl::Exception& )
 	{
 		return frl::False;
 	}
@@ -156,9 +156,9 @@ int main( int argc, char *argv[] )
 	frl::unit_test::ConsoleUnitTest poorXml( FRL_STR( "frl::poor_xml" ) );
 	poorXml.Add( testGetNodeName, FRL_STR("Get node name from string") );
 	poorXml.Add( testFindNodeClose, FRL_STR("Find close node") );
-	poorXml.Add( openNotExistFile );
-	poorXml.Add( openEmptyFile );
-	poorXml.Add( openNotEmptyFile );
-	poorXml.Add( openLargeFile );	
+	poorXml.Add( openNotExistFile, FRL_STR("Open not exist XML file") );
+	poorXml.Add( openEmptyFile, FRL_STR("Open empty XML file") );
+	poorXml.Add( openNotEmptyFile, FRL_STR("Open not empty XML file") );
+	poorXml.Add( openLargeFile, FRL_STR("Open large XML file") );	
 	return 0;
 }

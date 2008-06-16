@@ -25,7 +25,9 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 
 	# if you using version MinGW != 3.4.5, you maybe need correct libs name
 	if "vc" != toolset.name
-	lib("libboost_thread-mgw34-mt-sd.lib")
+	lib("libboost_thread-mgw34-mt-sd")
+	lib("libboost_filesystem-mgw34-mt-sd")
+	lib("libboost_system-mgw34-mt-sd")
 	else
 	# Visual C++ compiler supports auto-linking
 	end

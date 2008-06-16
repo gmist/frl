@@ -1,7 +1,10 @@
 #include <boost/scoped_array.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/fstream.hpp>
 #include "poor_xml/frl_poor_xml_document.h"
 #include "poor_xml/frl_poor_xml_parser.h"
-#include "io/fs/frl_fs_fn.h"
+
+namespace fs = boost::filesystem;
 
 namespace frl
 {
@@ -18,35 +21,45 @@ Document::~Document()
 void Document::LoadFromCurrenttDir( const String& fileName_ )
 {
 	FRL_EXCEPT_GUARD();
-	String currDir = io::fs::getCurrentDirectory();
-	io::fs::addSlashToEndPath( currDir );
+	String currDir;	
+	fs::detail::get_current_path_api( currDir );
+	currDir += FRL_STR("/");
 	fileName = currDir + fileName_;
-	if( ! io::fs::isExist( fileName ) )
-		FRL_THROW_S_CLASS( Document::FileNotFound );
-	io::fs::FileOffset length = io::fs::length( fileName );
-	if( length <= 0 )
-		FRL_THROW_S_CLASS( Document::EmptyFile );
-
-	boost::scoped_array< char > data( new char[ ( size_t )length + 1 ] );
-	io::fs::FileDescriptor file = io::fs::InvalidFileDescriptor;
-	size_t counts;
+	size_t length = 0;
 	try
 	{
-		io::fs::open( file, fileName, io::fs::openReadOnly | io::fs::openBinary );
-		counts = io::fs::read( file, data.get(), (io::fs::FileRWCount)length );
-		if( counts == 0 )
-			FRL_THROW_S_CLASS( Document::UnknownError );
+		if( ! fs::exists( fileName ) )
+			FRL_THROW_S_CLASS( Document::FileNotFound );
+		length = static_cast< size_t >( fs::file_size( fileName ) );
+	}
+	catch( Document::FileNotFound& ex )
+	{
+		throw ex;
 	}
 	catch( ... )
 	{
-		if( file != io::fs::InvalidFileDescriptor )
-			io::fs::close( file );
 		FRL_THROW_S_CLASS( Document::UnknownError );
 	}
-	io::fs::close( file );
+
+	if( length == 0 )
+		FRL_THROW_S_CLASS( Document::EmptyFile );
+
+	boost::scoped_array< char > data( new char[ ( size_t )length + 1 ] );
+	fs::filebuf file;
+	file.open( fileName, std::ios_base::in );
+	if( ! file.is_open() )
+		FRL_THROW_S_CLASS( Document::UnknownError );
+
+	data[0] = static_cast< char >( file.sgetc() );
+	for( size_t i = 1; i < length; ++i )
+	{
+		data[i] = static_cast< char >( file.snextc() );
+	}
+
+	file.close();
 	String buffer;
-	buffer.reserve( counts );
-	for( size_t i = 0; i < counts; ++i )
+	buffer.reserve( length );
+	for( size_t i = 0; i < length; ++i )
 	{
 		if( data[i] == 0xa || data[i] == 0xd )
 			continue;
