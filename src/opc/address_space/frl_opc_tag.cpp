@@ -97,7 +97,7 @@ DWORD Tag::getAccessRights()
 	return accessRights;
 }
 
-void Tag::isWriteable( Bool writeable )
+void Tag::isWritable( Bool writeable )
 {
 	if( writeable )
 		accessRights = OPC_READABLE | OPC_WRITEABLE;
@@ -105,7 +105,7 @@ void Tag::isWriteable( Bool writeable )
 		accessRights = OPC_READABLE;
 }
 
-frl::Bool Tag::isWriteable()
+frl::Bool Tag::isWritable()
 {
 	return ( accessRights & OPC_WRITEABLE ) == OPC_WRITEABLE;
 }

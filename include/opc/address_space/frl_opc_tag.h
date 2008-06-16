@@ -76,9 +76,9 @@ public:
 
 	DWORD getAccessRights();
 
-	void isWriteable( Bool writeable );
+	void isWritable( Bool writeable );
 
-	Bool isWriteable();
+	Bool isWritable();
 
 	Tag* addLeaf( const String &name );
 

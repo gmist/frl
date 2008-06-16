@@ -490,7 +490,7 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 		}
 		pHandles[i] = (*iter).second->getClientHandle();
 
-		if(  ! ( (*iter).second->getAccessRights() & OPC_WRITEABLE ) )
+		if( !(*iter).second->isWritable() )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADRIGHTS;

@@ -45,10 +45,11 @@ public:
 		std::list<OPCHANDLE> handles;
 
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			if( it == end )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -101,10 +102,11 @@ public:
 		std::list< OPCHANDLE > handles;
 
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			if( it == end )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -270,17 +272,18 @@ public:
 		std::list< ItemHVQT > itemsHVQTList;
 
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
 			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			if( it == end )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 				continue;
 			}
 
-			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )
+			if( ! (*it).second->isWritable() )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;

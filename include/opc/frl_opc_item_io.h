@@ -132,7 +132,7 @@ public:
 				continue;
 			}
 
-			if( ! ( item->getAccessRights() & OPC_WRITEABLE ) )
+			if( ! item->isWritable() )
 			{
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;

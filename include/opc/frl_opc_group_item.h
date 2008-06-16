@@ -61,6 +61,7 @@ public:
 	void setQuality( WORD quality );
 	void setDeadBand( Float newDeadBand );
 	Float getDeadBand();
+	Bool isWritable();
 }; // GroupItem
 
 typedef boost::shared_ptr< GroupItem > GroupItemElem;

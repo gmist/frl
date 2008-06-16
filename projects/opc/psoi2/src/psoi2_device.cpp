@@ -152,7 +152,7 @@ void Psoi2Device::setUpValues( const frl::String &low, const frl::String &hight 
 			+ lexicalCast<int, frl::String>( i )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("value") );
-		channels[i].value->isWriteable( False );
+		channels[i].value->isWritable( False );
 		channels[i].value->setCanonicalDataType( VT_R4 );
 		channels[i].value->write( 0.0f );
 	}
@@ -173,7 +173,7 @@ void Psoi2Device::setUpThresholdExceeding( const frl::String &low, const frl::St
 			+ lexicalCast<int, frl::String>( i )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("thresholdExceeding") );
-		channels[i].thresholdExceeding->isWriteable( False );
+		channels[i].thresholdExceeding->isWritable( False );
 		channels[i].thresholdExceeding->setCanonicalDataType( VT_UI4 );
 		channels[i].thresholdExceeding->write( 0 );
 	}
@@ -194,7 +194,7 @@ void Psoi2Device::setUpTypePPC( const frl::String &low, const frl::String &hight
 			+ lexicalCast<int, frl::String>( i )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("type") );
-		channels[i].typePPC->isWriteable( False );
+		channels[i].typePPC->isWritable( False );
 		channels[i].typePPC->setCanonicalDataType( VT_UI4 );
 		channels[i].typePPC->write( 0 );
 	}
@@ -215,7 +215,7 @@ void Psoi2Device::setUpMGC( const frl::String &low, const frl::String &hight )
 			+ lexicalCast<int, frl::String>( i )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("goodMGC") );
-		channels[i].goodMGC->isWriteable( False );
+		channels[i].goodMGC->isWritable( False );
 		channels[i].goodMGC->setCanonicalDataType( VT_UI4 );
 		channels[i].goodMGC->write( 0 );
 	}
@@ -236,7 +236,7 @@ void Psoi2Device::setUpPPC( const frl::String &low, const frl::String &hight )
 			+ lexicalCast<int, frl::String>( i )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("goodPPC") );
-		channels[i].goodPPC->isWriteable( False );
+		channels[i].goodPPC->isWritable( False );
 		channels[i].goodPPC->setCanonicalDataType( VT_UI4 );
 		channels[i].goodPPC->write( 0 );
 	}

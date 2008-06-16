@@ -192,6 +192,12 @@ frl::Float GroupItem::getDeadBand()
 	return deadBand;
 }
 
+frl::Bool GroupItem::isWritable()
+{
+	if( tagRef == NULL )
+		tagRef = opcAddressSpace::getInstance().getLeaf( itemID );
+	return tagRef->isWritable();
+}
 } // namespace opc
 } // FatRat Library
 

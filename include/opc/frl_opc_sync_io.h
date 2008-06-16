@@ -134,7 +134,7 @@ public:
 				continue;
 			}
 
-			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )
+			if( ! (*it).second->isWritable() )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;
@@ -277,7 +277,7 @@ public:
 				continue;
 			}
 
-			if( ! ( (*it).second->getAccessRights() & OPC_WRITEABLE ) )
+			if( ! (*it).second->isWritable() )
 			{
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;

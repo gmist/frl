@@ -13,13 +13,13 @@ int main( int argc, char *argv[] )
 
 	opc::opcAddressSpace::getInstance().addLeaf( FRL_STR("rootLeaf"));
 	opc::address_space::Tag *tag = opc::opcAddressSpace::getInstance().getLeaf( FRL_STR("rootLeaf") );
-	tag->isWriteable( False );
+	tag->isWritable( False );
 	tag->setCanonicalDataType( VT_R4 );
 	tag->write( 0.1 );
 
 	opc::opcAddressSpace::getInstance().addLeaf( FRL_STR("rootLeaf-writable"));
 	tag = opc::opcAddressSpace::getInstance().getLeaf( FRL_STR("rootLeaf-writable") );
-	tag->isWriteable( True );
+	tag->isWritable( True );
 	tag->setCanonicalDataType( VT_R4 );
 	tag->write( 0.0 );
 
