@@ -390,10 +390,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\include\frl_bind.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\include\frl_config.h"
 				>
 			</File>
@@ -510,30 +506,6 @@
 				>
 				<File
 					RelativePath="..\..\..\include\console_std\frl_iostream.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="bind"
-				>
-				<File
-					RelativePath="..\..\..\include\bind\frl_bind_class_methods.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\bind\frl_bind_functions.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\bind\frl_list.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\bind\frl_place_holders.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\bind\frl_storage.h"
 					>
 				</File>
 			</Filter>

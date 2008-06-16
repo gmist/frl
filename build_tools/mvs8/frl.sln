@@ -16,11 +16,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_lexical_cast", "test\t
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_bind", "test\test_bind\test_bind.vcproj", "{98980B7D-7C1F-4726-B2D3-24132BDE4575}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_opc_server", "test\test_opc_server\test_opc_server.vcproj", "{7AA93D62-A9E9-4741-9813-CBBB48BEEB38}"
 	ProjectSection(ProjectDependencies) = postProject
 		{9B04246C-95F5-45C4-B1BA-A47DECAFE102} = {9B04246C-95F5-45C4-B1BA-A47DECAFE102}
@@ -83,10 +78,6 @@ Global
 		{BBBC6EB8-15BA-4DAA-8646-0A97FDC2F113}.Debug|Win32.Build.0 = Debug|Win32
 		{BBBC6EB8-15BA-4DAA-8646-0A97FDC2F113}.Release|Win32.ActiveCfg = Release|Win32
 		{BBBC6EB8-15BA-4DAA-8646-0A97FDC2F113}.Release|Win32.Build.0 = Release|Win32
-		{98980B7D-7C1F-4726-B2D3-24132BDE4575}.Debug|Win32.ActiveCfg = Debug|Win32
-		{98980B7D-7C1F-4726-B2D3-24132BDE4575}.Debug|Win32.Build.0 = Debug|Win32
-		{98980B7D-7C1F-4726-B2D3-24132BDE4575}.Release|Win32.ActiveCfg = Release|Win32
-		{98980B7D-7C1F-4726-B2D3-24132BDE4575}.Release|Win32.Build.0 = Release|Win32
 		{7AA93D62-A9E9-4741-9813-CBBB48BEEB38}.Debug|Win32.ActiveCfg = Debug|Win32
 		{7AA93D62-A9E9-4741-9813-CBBB48BEEB38}.Debug|Win32.Build.0 = Debug|Win32
 		{7AA93D62-A9E9-4741-9813-CBBB48BEEB38}.Release|Win32.ActiveCfg = Release|Win32
