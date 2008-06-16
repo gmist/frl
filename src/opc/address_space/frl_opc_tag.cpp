@@ -15,7 +15,7 @@ namespace address_space
 Tag::Tag( Bool is_Branch_, const String &delimiter_ )
 	:	is_Branch( is_Branch_ ),
 		requestedDataType( VT_EMPTY ),
-		accessRights( OPC_READABLE | OPC_WRITEABLE ),
+		accessRights( OPC_READABLE ),
 		parent( NULL ),
 		quality( OPC_QUALITY_GOOD ),
 		scanRate( 0 )
@@ -100,14 +100,14 @@ DWORD Tag::getAccessRights()
 void Tag::isWriteable( Bool writeable )
 {
 	if( writeable )
-		accessRights |= OPC_WRITEABLE;
+		accessRights = OPC_READABLE | OPC_WRITEABLE;
 	else
 		accessRights = OPC_READABLE;
 }
 
 frl::Bool Tag::isWriteable()
 {
-	return ( accessRights & OPC_WRITEABLE ) == 1;
+	return ( accessRights & OPC_WRITEABLE ) == OPC_WRITEABLE;
 }
 
 Tag* Tag::addLeaf( const String &name )

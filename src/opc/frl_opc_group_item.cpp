@@ -150,6 +150,10 @@ GroupItem* GroupItem::clone() const
 	grItem->accessPath = accessPath;
 	grItem->itemID = itemID;
 	grItem->requestDataType = requestDataType;
+	grItem->lastChange = lastChange;
+	grItem->cachedValue = cachedValue;
+	grItem->tagRef = tagRef;
+	grItem->deadBand = deadBand;
 	return grItem;
 }
 
