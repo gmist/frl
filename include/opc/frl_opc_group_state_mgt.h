@@ -9,6 +9,7 @@ namespace frl
 {
 namespace opc
 {
+
 template < class T >
 class GroupStateMgt : public IOPCGroupStateMgt2
 {
@@ -186,10 +187,10 @@ public:
 		if( FAILED( result ) )
 			return result;
 
-		result = group->QueryInterface( riid, (void**)ppUnk );
+		result = group.get()->QueryInterface( riid, (void**)ppUnk );
 
 		if( FAILED( result ) )
-			pT->server->RemoveGroup( group->getServerHandle(), FALSE );
+			pT->server->RemoveGroup( group.get()->getServerHandle(), FALSE );
 
 		return result;
 	}
