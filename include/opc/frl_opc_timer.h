@@ -23,9 +23,10 @@ private:
 	boost::mutex mtx;
 	boost::condition cnd;
 	volatile bool stopIt;
+	volatile bool isTryStop;
 	boost::mutex opMtx;
 
-	boost::function< void() > functionBoost;
+	boost::function< void() > executionFunction;
 	typedef void ( T::*FunctionDef )( void );
 
 	boost::thread process;
@@ -33,7 +34,8 @@ public:
 
 	Timer()
 	:	time_ms( 100 ),
-		stopIt( true )		
+		stopIt( true ),
+		isTryStop( false )	
 	{
 	}
 
@@ -48,7 +50,7 @@ public:
 		{
 			while( ! stopIt )
 			{
-				functionBoost();
+				executionFunction();
 			}
 		}
 		else
@@ -61,19 +63,12 @@ public:
 			boost::xtime xdelay;
 			QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
 			QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
-			for( ; ; )
+			boost::mutex::scoped_lock lock( mtx );
+			to_time( tmp_time, xdelay );
+			while( ! ( stopIt || ( cnd.timed_wait(lock, xdelay) && stopIt  ) ) )
 			{
-				if( stopIt )
-					return;
-
-				to_time( tmp_time, xdelay );
-				boost::mutex::scoped_lock lock( mtx );
-				if( cnd.timed_wait(lock, xdelay) && stopIt ) 
-					return;
-
-				functionBoost();
-
-				if( stopIt ) // for fast exit if condition entry in function()
+				executionFunction();
+				if( stopIt ) // for fast return if condition entry in during executionFunction()
 					return;
 
 				QueryPerformanceCounter( (LARGE_INTEGER*)&timeEnd );
@@ -88,7 +83,8 @@ public:
 					else
 						tmp_time = time_ms_local;
 				}
-				QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );	
+				QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
+				to_time( tmp_time, xdelay );
 			}
 		}
 	}
@@ -96,7 +92,7 @@ public:
 	void init( T *ptr, typename Timer::FunctionDef function_ )
 	{		
 		boost::mutex::scoped_lock lock( opMtx );
-		functionBoost = boost::bind( function_, ptr );
+		executionFunction = boost::bind( function_, ptr );
 	}
 
 	void setTimer( int time_ )
@@ -129,6 +125,13 @@ public:
 	void stop()
 	{
 		boost::mutex::scoped_lock lock( opMtx );
+		if( isTryStop )
+		{
+			cnd.notify_one();
+			process.join();
+			isTryStop = false;
+			return;
+		}
 		if( ! stopIt )
 		{
 			stopIt = true;
@@ -148,7 +151,7 @@ public:
 		if( ! stopIt )
 		{
 			stopIt = true;
-			cnd.notify_one();
+			isTryStop = true;
 		}
 	}
 };
