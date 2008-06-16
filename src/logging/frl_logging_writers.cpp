@@ -10,7 +10,8 @@ namespace private_
 String getStr( const logging::ListLogElements &elements, const frl::logging::LogParameter &param )
 {
 	String tmp;
-	for( logging::ListLogElements::const_iterator it = elements.begin(); it != elements.end(); ++it )
+	logging::ListLogElements::const_iterator end = elements.end();
+	for( logging::ListLogElements::const_iterator it = elements.begin(); it != end; ++it )
 		tmp += (*it)->proccess( param );
 	return tmp;
 }

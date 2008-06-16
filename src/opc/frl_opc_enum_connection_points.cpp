@@ -73,9 +73,10 @@ HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Next( /* [in] */ ULONG cConnecti
 		return S_FALSE;
 
 	ULONG i = (ULONG)currentIndex;
+	ConnectionPointList::iterator end = points.end();
 	for( ConnectionPointList::iterator it = points.begin(); i < cConnections; ++i, ++it )
 	{
-		if( it == points.end() )
+		if( it == end )
 		{
 			*pcFetched = i;
 			currentIndex = points.size();
@@ -118,8 +119,8 @@ HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Clone( /* [out] */ IEnumConnecti
 		*ppEnum=NULL;
 		return E_OUTOFMEMORY;
 	}
-
-	for( ConnectionPointList::iterator it = points.begin(); it != points.end();  ++it )
+	ConnectionPointList::iterator end = points.end();
+	for( ConnectionPointList::iterator it = points.begin(); it != end;  ++it )
 	{
 		pNewEnum->points.push_back( *it );
 	}

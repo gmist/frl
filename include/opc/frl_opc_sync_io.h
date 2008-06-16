@@ -52,10 +52,12 @@ public:
 		HRESULT result = S_OK;
 
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -124,10 +126,12 @@ public:
 
 		HRESULT result = S_OK;
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -194,10 +198,12 @@ public:
 		HRESULT result = S_OK;
 
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -260,10 +266,12 @@ public:
 		os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 		
 		HRESULT res = S_OK;
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;

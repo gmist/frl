@@ -112,7 +112,8 @@ void ServerKind::registrerServer( const std::vector<IID> &categories )
 	TCHAR path[MAX_PATH] = {0};
 	GetModuleFileName(NULL, path ,MAX_PATH);
 	key.setStringValue( path );
-	for( std::vector< IID >::const_iterator it = categories.begin(); it != categories.end(); ++it )
+	std::vector< IID >::const_iterator end = categories.end();
+	for( std::vector< IID >::const_iterator it = categories.begin(); it != end; ++it )
 	{
 		key.reinit(	FRL_STR("CLSID\\") +
 			clsid +

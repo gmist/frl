@@ -40,7 +40,8 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in]
 		return E_POINTER;
 
 	boost::mutex::scoped_lock guard( cpGuard );
-	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
+	ConnectionPointList::iterator end = points.end();
+	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
 	{
 		if( (*it)->getInterface() == riid )
 			return (*it)->QueryInterface( IID_IConnectionPoint, (void**)ppCP );
@@ -52,7 +53,8 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in]
 frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
+	ConnectionPointList::iterator end = points.end();
+	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 			return (*it)->isConnected();
@@ -63,7 +65,8 @@ frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 void ConnectionPointContainer::registerInterface( const IID& interface_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
+	ConnectionPointList::iterator end = points.end();
+	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 			return; // already registration
@@ -74,7 +77,8 @@ void ConnectionPointContainer::registerInterface( const IID& interface_ )
 void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
+	ConnectionPointList::iterator end = points.end();
+	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 		{
@@ -87,7 +91,8 @@ void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 HRESULT ConnectionPointContainer::getCallback( const IID& interface_, IUnknown** callBack_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	for( ConnectionPointList::iterator it = points.begin(); it != points.end(); ++it )
+	ConnectionPointList::iterator end = points.end();
+	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
 	{
 		if( (*it)->getInterface() == interface_ )
 		{

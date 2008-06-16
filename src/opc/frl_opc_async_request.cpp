@@ -25,7 +25,8 @@ AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE >
 		source( 0 ),
 		groupHandle( groupHandle_ )
 {
-	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != handles_.end(); ++it )
+	std::list< OPCHANDLE >::const_iterator end = handles_.end();
+	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it )
 	{
 		ItemHVQT tmp;
 		tmp.setHandle( (*it) );
@@ -93,7 +94,8 @@ void AsyncRequest::init( const std::list< OPCHANDLE > &handles_, const VARIANT *
 		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
 
 	size_t i = 0;
-	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != handles_.end(); ++it, ++i )
+	std::list< OPCHANDLE >::const_iterator end = handles_.end();
+	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it, ++i )
 	{
 		ItemHVQT tmp;
 		tmp.setHandle( (*it) );
@@ -109,8 +111,9 @@ void AsyncRequest::init( const std::list< OPCHANDLE > &handles_ )
 
 	if( handles_.empty() )
 		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
-
-	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != handles_.end(); ++it )
+	
+	std::list< OPCHANDLE >::const_iterator end = handles_.end();
+	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it )
 	{
 		ItemHVQT tmp;
 		tmp.setHandle( (*it) );

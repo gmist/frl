@@ -191,10 +191,11 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( pT->groupGuard );
+	GroupItemElemList::iterator end = pT->itemList.end();
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
-		if( it == pT->itemList.end() ) 
+		if( it == end ) 
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 			res = S_FALSE;
@@ -233,10 +234,11 @@ HRESULT STDMETHODCALLTYPE SetActiveState(
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( pT->groupGuard );
+	GroupItemElemList::iterator end = pT->itemList.end();
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
-		if ( it == pT->itemList.end() )
+		if ( it == end )
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 			res = S_FALSE;
@@ -271,10 +273,11 @@ HRESULT STDMETHODCALLTYPE SetClientHandles(
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( pT->groupGuard );
+	GroupItemElemList::iterator end = pT->itemList.end();
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
-		if(it == pT->itemList.end())
+		if( it == end )
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 			res = S_FALSE;
@@ -310,10 +313,11 @@ HRESULT STDMETHODCALLTYPE SetDatatypes(
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( pT->groupGuard );
+	GroupItemElemList::iterator end = pT->itemList.end();
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		it = pT->itemList.find( phServer[i] );
-		if(it == pT->itemList.end())
+		if( it == end )
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 			res = S_FALSE;

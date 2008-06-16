@@ -41,7 +41,8 @@ void Logger::log( const LogParameter &param )
 {
 	if( level <= param.level )
 	{
-		for( ListLogWriters::iterator it = destionations.begin(); it != destionations.end(); ++it )
+		ListLogWriters::iterator end = destionations.end();
+		for( ListLogWriters::iterator it = destionations.begin(); it != end; ++it )
 			(*it)->write( formaters, param );
 	}
 }

@@ -368,7 +368,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR 
 	#endif
 
 	GroupElemIndexMap::iterator it = groupItemIndex.find( name );
-	if(it == groupItemIndex.end() )
+	if( it == groupItemIndex.end() )
 		return E_INVALIDARG;
 
 	HRESULT hr = (*it).second->QueryInterface( riid, (void**)ppUnk );

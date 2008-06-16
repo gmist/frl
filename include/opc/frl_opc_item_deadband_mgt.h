@@ -44,10 +44,12 @@ virtual HRESULT STDMETHODCALLTYPE SetItemDeadband(
 
 		HRESULT result = S_OK;			
 		boost::mutex::scoped_lock guard( pT->groupGuard );
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 				result = S_FALSE;
@@ -108,10 +110,12 @@ virtual HRESULT STDMETHODCALLTYPE GetItemDeadband(
 		HRESULT result = S_OK;
 		boost::mutex::scoped_lock guard( pT->groupGuard );
 		Float tmpDeadBand;
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 				result = S_FALSE;
@@ -162,10 +166,12 @@ virtual HRESULT STDMETHODCALLTYPE ClearItemDeadband(
 		HRESULT result = S_OK;
 		boost::mutex::scoped_lock guard( pT->groupGuard );
 		Float tmpDeadBand;
+		GroupItemElemList::iterator it;
+		GroupItemElemList::iterator end = pT->itemList.end();
 		for( DWORD i = 0; i < dwCount; ++i )
 		{
-			GroupItemElemList::iterator it = pT->itemList.find( phServer[i] );
-			if( it == pT->itemList.end() )
+			it = pT->itemList.find( phServer[i] );
+			if( it == end )
 			{
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 				result = S_FALSE;

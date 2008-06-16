@@ -33,7 +33,8 @@ const String& Node::getName()
 NodesList Node::getSubNodes( const String &name_ )
 {
 	NodesList nodesList;
-	for( NodesList::iterator it = nodes.begin(); it != nodes.end(); ++it )
+	NodesList::iterator end = nodes.end();
+	for( NodesList::iterator it = nodes.begin(); it != end; ++it )
 	{ 
 		if( (*it)->getName() == name_ )
 			nodesList.push_back( (*it) );
@@ -45,7 +46,8 @@ NodesList Node::getSubNodes( const String &name_ )
 
 boost::shared_ptr< Node > Node::getFirstNode( const String& name_ )
 {
-	for( NodesList::iterator it = nodes.begin(); it != nodes.end(); ++it )
+	NodesList::iterator end = nodes.end();
+	for( NodesList::iterator it = nodes.begin(); it != end; ++it )
 	{
 		if( (*it)->getName() == name_ )
 			return (*it);
@@ -63,8 +65,9 @@ String Node::getProprtyVal( const String &propertyName )
 
 boost::shared_ptr< Node > Node::getNode( const String &name_, const String &propertyName, const String &propertyValue )
 {
-	std::list< boost::shared_ptr< Node > > nodesList = getSubNodes( name_ );
-	for( NodesList::iterator it = nodesList.begin(); it != nodesList.end(); ++it )
+	NodesList nodesList = getSubNodes( name_ );
+	NodesList::iterator end = nodesList.end();
+	for( NodesList::iterator it = nodesList.begin(); it != end; ++it )
 	{
 		if( (*it)->getProprtyVal( propertyName ) == propertyValue )
 			return (*it );

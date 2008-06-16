@@ -74,7 +74,6 @@ public:
 
 				(*ppItemProperties)[i].dwNumProperties = (DWORD)arrSize;
 
-				std::vector< DWORD >::iterator end = propArray.end();
 				for( size_t j = 0; j < arrSize; ++j )
 				{
 					(*ppItemProperties)[i].pItemProperties[j].dwPropertyID = propArray[j];

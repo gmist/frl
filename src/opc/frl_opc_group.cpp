@@ -279,10 +279,12 @@ void Group::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem 
 	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
 	size_t i = 0;
 	std::list< ItemHVQT >::const_iterator end = handles->end();
+	GroupItemElemList::iterator iter;
+	GroupItemElemList::iterator groupIterEnd = itemList.end();
 	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		GroupItemElemList::iterator iter = itemList.find( (*it).getHandle() );
-		if( iter == itemList.end() )
+		iter = itemList.find( (*it).getHandle() );
+		if( iter == groupIterEnd )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_INVALIDHANDLE;
@@ -409,10 +411,12 @@ void Group::doAsyncRefresh( const AsyncRequestListElem &request )
 	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
 	size_t i = 0;
 	std::list< ItemHVQT >::const_iterator end = handles->end();
+	GroupItemElemList::iterator iter;
+	GroupItemElemList::iterator groupIterEnd = itemList.end();
 	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		GroupItemElemList::iterator iter = itemList.find( (*it).getHandle() );
-		if( iter == itemList.end() )
+		iter = itemList.find( (*it).getHandle() );
+		if( iter == groupIterEnd )
 		{
 			pErrors[i] = OPC_E_INVALIDHANDLE;
 			continue;
@@ -479,10 +483,12 @@ void Group::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem
 	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
 	size_t i = 0;
 	std::list< ItemHVQT >::const_iterator end = handles->end();
+	GroupItemElemList::iterator iter;
+	GroupItemElemList::iterator groupIterEnd = itemList.end();
 	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
 	{
-		GroupItemElemList::iterator iter = itemList.find( (*it).getHandle() );
-		if( iter == itemList.end() )
+		iter = itemList.find( (*it).getHandle() );
+		if( iter == groupIterEnd )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_INVALIDHANDLE;
@@ -554,7 +560,7 @@ GroupElem Group::clone()
 	newGroup->deleted = deleted;
 
 	GroupItemElemList::const_iterator end = itemList.end();
-	for( GroupItemElemList::const_iterator it = itemList.begin(); it != itemList.end(); ++it )
+	for( GroupItemElemList::const_iterator it = itemList.begin(); it != end; ++it )
 	{
 		GroupItemElem item( (*it).second->clone() );
 		newGroup->itemList.insert( std::pair< OPCHANDLE, GroupItemElem > ( item->getServerHandle(), item ) );
