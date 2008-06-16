@@ -33,7 +33,7 @@ public:
 
 	Timer()
 	:	time_ms( 100 ),
-		stopIt( false )		
+		stopIt( true )		
 	{
 	}
 
