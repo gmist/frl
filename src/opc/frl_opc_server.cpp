@@ -70,11 +70,11 @@ OPCServer::OPCServer()
 OPCServer::~OPCServer()
 {
 	timerRead.tryStop();
-	asyncReadSignal();
+	readEvent.signal();
 	timerRead.stop();
 
 	timerWrite.tryStop();
-	asyncWriteSignal();
+	writeEvent.signal();
 	timerWrite.stop();
 
 	factory.LockServer( FALSE );
@@ -82,11 +82,9 @@ OPCServer::~OPCServer()
 
 void OPCServer::onReadTimer()
 {
-	boost::mutex::scoped_lock lock( readMtx );
-	while( asyncReadList.empty() && ! timerRead.isStop() )
-		readCnd.wait( lock );
+	readEvent.wait();
 
-	if( timerRead.isStop() )
+	if( timerRead.isStop() || asyncReadList.empty() )
 		return;
 
 	AsyncRequestList tmp;
@@ -127,11 +125,9 @@ void OPCServer::onReadTimer()
 
 void OPCServer::onWriteTimer()
 {	
-	boost::mutex::scoped_lock lock( writeMtx );
-	while( asyncWriteList.empty() && ! timerWrite.isStop() )
-		writeCnd.wait( lock );
+	writeEvent.wait();
 
-	if( timerWrite.isStop() )
+	if( timerWrite.isStop() || asyncWriteList.empty() )
 		return;
 
 	AsyncRequestList tmp;
@@ -538,14 +534,12 @@ OPCSERVERSTATE OPCServer::getServerState()
 
 void OPCServer::asyncReadSignal()
 {
-	boost::mutex::scoped_lock lock( readMtx );
-	readCnd.notify_one();
+	readEvent.signal();
 }
 
 void OPCServer::asyncWriteSignal()
 {
-	boost::mutex::scoped_lock lock( writeMtx );
-	writeCnd.notify_one();
+	writeEvent.signal();
 }
 
 frl::Bool OPCServer::asyncRequestCancel( DWORD id )

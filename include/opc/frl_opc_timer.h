@@ -3,12 +3,10 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <boost/thread/mutex.hpp>
-#include <boost/thread/condition.hpp>
-#include <libs/thread/src/win32/timeconv.inl>
-#include <boost/thread/xtime.hpp>
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/thread.hpp>
+#include "opc/frl_opc_event.h"
 
 namespace frl
 {
@@ -20,11 +18,11 @@ class Timer : private boost::noncopyable
 {
 private:
 	frl::TimeOut time_ms;
-	boost::mutex mtx;
-	boost::condition cnd;
 	volatile bool stopIt;
 	volatile bool isTryStop;
 	boost::mutex opMtx;
+	boost::mutex mtx;
+	opc::Event stopEvent;
 
 	boost::function< void() > executionFunction;
 	typedef void ( T::*FunctionDef )( void );
@@ -35,7 +33,7 @@ public:
 	Timer()
 	:	time_ms( 100 ),
 		stopIt( true ),
-		isTryStop( false )	
+		isTryStop( false )
 	{
 	}
 
@@ -60,17 +58,13 @@ public:
 			LONGLONG timeStart = 0;
 			LONGLONG timeEnd   = 0;
 			LONGLONG frequency  = 0;
-			boost::xtime xdelay;
+
 			QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
 			QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
 			boost::mutex::scoped_lock lock( mtx );
-			to_time( tmp_time, xdelay );
-			while( ! ( stopIt || ( cnd.timed_wait(lock, xdelay) && stopIt  ) ) )
+			while( ! stopEvent.timedWait( tmp_time ) )
 			{
 				executionFunction();
-				if( stopIt ) // for fast return if condition entry in during executionFunction()
-					return;
-
 				QueryPerformanceCounter( (LARGE_INTEGER*)&timeEnd );
 				double delay = ( ( ( double )( timeEnd - timeStart ) ) / ( (double) frequency ) ) * 1000;
 				unsigned int delta = (unsigned int)delay;
@@ -84,7 +78,6 @@ public:
 						tmp_time = time_ms_local;
 				}
 				QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
-				to_time( tmp_time, xdelay );
 			}
 		}
 	}
@@ -98,7 +91,7 @@ public:
 	void setTimer( int time_ )
 	{
 		{
-			boost::mutex::scoped_lock lock( mtx );
+			boost::mutex::scoped_lock lock( opMtx );
 			if( stopIt )
 			{
 				time_ms = time_;
@@ -116,7 +109,7 @@ public:
 		boost::mutex::scoped_lock lock( opMtx );
 		if( stopIt )
 		{
-			boost::mutex::scoped_lock lock( mtx );	
+			boost::mutex::scoped_lock lock( mtx );
 			process = boost::thread(  boost::bind( &Timer::func, this ) );
 			stopIt = false;
 		}
@@ -127,15 +120,15 @@ public:
 		boost::mutex::scoped_lock lock( opMtx );
 		if( isTryStop )
 		{
-			cnd.notify_one();
+			stopEvent.signal();
 			process.join();
 			isTryStop = false;
 			return;
 		}
 		if( ! stopIt )
 		{
+			stopEvent.signal();
 			stopIt = true;
-			cnd.notify_one();
 			process.join();
 		}
 	}

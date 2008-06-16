@@ -4,20 +4,20 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include <boost/thread/mutex.hpp>
-#include <boost/thread/condition.hpp>
+#include <boost/noncopyable.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_common.h"
 #include "opc/frl_opc_item_properties.h"
 #include "opc/frl_opc_browse_server_address_space.h"
 #include "opc/frl_opc_connection_point_container.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
-#include <boost/noncopyable.hpp>
 #include "opc/address_space/frl_opc_addr_space_crawler.h"
 #include "opc/frl_opc_browse.h"
 #include "opc/frl_opc_item_io.h"
 #include "opc/frl_opc_async_request.h"
 #include "opc/frl_opc_timer.h"
 #include "frl_smart_ptr.h"
+#include "opc/frl_opc_event.h"
 
 namespace frl
 {
@@ -63,11 +63,8 @@ private:
 	Timer< OPCServer > timerRead;
 	Timer< OPCServer > timerWrite;
 
-	boost::mutex readMtx;
-	boost::condition readCnd;
-
-	boost::mutex writeMtx;
-	boost::condition writeCnd;
+	opc::Event readEvent;
+	opc::Event writeEvent;
 
 	boost::mutex readGuard;
 	boost::mutex writeGuard;
