@@ -1,6 +1,8 @@
 #include <boost/scoped_array.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/bind.hpp>
+#include "stream_std/frl_fstream.h"
 #include "poor_xml/frl_poor_xml_document.h"
 #include "poor_xml/frl_poor_xml_parser.h"
 
@@ -10,6 +12,17 @@ namespace frl
 {
 namespace poor_xml
 {
+
+namespace private_
+{
+bool isCRLF( const Char el )
+{
+	if( el == 0x0d || el == 0x0a )
+			return true;
+		return false;
+}
+} // namespace private_
+
 Document::Document()
 {
 }
@@ -44,27 +57,20 @@ void Document::LoadFromCurrenttDir( const String& fileName_ )
 	if( length == 0 )
 		FRL_THROW_S_CLASS( Document::EmptyFile );
 
-	boost::scoped_array< char > data( new char[ ( size_t )length + 1 ] );
-	fs::filebuf file;
-	file.open( fileName, std::ios_base::in );
+	stream_std::InFile file( fileName.c_str() );
 	if( ! file.is_open() )
 		FRL_THROW_S_CLASS( Document::UnknownError );
 
-	data[0] = static_cast< char >( file.sgetc() );
-	for( size_t i = 1; i < length; ++i )
-	{
-		data[i] = static_cast< char >( file.snextc() );
-	}
-
+	std::list< Char > data;
+	data.resize(length);
+	std::copy(	std::istreambuf_iterator< Char >( file.rdbuf() ),
+					std::istreambuf_iterator< Char >(),
+					data.begin() );
 	file.close();
+	std::remove_if( data.begin(), data.end(), private_::isCRLF ); // remove CRLF
 	String buffer;
-	buffer.reserve( length );
-	for( size_t i = 0; i < length; ++i )
-	{
-		if( data[i] == 0xa || data[i] == 0xd )
-			continue;
-		buffer+= data[i];
-	}
+	buffer.resize( data.size() );
+	std::copy( data.begin(), data.end(), buffer.begin() );
 	parseHeader( buffer );
 	NodesList tmpMap = Parser::getSubNodes( buffer );
 	if( tmpMap.size() > 1 )
