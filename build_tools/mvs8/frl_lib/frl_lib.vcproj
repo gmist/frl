@@ -211,6 +211,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\opc\frl_opc_event.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\opc\frl_opc_group.cpp"
 					>
 				</File>
@@ -558,6 +562,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_enum_string.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_event.h"
 					>
 				</File>
 				<File

@@ -17,11 +17,11 @@ template< class T >
 class Timer : private boost::noncopyable
 {
 private:
-	frl::TimeOut time_ms;
+	unsigned long time_ms;
 	volatile bool stopIt;
 	volatile bool isTryStop;
 	boost::mutex opMtx;
-	boost::mutex mtx;
+	boost::mutex startThreadGuard;
 	opc::Event stopEvent;
 
 	boost::function< void() > executionFunction;
@@ -53,15 +53,15 @@ public:
 		}
 		else
 		{
-			frl::TimeOut time_ms_local = time_ms;
-			frl::TimeOut tmp_time = time_ms;
+			unsigned long time_ms_local = time_ms;
+			unsigned long tmp_time = time_ms;
 			LONGLONG timeStart = 0;
 			LONGLONG timeEnd   = 0;
 			LONGLONG frequency  = 0;
 
 			QueryPerformanceFrequency((LARGE_INTEGER*)&frequency);
 			QueryPerformanceCounter( (LARGE_INTEGER*)&timeStart );
-			boost::mutex::scoped_lock lock( mtx );
+			boost::mutex::scoped_lock lock( startThreadGuard );
 			while( ! stopEvent.timedWait( tmp_time ) )
 			{
 				executionFunction();
@@ -109,7 +109,7 @@ public:
 		boost::mutex::scoped_lock lock( opMtx );
 		if( stopIt )
 		{
-			boost::mutex::scoped_lock lock( mtx );
+			boost::mutex::scoped_lock lock( startThreadGuard );
 			process = boost::thread(  boost::bind( &Timer::func, this ) );
 			stopIt = false;
 		}
