@@ -17,7 +17,7 @@ namespace private_
 {
 bool isCRLF( const Char el )
 {
-	if( el == 0x0d || el == 0x0a )
+	if( el == 0x0d || el == 0x0a || ! el )
 			return true;
 		return false;
 }
@@ -61,13 +61,12 @@ void Document::LoadFromCurrenttDir( const String& fileName_ )
 	if( ! file.is_open() )
 		FRL_THROW_S_CLASS( Document::UnknownError );
 
-	std::list< Char > data;
-	data.resize(length);
+	std::list< Char > data( length );
 	std::copy(	std::istreambuf_iterator< Char >( file.rdbuf() ),
 					std::istreambuf_iterator< Char >(),
 					data.begin() );
 	file.close();
-	std::remove_if( data.begin(), data.end(), private_::isCRLF ); // remove CRLF
+	data.erase( std::remove_if( data.begin(), data.end(), private_::isCRLF ), data.end() ); // remove CRLF
 	String buffer;
 	buffer.resize( data.size() );
 	std::copy( data.begin(), data.end(), buffer.begin() );
