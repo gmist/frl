@@ -62,34 +62,12 @@ wchar_t* duplicateString( const wchar_t *str )
 
 char* duplicateString( const std::string &string )
 {
-	char* ret = NULL;
-	if( !string.empty() )
-	{
-		size_t size = string.length() + 1;
-		ret = os::win32::com::allocMemory< char >( size );
-		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		strcpy_s( ret, size, string.c_str() );
-		#else
-		strcpy( ret, string.c_str() );
-		#endif
-	}
-	return ret;
+	return duplicateString( string.c_str() );
 }
 
 wchar_t* duplicateString( const std::wstring &string )
 {
-	wchar_t* ret = NULL;
-	if( !string.empty() )
-	{
-		size_t size = string.length() + 2;
-		ret = os::win32::com::allocMemory< wchar_t >( size );
-		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		wcscpy_s( ret, size, string.c_str() );
-		#else
-		wcscpy( ret, string.c_str() );
-		#endif
-	}
-	return ret;
+	return duplicateString( string.c_str() );
 }
 
 HRESULT getErrorString( HRESULT dwError, LCID lcid, LPWSTR **ppString )

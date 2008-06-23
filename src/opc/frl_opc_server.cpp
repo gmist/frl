@@ -10,38 +10,12 @@
 #include "frl_util_functors.h"
 #include "os/win32/com/frl_os_win32_com_uuidof.h"
 #include <boost/lambda/lambda.hpp>
+#include "opc/frl_opc_group.h"
 
 namespace frl
 {
 namespace opc
 {
-
-namespace private_
-{
-
-class RemoveItemFunctor
-{
-	OPCHANDLE handle;
-public:
-	RemoveItemFunctor( OPCHANDLE handle_  )
-		:	handle( handle_ )
-	{
-	}
-
-	bool operator()( const AsyncRequestListElem& el )
-	{
-		el->removeHandle( handle );
-		return el->getCounts() == 0;
-	}
-};
-
-inline
-void RemoveItemFromAyncRequestList( const OPCHANDLE &handle, AsyncRequestList &requestList )
-{
-	requestList.remove_if( RemoveItemFunctor( handle ) );
-}
-
-} // namespace private_
 
 OPCServer::OPCServer()
 	:	refCount( 0 )
@@ -56,126 +30,29 @@ OPCServer::OPCServer()
 	serverStatus.dwServerState = OPC_STATUS_NOCONFIG;
 	serverStatus.dwBandWidth = 0xFFFFFFFF;
 	serverStatus.wMajorVersion = 2;
+
+	updateThread = boost::thread(boost::bind( &OPCServer::updateGroups, this ) );
+
 	registerInterface( IID_IOPCShutdown );
 	factory.LockServer( TRUE );
-
-	timerRead.init( this, &OPCServer::onReadTimer );
-	timerWrite.init( this, &OPCServer::onWriteTimer );
-	timerRead.setTimer( 1 );
-	timerWrite.setTimer( 1 );
-	timerRead.start();
-	timerWrite.start();
 }
 
 OPCServer::~OPCServer()
 {
-	timerRead.tryStop();
-	readEvent.signal();
-	timerRead.stop();
-
-	timerWrite.tryStop();
-	writeEvent.signal();
-	timerWrite.stop();
+	stopUpdate.signal();
+	updateThread.join();
 
 	factory.LockServer( FALSE );
 }
 
-void OPCServer::onReadTimer()
+void OPCServer::addAsyncReadRequest( AsyncRequestListElem &request )
 {
-	readEvent.wait();
-
-	if( timerRead.isStop() || asyncReadList.empty() )
-		return;
-
-	AsyncRequestList tmp;
-	{
-		boost::mutex::scoped_lock guard( readGuard );
-		asyncReadList.swap( tmp );
-	}
-
-	IOPCDataCallback* ipCallback = NULL;
-	HRESULT hResult;
-	
-	boost::mutex::scoped_lock guard( scopeGuard );
-	GroupElemMap::iterator group;
-	GroupElemMap::iterator groupEnd = groupItem.end();
-
-	AsyncRequestList::iterator end = tmp.end();
-	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
-	{
-		group = groupItem.find( (*it)->getGroupHandle() );
-		if( group == groupEnd )
-			continue;
-		hResult = (*group).second->getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
-		if( FAILED( hResult ) )
-			continue;
-
-		if( (*it)->isCancelled() )
-		{
-			ipCallback->OnCancelComplete( (*it)->getTransactionID(), (*group).second->getClientHandle() );
-		}
-		else
-		{
-			if( (*it)->getCounts() != 0 )
-				(*group).second->doAsyncRead( ipCallback, (*it) );
-		}
-		ipCallback->Release();
-	}
+	request_manager.addReadRequest( request );
 }
 
-void OPCServer::onWriteTimer()
-{	
-	writeEvent.wait();
-
-	if( timerWrite.isStop() || asyncWriteList.empty() )
-		return;
-
-	AsyncRequestList tmp;
-	{
-		boost::mutex::scoped_lock guard( writeGuard );
-		asyncWriteList.swap( tmp );
-	}
-
-	IOPCDataCallback* ipCallback = NULL;
-	HRESULT hResult;
-
-	boost::mutex::scoped_lock guard( scopeGuard );
-	GroupElemMap::iterator group;
-	GroupElemMap::iterator groupEnd = groupItem.end();
-
-	AsyncRequestList::iterator end = tmp.end();
-	for( AsyncRequestList::iterator it = tmp.begin(); it != end; ++it )
-	{
-		group = groupItem.find( (*it)->getGroupHandle() );
-		if( group == groupEnd )
-			continue;
-		hResult = (*group).second->getCallback( IID_IOPCDataCallback, (IUnknown**)&ipCallback );
-		if( FAILED( hResult ) )
-			continue;
-
-		if( (*it)->isCancelled() )
-		{
-			ipCallback->OnCancelComplete( (*it)->getTransactionID(), (*group).second->getClientHandle() );
-		}
-		else
-		{
-			if( (*it)->getCounts() != 0 )
-				(*group).second->doAsyncWrite( ipCallback, (*it) );
-		}
-		ipCallback->Release();
-	}
-}
-
-void OPCServer::addAsyncReadRequest( const AsyncRequestListElem &request )
+void OPCServer::addAsyncWriteRequest( AsyncRequestListElem &request )
 {
-	boost::mutex::scoped_lock guard( readGuard );
-	asyncReadList.push_back( request );
-}
-
-void OPCServer::addAsyncWriteRequest( const AsyncRequestListElem &request )
-{
-	boost::mutex::scoped_lock guard( writeGuard );
-	asyncWriteList.push_back( request );
+	request_manager.addWriteRequest( request );
 }
 
 STDMETHODIMP OPCServer::QueryInterface( REFIID iid, LPVOID* ppInterface )
@@ -269,8 +146,16 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 	*pRevisedUpdateRate = 0;
 	*ppUnk = NULL;
 
-	String name;
+	if( pPercentDeadband )
+	{
+		if( *pPercentDeadband < 0 || *pPercentDeadband > 100 )
+		{
+			return E_INVALIDARG;
+		}
+	}
 
+	GroupElem new_group;
+	String name;
 	boost::mutex::scoped_lock guard( scopeGuard );
 	if( szName == NULL || wcslen( szName ) == 0 )
 	{
@@ -279,30 +164,20 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 	else
 	{
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			if( groupItemIndex.find( szName ) != groupItemIndex.end() )
-				return OPC_E_DUPLICATENAME;
 			name = szName;
-		#else
-		if( groupItemIndex.find( wstring2string( szName ) ) != groupItemIndex.end() )
-			return OPC_E_DUPLICATENAME;
-		name = wstring2string( szName );
+		#else	
+			name = wstring2string( szName );
 		#endif
 	}
 
-	if( pPercentDeadband )
+	try
 	{
-		if( *pPercentDeadband < 0 || *pPercentDeadband > 100 )
-		{
-			return E_INVALIDARG;
-		}
+		new_group = group_manager.addGroup( name );
 	}
-	
-	Group *forcePtr = new Group( name );
-	if( forcePtr == NULL )
+	catch( GroupManager::IsExistGroup& )
 	{
-		return E_OUTOFMEMORY;
+		return OPC_E_DUPLICATENAME;
 	}
-	frl::ComPtr< Group > newGroup( forcePtr );	
 
 	LONG lTimeBias = 0;
 	if (pTimeBias == NULL)
@@ -316,27 +191,32 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 		lTimeBias = *pTimeBias;
 	}
 
-	HRESULT res = newGroup->SetState
-		( &dwRequestedUpdateRate, pRevisedUpdateRate, &bActive,
-		&lTimeBias, pPercentDeadband, &dwLCID, &hClientGroup);
+	new_group->setServerPtr( this );
+	HRESULT res = new_group->SetState(
+		&dwRequestedUpdateRate,
+		pRevisedUpdateRate,
+		&bActive,
+		&lTimeBias,
+		pPercentDeadband,
+		&dwLCID,
+		&hClientGroup );
+
 	if( FAILED(res) )
 	{
+		group_manager.removeGroup( name );
 		return res;
 	}
-	HRESULT queryResult = newGroup->QueryInterface( riid, (void**)ppUnk );
+	HRESULT queryResult = new_group->QueryInterface( riid, (void**)ppUnk );
 	if( FAILED( queryResult ) || *ppUnk == NULL)
 	{
+		group_manager.removeGroup( name );		
 		return E_NOINTERFACE;
 	}
-
-	newGroup->setServerPtr( this );
-	groupItemIndex.insert( std::pair< String, GroupElem >( newGroup->getName(), newGroup ) );
-	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( newGroup->getServerHandle(), newGroup ) );
+	
 	if( phServerGroup )
 	{
-		*phServerGroup = newGroup->getServerHandle();
+		*phServerGroup = new_group->getServerHandle();
 	}
-	newGroup->AddRef(); // for detecting using group in OPCServer::RemoveGroup
 	return res;
 }
 
@@ -367,11 +247,17 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR 
 	String name = wstring2string( szName );
 	#endif
 
-	GroupElemIndexMap::iterator it = groupItemIndex.find( name );
-	if( it == groupItemIndex.end() )
+	GroupElem group;
+	try
+	{
+		group = group_manager.getGroup( name );
+	}
+	catch( GroupManager::NotExistGroup& )
+	{
 		return E_INVALIDARG;
+	}
 
-	HRESULT hr = (*it).second->QueryInterface( riid, (void**)ppUnk );
+	HRESULT hr = group->QueryInterface( riid, (void**)ppUnk );
 	if( FAILED(hr) || *ppUnk == NULL)
 	{
 		*ppUnk = NULL;
@@ -393,27 +279,24 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **pp
 	*ppServerStatus = stat;
 	stat->szVendorInfo = os::win32::com::allocMemory<WCHAR>( (wcslen(serverStatus.szVendorInfo)+1) * sizeof(WCHAR) );
 	memcpy( stat->szVendorInfo, serverStatus.szVendorInfo, (wcslen( serverStatus.szVendorInfo) + 1) * sizeof(WCHAR) );
-	stat->dwGroupCount = (DWORD) groupItemIndex.size();
-
+	stat->dwGroupCount = (DWORD) group_manager.getGroupCount();
 	return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
-
-	GroupElemMap::iterator it = groupItem.find( hServerGroup );
-	if( it == groupItem.end() )
-		return E_FAIL;
-
-	Group* grpItem = (*it).second.get();
-	grpItem->isDeleted( True );
-	groupItemIndex.erase( grpItem->getName() );
-	groupItem.erase( it );
-
-	if( grpItem->Release() != 0 && ! bForce ) // detecting using group
+	try
 	{
-		return OPC_S_INUSE;
+		request_manager.removeGroupFromRequest( hServerGroup );
+		if( ! group_manager.removeGroup( hServerGroup ) && ! bForce )
+		{
+			return OPC_S_INUSE;
+		}
+	}
+	catch( GroupManager::NotExistGroup& )
+	{
+		return E_FAIL;
 	}
 	return S_OK;
 }
@@ -426,10 +309,13 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 		std::vector< GroupElem > unkn;
 		if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
 		{
-			GroupElemMap::iterator end = groupItem.end();
-			unkn.reserve( groupItem.size() );
-			for( GroupElemMap::iterator it = groupItem.begin(); it != end; ++it )
-				unkn.push_back( (*it).second );
+			try
+			{
+				unkn = group_manager.getGroupEnum();
+			}
+			catch( GroupManager::NotExistGroup& )
+			{
+			}
 		}
 
 		EnumGroup *enumGroup;
@@ -451,10 +337,13 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 		std::vector< String > nameList;
 		if( dwScope != OPC_ENUM_PUBLIC && dwScope != OPC_ENUM_PUBLIC_CONNECTIONS )
 		{
-			GroupElemMap::iterator end = groupItem.end();
-			nameList.reserve( groupItem.size() );
-			for( GroupElemMap::iterator it = groupItem.begin(); it != end; ++it )
-				nameList.push_back( (*it).second->getName() );
+			try
+			{
+				nameList = group_manager.getNamesEnum();
+			}
+			catch( GroupManager::NotExistGroup& )
+			{			
+			}
 		}
 
 		EnumString *enumString = new EnumString();
@@ -473,50 +362,24 @@ HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSC
 HRESULT OPCServer::setGroupName( const String &oldName, const String &newName )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
-
-	GroupElemIndexMap::iterator it =  groupItemIndex.find( newName );
-	if( it != groupItemIndex.end() )
-		return OPC_E_DUPLICATENAME;
-
-	it = groupItemIndex.find( oldName );
-	if( it == groupItemIndex.end() )
-		return E_INVALIDARG;
-
-	GroupElem tmpGroup = (*it).second;
-	groupItemIndex.erase( it );
-	groupItemIndex.insert( std::pair< String, GroupElem >( newName, tmpGroup) );
-	return S_OK;
-}
-
-HRESULT OPCServer::cloneGroup( const String &name, const String &cloneName, GroupElem &group )
-{
-	boost::mutex::scoped_lock guard( scopeGuard );
-
-	GroupElemIndexMap::iterator end = groupItemIndex.end();
-	GroupElemIndexMap::iterator it = groupItemIndex.find( cloneName );
-	if( it != end )
-		return OPC_E_DUPLICATENAME;
-
-	it = groupItemIndex.find( name );
-	if( it == end )
-		return E_INVALIDARG;
-
-	group = (*it).second->clone();	
-	group->setName( cloneName );
-	return addNewGroup( group );
-}
-
-HRESULT OPCServer::addNewGroup( GroupElem &group )
-{
-	if( group->getName().empty() )
+	try
 	{
-		group->setName( util::getUniqueName() );
+		group_manager.renameGroup( oldName, newName );
 	}
-
-	groupItemIndex.insert( std::pair< String, GroupElem >( group->getName(), group ) );
-	groupItem.insert( std::pair< OPCHANDLE, GroupElem >( group->getServerHandle(), group ) );
-	group->AddRef(); // for detecting using group in OPCServer::RemoveGroup
+	catch( GroupManager::IsExistGroup )
+	{
+		return OPC_E_DUPLICATENAME;
+	}
+	catch( GroupManager::NotExistGroup )
+	{
+		return E_INVALIDARG;
+	}
 	return S_OK;
+}
+
+frl::opc::GroupElem OPCServer::cloneGroup( String &name , String &to_name )
+{
+	return group_manager.cloneGroup( name, to_name );
 }
 
 void OPCServer::setServerState( OPCSERVERSTATE newState )
@@ -532,65 +395,27 @@ OPCSERVERSTATE OPCServer::getServerState()
 	return serverStatus.dwServerState;
 }
 
-void OPCServer::asyncReadSignal()
-{
-	readEvent.signal();
-}
-
-void OPCServer::asyncWriteSignal()
-{
-	writeEvent.signal();
-}
-
 frl::Bool OPCServer::asyncRequestCancel( DWORD id )
-{
-	Bool isExistRead = False;
-	Bool isExistWrite = False;
-	AsyncRequestList::iterator it;
-	AsyncRequestList::iterator end;
-	{
-		boost::mutex::scoped_lock lock( readGuard );
-		end = asyncReadList.end();
-		for( it = asyncReadList.begin(); it != end; ++it )
-		{
-			if( (*it)->getCancelID() == id )
-			{
-				isExistRead = True;
-				break;
-			}
-		}
-		if( isExistRead )
-			(*it)->isCancelled( True );		
-	}
-
-	{
-		boost::mutex::scoped_lock lock( writeGuard );
-		end =  asyncWriteList.end();
-		for( it = asyncWriteList.begin(); it != end; ++it )
-		{
-			if( (*it)->getCancelID() == id )
-			{
-				isExistWrite = True;
-				break;
-			}
-		}
-		if( isExistWrite )
-			(*it)->isCancelled( True );	
-	}
-	
-	return ( isExistRead || isExistWrite );
+{	
+	return ( request_manager.cancelRequest( id ) );
 }
 
-void OPCServer::removeItemFromAsyncReadRequestList( OPCHANDLE handle_ )
+void OPCServer::removeItemFromRequestList( OPCHANDLE item_handle )
 {
-	boost::mutex::scoped_lock guar( readGuard );
-	private_::RemoveItemFromAyncRequestList( handle_, asyncReadList );
+	request_manager.removeItemFromRequest( item_handle );
 }
 
-void OPCServer::removeItemFromAsyncWriteRequestList( OPCHANDLE handle_ )
+void OPCServer::removeGroupFromRequestList( OPCHANDLE group_handle )
 {
-	boost::mutex::scoped_lock guar( writeGuard );
-	private_::RemoveItemFromAyncRequestList( handle_, asyncWriteList );
+	request_manager.removeGroupFromRequest( group_handle );
+}
+
+void OPCServer::updateGroups()
+{
+	while( ! stopUpdate.timedWait( 50 ) )
+	{
+		group_manager.updateGroups();
+	}
 }
 
 } // namespace opc

@@ -1,7 +1,8 @@
 #include "opc/frl_opc_common.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include "../dependency/vendors/opc_foundation/opcerror.h"
 #include <WinNT.h>
+#include "../dependency/vendors/opc_foundation/opcerror.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "opc/frl_opc_util.h"
 #include "sys/frl_sys_util.h"
 
@@ -11,17 +12,15 @@ namespace opc
 {
 OPCCommon::OPCCommon() : lcid( 0 )
 {
-
 }
 
 OPCCommon::~OPCCommon()
 {
-
 }
 
 HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
 {
-	switch (dwLcid)
+	switch( dwLcid )
 	{
 		case MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT):
 		case MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), SORT_DEFAULT):
@@ -39,7 +38,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
 
 HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
 {
-	if (pdwLcid == NULL)
+	if( pdwLcid == NULL )
 		return E_INVALIDARG;
 	*pdwLcid = lcid;
 	return S_OK;
@@ -47,11 +46,11 @@ HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
 
 HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
 {
-	if (pdwCount == NULL || pdwLcid == NULL)
+	if( pdwCount == NULL || pdwLcid == NULL )
 		return E_INVALIDARG;
 
 	*pdwCount = 6;
-	*pdwLcid = (LCID*)CoTaskMemAlloc((*pdwCount)*sizeof(LCID));
+	*pdwLcid = os::win32::com::allocMemory< LCID >( *pdwCount );
 
 	(*pdwLcid)[0] = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT);
 	(*pdwLcid)[1] = MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), SORT_DEFAULT);
@@ -65,7 +64,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD 
 
 HRESULT STDMETHODCALLTYPE OPCCommon::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
 {
-	if (ppString == NULL )
+	if( ppString == NULL )
 		return E_INVALIDARG;
 
 	*ppString = NULL;

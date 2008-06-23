@@ -127,15 +127,14 @@ Group::Group( const String &groupName )
 Group::~Group()
 {
 	groupGuard.lock();
-	timerUpdate.stop();
 	unregisterInterface(IID_IOPCDataCallback);
 	groupGuard.unlock();
 }
 
 void Group::Init()
 {
+	boost::mutex::scoped_lock guard( groupGuard );
 	clientHandle = 0;
-
 	actived = False;
 	enabled = True;
 	deleted = False;
@@ -144,12 +143,8 @@ void Group::Init()
 	deadband = 0;
 	localeID = LOCALE_NEUTRAL;
 	keepAlive = 0;
-	::GetSystemTimeAsFileTime( &lastUpdate );
-	tickOffset = -1;
 	registerInterface(IID_IOPCDataCallback);
-	
-	timerUpdate.init( this, &Group::onUpdateTimer );
-	timerUpdate.setTimer( updateRate );
+	renewUpdateRate();
 }
 
 void Group::setServerPtr( OPCServer *serverPtr )
@@ -160,11 +155,6 @@ void Group::setServerPtr( OPCServer *serverPtr )
 const String Group::getName()
 {
 	return name;
-}
-
-LONG Group::getRefCount()
-{
-	return refCount;
 }
 
 frl::Bool Group::isDeleted()
@@ -184,7 +174,7 @@ void Group::setName( const String &newName )
 
 void Group::onUpdateTimer()
 {
-	if( timerUpdate.isStop() || ! actived )
+	if( ! actived )
 		return;
 
 	boost::mutex::scoped_lock guard( groupGuard );
@@ -202,8 +192,9 @@ void Group::onUpdateTimer()
 
 	if( ! handles.empty() )
 	{
-		GetSystemTimeAsFileTime( &lastUpdate );
-		AsyncRequestListElem request( new AsyncRequest( getServerHandle(), handles) );
+		renewUpdateRate();
+		GroupElem tmp = GroupElem( this );
+		AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
 		request->setTransactionID( 0 );
 		doAsyncRefresh( request );	
 	}
@@ -214,13 +205,13 @@ void Group::onUpdateTimer()
 	}
 	
 	FILETIME curTime;
-	GetSystemTimeAsFileTime( &curTime );
-	ULONGLONG lastUpdateCount = *(ULONGLONG*)( &lastUpdate );
-	ULONGLONG curTimeCount = *(ULONGLONG*)( &curTime );
-	if( ( curTimeCount - lastUpdateCount ) >= keepAlive * 10000000 )
+	::GetSystemTimeAsFileTime( &curTime );
+	ULONGLONG curTimeCount = *reinterpret_cast< ULONGLONG* >( &curTime );
+	if( ( curTimeCount - getLastUpdateTick() ) >= keepAlive * 10000000 )
 	{
-		GetSystemTimeAsFileTime( &lastUpdate );
-		AsyncRequestListElem request( new AsyncRequest( getServerHandle(), handles) );
+		renewUpdateRate();
+		GroupElem tmp = GroupElem( this );
+		AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
 		request->setTransactionID( 0 );
 		doAsyncRefresh( request );	
 	}
@@ -553,7 +544,6 @@ GroupElem Group::clone()
 	newGroup->lastUpdate = lastUpdate;
 	newGroup->localeID = localeID;
 	newGroup->server = server;
-	newGroup->tickOffset = tickOffset;
 	newGroup->timeBias = timeBias;
 	newGroup->updateRate = updateRate;
 	newGroup->clientHandle = clientHandle;
@@ -565,7 +555,6 @@ GroupElem Group::clone()
 		GroupItemElem item( (*it).second->clone() );
 		newGroup->itemList.insert( std::pair< OPCHANDLE, GroupItemElem > ( item->getServerHandle(), item ) );
 	}
-	newGroup->timerUpdate.setTimer( newGroup->updateRate );
 	return newGroup;
 }
 
@@ -573,6 +562,27 @@ OPCHANDLE Group::getClientHandle()
 {
 	return clientHandle;
 }
+
+DWORD Group::getUpdateRate()
+{
+	return updateRate;
+}
+
+FILETIME Group::getLastUpdate()
+{
+	return lastUpdate;
+}
+
+ULONGLONG Group::getLastUpdateTick()
+{
+	return *( reinterpret_cast< ULONGLONG* >( &lastUpdate ) );
+}
+
+void Group::renewUpdateRate()
+{
+	::GetSystemTimeAsFileTime( &lastUpdate );
+}
+
 } //namespace opc
 } //namespace FatRat Library
 

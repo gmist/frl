@@ -202,9 +202,7 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 			continue;
 		}
 		// and disconnected from all async requests
-		pT->server->removeItemFromAsyncReadRequestList( phServer[i] );
-		pT->server->removeItemFromAsyncWriteRequestList( phServer[i] );
-
+		pT->server->removeItemFromRequestList( phServer[i] );
 		pT->itemList.erase( it );
 	}
 	return res;

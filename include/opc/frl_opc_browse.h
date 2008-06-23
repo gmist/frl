@@ -21,8 +21,6 @@ public:
 		/* [size_is][in] */ DWORD *pdwPropertyIDs,
 		/* [size_is][size_is][out] */ OPCITEMPROPERTIES **ppItemProperties)
 	{
-		// T* pT = static_cast< T* >( this );
-		//lock::ScopeGuard guard( pT->scopeGuard );
 		if( pszItemIDs == NULL || ppItemProperties == NULL )
 			return E_INVALIDARG;
 
@@ -40,19 +38,19 @@ public:
 		address_space::Tag *item = NULL;
 		for( DWORD i = 0; i < dwItemCount; ++i )
 		{
-			if( wcslen( pszItemIDs[i] ) == 0 )
+			if( pszItemIDs[i] == NULL || wcslen( pszItemIDs[i] ) == 0 )
 			{
 				(*ppItemProperties)[i].hrErrorID = OPC_E_INVALIDITEMID;
 				ret = S_FALSE;
 				continue;
 			}
-			
+
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 				String itemID = pszItemIDs[i];
 			#else
 				String itemID = wstring2string( pszItemIDs[i] );
 			#endif
-			
+
 			try
 			{
 				item = opcAddressSpace::getInstance().getTag( itemID );
@@ -154,9 +152,9 @@ public:
 		else
 		{
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String itemID = szItemID;
+				String itemID = szItemID;
 			#else
-			String itemID = wstring2string( szItemID );
+				String itemID = wstring2string( szItemID );
 			#endif
 
 			try
@@ -170,12 +168,12 @@ public:
 		}
 		
 		String cp;
-		if( pszContinuationPoint != NULL && wcslen( *pszContinuationPoint ) != 0 )
+		if( *pszContinuationPoint != NULL && wcslen( *pszContinuationPoint ) != 0 )
 		{
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			 cp = *pszContinuationPoint;
+				cp = *pszContinuationPoint;
 			#else
-			cp = wstring2string( *pszContinuationPoint );
+				cp = wstring2string( *pszContinuationPoint );
 			#endif
 			if( ! opcAddressSpace::getInstance().isExistTag( cp ) )
 				return OPC_E_INVALIDCONTINUATIONPOINT;
@@ -237,7 +235,7 @@ public:
 		if( itemsList.empty() )
 			return S_FALSE;
 
-		if( ( dwMaxElementsReturned != 0 )
+		if( dwMaxElementsReturned != 0
 			&& ( dwMaxElementsReturned < (DWORD)itemsList.size() ) )
 		{
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
@@ -247,6 +245,7 @@ public:
 			#endif
 
 			std::vector< address_space::TagBrowseInfo > tmp;
+			tmp.reserve( dwMaxElementsReturned );
 			for( size_t i = 0; i < dwMaxElementsReturned; ++i )
 				tmp.push_back( itemsList[i] );
 			itemsList.swap( tmp );			
@@ -282,14 +281,16 @@ public:
 		}
 
 		HRESULT ret = S_OK;
-		if (bReturnAllProperties || dwPropertyCount > 0)
+		if( bReturnAllProperties || dwPropertyCount > 0 )
 		{
 			LPWSTR* szItemIDs = os::win32::com::allocMemory< LPWSTR >( size );
 			for( size_t i = 0; i < size; ++i )
+			{
 				szItemIDs[i] = (*ppBrowseElements)[i].szItemID;
+			}
 
 			OPCITEMPROPERTIES* pProperties = NULL;
-			HRESULT hResult = GetProperties(
+			HRESULT prop_result = GetProperties(
 				(DWORD)size,
 				szItemIDs,
 				bReturnPropertyValues,
@@ -300,20 +301,20 @@ public:
 
 			os::win32::com::freeMemory( szItemIDs );
 
-			for( size_t i = 0; i < itemsList.size(); ++i )
+			for( size_t i = 0; i < size; ++i )
 			{
 				if( ((*ppBrowseElements)[i].dwFlagValue & OPC_BROWSE_ISITEM) == 0 )
 					continue;
 
-				if( FAILED(hResult) )
+				if( FAILED( prop_result ) )
 				{
-					(*ppBrowseElements)[i].ItemProperties.hrErrorID = hResult;
+					(*ppBrowseElements)[i].ItemProperties.hrErrorID = prop_result;
 					ret = S_FALSE;
 					continue;
 				}
 
 				(*ppBrowseElements)[i].ItemProperties = pProperties[i];
-				if( pProperties[i].hrErrorID == S_FALSE || FAILED(pProperties[i].hrErrorID) )
+				if( pProperties[i].hrErrorID == S_FALSE || FAILED( pProperties[i].hrErrorID ) )
 					ret = S_FALSE;
 			}
 			os::win32::com::freeMemory(pProperties);

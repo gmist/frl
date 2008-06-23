@@ -17,6 +17,7 @@ private:
 	String encoding;
 	void parseHeader( String &buffer );
 	String fileName;
+	void loadFileToString( const String& file_name_, String &buffer_ );
 public:
 	FRL_EXCEPTION_CLASS( FileNotFound );
 	FRL_EXCEPTION_CLASS( EmptyFile );
@@ -25,7 +26,7 @@ public:
 
 	Document();
 	~Document();
-	void LoadFromCurrenttDir( const String& fileName );
+	void loadFromCurrenttDir( const String& fileName );
 	const String& getVersion();
 	const String& getEncoding();
 	boost::shared_ptr< Node > getRoot();

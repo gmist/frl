@@ -11,12 +11,12 @@
 #include "opc/frl_opc_async_io.h"
 #include "opc/frl_opc_group_item.h"
 #include "opc/frl_opc_connection_point_container.h"
-#include "opc/frl_opc_timer.h"
 #include "opc/frl_opc_async_request.h"
 #include <boost/noncopyable.hpp>
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "opc/frl_opc_item_deadband_mgt.h"
 #include "opc/frl_opc_serv_handle_counter.h"
+#include "opc/frl_opc_group_manager.h"
 
 namespace frl
 {
@@ -61,12 +61,9 @@ private:
 	DWORD localeID;
 	DWORD keepAlive;
 	FILETIME lastUpdate;
-	LONGLONG tickOffset;
 
 	boost::mutex groupGuard;
 	GroupItemElemList itemList;
-
-	Timer< Group > timerUpdate;
 
 public:
 	// IUnknown implementation
@@ -86,13 +83,16 @@ public:
 	Bool isDeleted();
 	void isDeleted( Bool deleteFlag );
 	void setName( const String &newName );
-	LONG getRefCount();
 	void onUpdateTimer();
 	void doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListElem &request );
 	void doAsyncRefresh( const AsyncRequestListElem &request );
 	void doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestListElem &request );
 	GroupElem clone();
 	OPCHANDLE getClientHandle();
+	DWORD getUpdateRate();
+	FILETIME getLastUpdate();
+	ULONGLONG getLastUpdateTick();
+	void renewUpdateRate();
 }; // class Group
 
 } // namespace opc

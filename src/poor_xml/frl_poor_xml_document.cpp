@@ -1,7 +1,5 @@
-#include <boost/scoped_array.hpp>
 #include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
-#include <boost/bind.hpp>
+#include "io/fs/frl_fs_fn.h"
 #include "stream_std/frl_fstream.h"
 #include "poor_xml/frl_poor_xml_document.h"
 #include "poor_xml/frl_poor_xml_parser.h"
@@ -31,45 +29,15 @@ Document::~Document()
 {
 }
 
-void Document::LoadFromCurrenttDir( const String& fileName_ )
+void Document::loadFromCurrenttDir( const String& fileName_ )
 {
 	FRL_EXCEPT_GUARD();
-	String currDir;	
-	fs::detail::get_current_path_api( currDir );
-	currDir += FRL_STR("/");
+	String currDir = io::fs::getCurrentDirectory();
+	io::fs::addSlashToEndPath( currDir );
 	fileName = currDir + fileName_;
-	size_t length = 0;
-	try
-	{
-		if( ! fs::exists( fileName ) )
-			FRL_THROW_S_CLASS( Document::FileNotFound );
-		length = static_cast< size_t >( fs::file_size( fileName ) );
-	}
-	catch( Document::FileNotFound& ex )
-	{
-		throw ex;
-	}
-	catch( ... )
-	{
-		FRL_THROW_S_CLASS( Document::UnknownError );
-	}
-
-	if( length == 0 )
-		FRL_THROW_S_CLASS( Document::EmptyFile );
-
-	stream_std::InFile file( fileName.c_str() );
-	if( ! file.is_open() )
-		FRL_THROW_S_CLASS( Document::UnknownError );
-
-	std::list< Char > data( length );
-	std::copy(	std::istreambuf_iterator< Char >( file.rdbuf() ),
-					std::istreambuf_iterator< Char >(),
-					data.begin() );
-	file.close();
-	data.erase( std::remove_if( data.begin(), data.end(), private_::isCRLF ), data.end() ); // remove CRLF
 	String buffer;
-	buffer.resize( data.size() );
-	std::copy( data.begin(), data.end(), buffer.begin() );
+	loadFileToString( fileName, buffer );
+	buffer.erase( std::remove_if( buffer.begin(), buffer.end(), private_::isCRLF ), buffer.end() ); // remove CRLF
 	parseHeader( buffer );
 	NodesList tmpMap = Parser::getSubNodes( buffer );
 	if( tmpMap.size() > 1 )
@@ -132,5 +100,34 @@ boost::shared_ptr< Node > Document::getRoot()
 {
 	return root;
 }
+
+void Document::loadFileToString( const String& file_name_, String &buffer_ )
+{
+	FRL_EXCEPT_GUARD();
+	if( ! fs::exists( file_name_ ) )
+		FRL_THROW_S_CLASS( Document::FileNotFound );
+	size_t length = static_cast< size_t >( fs::file_size( file_name_ ) );
+	if( length == 0 )
+		FRL_THROW_S_CLASS( Document::EmptyFile );
+	if( ! buffer_.empty() )
+		buffer_.clear();
+
+	static const size_t buffer_size = 4096;
+	stream_std::InFile in( file_name_.c_str(), std::ios::binary );
+	if( ! in.is_open() )
+		FRL_THROW_S_CLASS( Document::UnknownError );
+	std::vector< Char > buf( buffer_size );
+
+	buffer_.reserve( length );
+	while( in )
+	{
+		in.read( &buf[ 0 ], buffer_size );
+		buffer_.append( &buf[ 0 ], in.gcount() );
+	}
+	in.close();
+}
+
+
+
 } // namespace poor_xml
 } // FatRat Library

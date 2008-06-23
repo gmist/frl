@@ -4,6 +4,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #include <boost/noncopyable.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_common.h"
@@ -14,19 +15,14 @@
 #include "opc/address_space/frl_opc_addr_space_crawler.h"
 #include "opc/frl_opc_browse.h"
 #include "opc/frl_opc_item_io.h"
-#include "opc/frl_opc_async_request.h"
-#include "opc/frl_opc_timer.h"
-#include "frl_smart_ptr.h"
 #include "opc/frl_opc_event.h"
+#include "opc/frl_opc_group_manager.h"
+#include "opc/frl_opc_request_manager.h"
 
 namespace frl
 {
 namespace opc
 {
-class Group;
-typedef ComPtr< Group > GroupElem;
-typedef std::map< OPCHANDLE, GroupElem > GroupElemMap;
-typedef std::map< String, GroupElem > GroupElemIndexMap;
 
 class OPCServer
 	:	public OPCCommon,
@@ -50,47 +46,29 @@ private:
 	#else
 	LONG refCount;
 	#endif
-
-	GroupElemMap groupItem;
-	GroupElemIndexMap groupItemIndex;
-	boost::mutex scopeGuard;
-	OPCSERVERSTATUS serverStatus;
+	GroupManager group_manager;
+	opc::RequestManager request_manager;
 	address_space::AddrSpaceCrawler crawler;
 
-	AsyncRequestList asyncReadList;
-	AsyncRequestList asyncWriteList;
+	boost::mutex scopeGuard;
+	OPCSERVERSTATUS serverStatus;
 
-	Timer< OPCServer > timerRead;
-	Timer< OPCServer > timerWrite;
-
-	opc::Event readEvent;
-	opc::Event writeEvent;
-
-	boost::mutex readGuard;
-	boost::mutex writeGuard;
+	Event stopUpdate;
+	boost::thread updateThread;
 public:
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 
 	OPCServer();
 	~OPCServer();
 
-	void onReadTimer();
-	void onWriteTimer();
-	
-	void addAsyncReadRequest( const AsyncRequestListElem &request );
-	void addAsyncWriteRequest( const AsyncRequestListElem &request );
-
-	void asyncReadSignal();
-	void asyncWriteSignal();
-	
+	void addAsyncReadRequest( AsyncRequestListElem &request );
+	void addAsyncWriteRequest( AsyncRequestListElem &request );
 	Bool asyncRequestCancel( DWORD id );
-	
-	void removeItemFromAsyncReadRequestList( OPCHANDLE handle_ );
-	void removeItemFromAsyncWriteRequestList( OPCHANDLE handle_ );
+	void removeItemFromRequestList( OPCHANDLE handle_ );
+	void removeGroupFromRequestList( OPCHANDLE group_handle );
+	void updateGroups();
 
 	HRESULT setGroupName( const String &oldName, const String &newName );
-	HRESULT cloneGroup( const String &name, const String &cloneName, GroupElem &group );
-	HRESULT addNewGroup( GroupElem &group );
 	void setServerState( OPCSERVERSTATE newState );
 	OPCSERVERSTATE getServerState();
 
@@ -134,6 +112,8 @@ public:
 		/* [in] */ OPCENUMSCOPE dwScope,
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);
+		
+	GroupElem cloneGroup( String &name , String &to_name );
 
 }; // OPCServer
 } // namespace opc

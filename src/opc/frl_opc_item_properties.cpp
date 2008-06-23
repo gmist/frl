@@ -76,8 +76,7 @@ HRESULT STDMETHODCALLTYPE ItemProperties::QueryAvailableProperties(
 	}
 	os::win32::com::zeroMemory< VARTYPE >( *ppvtDataTypes, *pdwCount );
 
-	size_t arrSize = propArray.size();
-	for( size_t i = 0; i < arrSize; ++i )
+	for( DWORD i = 0; i < *pdwCount; ++i )
 	{
 		(*ppPropertyIDs)[i] = propArray[i];
 		(*ppDescriptions)[i] = util::duplicateString( util::getPropertyDesc( propArray[i] ) );
@@ -193,7 +192,6 @@ HRESULT STDMETHODCALLTYPE ItemProperties::LookupItemIDs(
 		if( item->isValidProperties( pdwPropertyIDs[i] ) )
 		{
 			(*ppszNewItemIDs)[i] = util::duplicateString( util::getPropertyDesc( pdwPropertyIDs[i] ) );
-			
 		}
 		else
 		{

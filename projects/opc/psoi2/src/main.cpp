@@ -64,7 +64,7 @@ int main( int argc, char *argv[] )
 		frl::poor_xml::Document config;
 		try
 		{
-			config.LoadFromCurrenttDir( FRL_STR( "config.xml" ) );
+			config.loadFromCurrenttDir( FRL_STR( "config.xml" ) );
 			frl::String sw = config.getRoot()->getProprtyVal( FRL_STR("ShowWindow") );
 			if( frl::lexicalCast<String, int>( sw ) == 0 )
 			{

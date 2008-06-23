@@ -68,7 +68,7 @@ int main( int argc, char *argv[] )
 	Int delay;
 	try
 	{
-		config.LoadFromCurrenttDir( FRL_STR("config.xml") );
+		config.loadFromCurrenttDir( FRL_STR("config.xml") );
 		poor_xml::NodesList psoi2conf = config.getRoot()->getSubNodes( FRL_STR("Psoi2Sender") );
 		numCom = lexicalCast< String, Int >( (*psoi2conf.begin())->getProprtyVal( FRL_STR("ComPort") ) );
 		numChannels = lexicalCast< String, Int >( (*psoi2conf.begin())->getProprtyVal( FRL_STR("Channels") ) );

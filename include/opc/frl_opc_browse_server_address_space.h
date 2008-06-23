@@ -48,17 +48,14 @@ public:
 
 			case OPC_BROWSE_DOWN:
 			{
-				if( szString == NULL )
+				if( szString == NULL || wcslen( szString ) == 0 )
 					return E_INVALIDARG;
 				
 				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				String inString = szString;
+					String inString = szString;
 				#else
-				String inString = wstring2string( szString );
+					String inString = wstring2string( szString );
 				#endif
-				
-				if( inString.empty() )
-					return E_INVALIDARG;
 
 				try
 				{
@@ -73,23 +70,18 @@ public:
 
 			case OPC_BROWSE_TO:
 			{
-				if( szString == NULL )
+				if( szString == NULL || wcslen( szString ) == 0 )
 				{
 					pT->crawler.goToRoot();
 					return S_OK;
 				}
 					
 				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				String inString = szString;
+					String inString = szString;
 				#else
-				String inString = wstring2string( szString );
+					String inString = wstring2string( szString );
 				#endif
 
-				if( inString.empty() )
-				{
-					pT->crawler.goToRoot();
-					return S_OK;
-				}
 				try
 				{
 					pT->crawler.goTo( inString );
@@ -148,16 +140,15 @@ public:
 
 		// filtration by name
 		if( szFilterCriteria != NULL && wcslen( szFilterCriteria ) != 0 )
-		{
+		{			
+			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+				String filter = szFilterCriteria;
+			#else
+				String filter = wstring2string( szFilterCriteria );
+			#endif
 			std::vector< String > filtredItems;
 			filtredItems.reserve( items.size() );
 			std::vector< String >::iterator end = items.end();
-			
-			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String filter = szFilterCriteria;
-			#else
-			String filter = wstring2string( szFilterCriteria );
-			#endif
 			for( std::vector< String >::iterator it = items.begin(); it != end; ++it )
 			{
 				if( util::matchStringPattern( (*it), filter ) )
@@ -188,9 +179,9 @@ public:
 		*szItemID = NULL;
 
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String itemDataID = szItemDataID;
+			String itemDataID = szItemDataID;
 		#else
-		String itemDataID = wstring2string( szItemDataID );
+			String itemDataID = wstring2string( szItemDataID );
 		#endif
 
 		boost::mutex::scoped_lock guard( bsaScopeGuard );
@@ -199,16 +190,16 @@ public:
 		if( itemDataID.empty() )
 		{
 			String tmp = pT->crawler.getCurPosPath();
-			if( ! tmp.size() ) // is root item
+			if( tmp.empty() ) // is root item
 			{
 				*szItemID = szItemDataID;
 			}
 			else
 			{
 				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				*szItemID = util::duplicateString( tmp ); // return current position
+					*szItemID = util::duplicateString( tmp ); // return current position
 				#else
-				*szItemID = util::duplicateString( string2wstring( tmp ) ); // return current position
+					*szItemID = util::duplicateString( string2wstring( tmp ) ); // return current position
 				#endif
 			}
 			return S_OK;

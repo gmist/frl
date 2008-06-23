@@ -4,7 +4,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
 #include <vector>
-#include "opc/frl_opc_group.h"
+#include "opc/frl_opc_group_manager.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
@@ -23,7 +23,7 @@ private:
 	#endif
 
 	size_t currentIndex;	//Current element
-	std::vector< opc::GroupElem > groupList;
+	std::vector< GroupElem > groupList;
 
 public:
 	EnumGroup();

@@ -12,7 +12,7 @@ DeviceManager::DeviceManager()
 	frl::Bool startRand = frl::False;
 	try
 	{
-		config.LoadFromCurrenttDir( FRL_STR("config.xml") );
+		config.loadFromCurrenttDir( FRL_STR("config.xml") );
 		frl::poor_xml::NodesList log = config.getRoot()->getSubNodes( FRL_STR("Log") );
 		frl::String logLevelStr = ( *log.begin() )->getProprtyVal( FRL_STR("Level") );
 		frl::logging::Level logLevel = frl::logging::LEVEL_TRACE;

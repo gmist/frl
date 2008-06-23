@@ -22,9 +22,7 @@ public:
 	OPCCommon();
 	virtual ~OPCCommon();
 
-	//////////////////////////////////////////////////////////////////////////
 	// IOPCCommon implementation
-
 	virtual HRESULT STDMETHODCALLTYPE SetLocaleID( 
 		/* [in] */ LCID dwLcid);
 

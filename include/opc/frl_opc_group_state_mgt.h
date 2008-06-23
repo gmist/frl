@@ -70,7 +70,6 @@ public:
 		}
 
 		boost::mutex::scoped_lock guard( pT->groupGuard );
-		pT->timerUpdate.stop();
 
 		if( pRequestedUpdateRate != NULL )
 		{
@@ -82,9 +81,7 @@ public:
 				hResult = OPC_S_UNSUPPORTEDRATE;
 			}
 
-			pT->tickOffset = -2;
 			*pRevisedUpdateRate = pT->updateRate = dwUpdateRate;
-			pT->timerUpdate.setTimer( dwUpdateRate );
 		}
 
 		if( pTimeBias != NULL )
@@ -121,22 +118,18 @@ public:
 							}
 							if( handles.size() )
 							{
-								AsyncRequestListElem request( new AsyncRequest( pT->getServerHandle(), handles) );
+								GroupElem tmp = GroupElem( pT );
+								AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
 								pT->doAsyncRefresh( request );
 							}
 						}
 					}
+					pT->renewUpdateRate();
 				}
-				pT->timerUpdate.start();
 			}
 			else
 			{
-				GroupItemElemList::iterator end = pT->itemList.end();
-				for( GroupItemElemList::iterator it = pT->itemList.begin(); it != end; ++it )
-				{
-					pT->server->removeItemFromAsyncReadRequestList( (*it).first );
-					pT->server->removeItemFromAsyncWriteRequestList( (*it).first );
-				}
+				pT->server->removeGroupFromRequestList( pT->getServerHandle() );
 			}
 		}
 		return hResult;
@@ -183,14 +176,33 @@ public:
 			String name = wstring2string( szName );
 		#endif
 		GroupElem group;
-		HRESULT result = pT->server->cloneGroup( pT->name, name, group );
-		if( FAILED( result ) )
-			return result;
+		try
+		{
+			group = pT->server->cloneGroup( pT->name, name );
+		}
+		catch( GroupManager::IsExistGroup& )
+		{
+			return OPC_E_DUPLICATENAME;
+		}
+		catch( GroupManager::NotExistGroup& )
+		{
+			return E_INVALIDARG;
+		}
 
-		result = group.get()->QueryInterface( riid, (void**)ppUnk );
+		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
+		HRESULT result = group->QueryInterface( riid, (void**)ppUnk );
+		#else
+		HRESULT result = group.get()->QueryInterface( riid, (void**)ppUnk );
+		#endif
 
 		if( FAILED( result ) )
+		{
+			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
+			pT->server->RemoveGroup( group->getServerHandle(), FALSE );
+			#else
 			pT->server->RemoveGroup( group.get()->getServerHandle(), FALSE );
+			#endif
+		}
 
 		return result;
 	}

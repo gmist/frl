@@ -2,6 +2,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_async_request.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
+#include "opc/frl_opc_group.h"
 
 namespace frl
 {
@@ -9,21 +10,21 @@ namespace opc
 {
 using namespace os::win32::com;
 
-AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_ )
+AsyncRequest::AsyncRequest( GroupElem& group_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		source( OPC_DS_DEVICE ),
-		groupHandle( groupHandle_ )
+		group( group_ )
 {
 }
 
-AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE > &handles_ )
+AsyncRequest::AsyncRequest( GroupElem& group_, const std::list< OPCHANDLE > &handles_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		source( 0 ),
-		groupHandle( groupHandle_ )
+		group( group_ )
 {
 	std::list< OPCHANDLE >::const_iterator end = handles_.end();
 	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it )
@@ -34,24 +35,13 @@ AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE >
 	}
 }
 
-AsyncRequest::AsyncRequest( const AsyncRequest &request )
-	:	id( request.id ),
-		cancelID( request.cancelID ),
-		cancelled( request.cancelled ),
-		itemHVQTList( request.itemHVQTList ),
-		source( request.source ),
-		groupHandle( request.groupHandle )
-{
-
-}
-
-AsyncRequest::AsyncRequest( OPCHANDLE groupHandle_, const std::list< ItemHVQT >& itemsList )
+AsyncRequest::AsyncRequest( GroupElem& group_, const std::list< ItemHVQT >& itemsList )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		itemHVQTList( itemsList ),
 		source( 0 ),
-		groupHandle( groupHandle_ )
+		group( group_ )
 {
 
 }
@@ -137,13 +127,12 @@ void AsyncRequest::removeHandle( OPCHANDLE handle )
 		return;
 
 	std::list< ItemHVQT >::iterator end = itemHVQTList.end();
-	for( std::list< ItemHVQT >::iterator it = itemHVQTList.begin(); it != end; ++it )
+	for( std::list< ItemHVQT >::iterator it = itemHVQTList.begin(); it != end; )
 	{
 		if( (*it).getHandle() == handle )
-		{
-			itemHVQTList.erase( it );
-			return;
-		}
+			itemHVQTList.erase( it++ );
+		else
+			++it;
 	}
 }
 
@@ -163,28 +152,9 @@ DWORD AsyncRequest::getUniqueCancelID()
 	return ++id;
 }
 
-AsyncRequest& AsyncRequest::operator=( const AsyncRequest &request )
+GroupElem AsyncRequest::getGroup()
 {
-	if( this == &request )
-		return *this;
-	
-	AsyncRequest tmp( request );
-	swap( tmp );
-	return *this;
-}
-
-void AsyncRequest::swap( AsyncRequest &req )
-{
-	itemHVQTList.swap( req.itemHVQTList );
-	std::swap( id, req.id );
-	std::swap( cancelled, req.cancelled );
-	std::swap( cancelID, req.cancelID );
-	std::swap( source, req.source );
-}
-
-OPCHANDLE AsyncRequest::getGroupHandle()
-{
-	return groupHandle;
+	return group;
 }
 
 } // namespace opc

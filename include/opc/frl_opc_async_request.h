@@ -5,17 +5,21 @@
 #include <Windows.h>
 #include <list>
 #include <vector>
-#include <boost/shared_ptr.hpp>
+#include "frl_smart_ptr.h"
 #include "frl_exception.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_item_hvqt.h"
+#include <boost/noncopyable.hpp>
 
 
 namespace frl
 {
 namespace opc
 {
-class AsyncRequest
+class Group;
+typedef ComPtr< Group > GroupElem;
+
+class AsyncRequest : private boost::noncopyable
 {
 private:
 	DWORD id;
@@ -23,13 +27,13 @@ private:
 	Bool cancelled;
 	std::list< ItemHVQT > itemHVQTList;
 	DWORD source;
-	OPCHANDLE groupHandle;
+	GroupElem group;
+
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
-	AsyncRequest( OPCHANDLE groupHandle_ );
-	AsyncRequest( OPCHANDLE groupHandle_, const std::list< OPCHANDLE > &handles_ );
-	AsyncRequest( OPCHANDLE groupHandle_, const std::list< ItemHVQT >& itemsList );
-	AsyncRequest( const AsyncRequest &request );
+	AsyncRequest( GroupElem& group_ );
+	AsyncRequest( GroupElem& group_, const std::list< OPCHANDLE > &handles_ );
+	AsyncRequest( GroupElem& group_, const std::list< ItemHVQT >& itemsList );
 	~AsyncRequest();
 	void setTransactionID( DWORD id_ );
 	DWORD getTransactionID() const;
@@ -44,9 +48,7 @@ public:
 	DWORD getSource() const;
 	void setSource( DWORD source_ );
 	static DWORD getUniqueCancelID();
-	AsyncRequest& operator = ( const AsyncRequest &rvl );
-	void swap( AsyncRequest &req );
-	OPCHANDLE getGroupHandle();
+	GroupElem getGroup();
 }; // class AsyncRequest
 
 typedef boost::shared_ptr< AsyncRequest > AsyncRequestListElem;

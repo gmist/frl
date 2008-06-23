@@ -223,11 +223,19 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\opc\frl_opc_group_manager.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\opc\frl_opc_item_hvqt.cpp"
 					>
 				</File>
 				<File
 					RelativePath="..\..\..\src\opc\frl_opc_item_properties.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_request_manager.cpp"
 					>
 				</File>
 				<File
@@ -577,6 +585,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\include\opc\frl_opc_group_manager.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\include\opc\frl_opc_group_state_mgt.h"
 					>
 				</File>
@@ -598,6 +610,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_item_properties.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_request_manager.h"
 					>
 				</File>
 				<File

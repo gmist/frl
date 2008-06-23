@@ -74,7 +74,7 @@ frl::Bool openNotExistFile()
 	frl::poor_xml::Document doc;
 	try
 	{
-		doc.LoadFromCurrenttDir( FRL_STR("12345") );
+		doc.loadFromCurrenttDir( FRL_STR("12345") );
 	}
 	catch( frl::poor_xml::Document::FileNotFound& )
 	{
@@ -92,7 +92,7 @@ frl::Bool openEmptyFile()
 	frl::poor_xml::Document doc;
 	try
 	{
-		doc.LoadFromCurrenttDir( FRL_STR("empty_file.xml") );
+		doc.loadFromCurrenttDir( FRL_STR("empty_file.xml") );
 	}
 	catch( frl::poor_xml::Document::EmptyFile& )
 	{
@@ -110,7 +110,7 @@ frl::Bool openNotEmptyFile()
 	frl::poor_xml::Document doc;
 	try
 	{
-		doc.LoadFromCurrenttDir( FRL_STR("test_poor_xml.xml") );
+		doc.loadFromCurrenttDir( FRL_STR("test_poor_xml.xml") );
 		if( doc.getVersion() != FRL_STR("1.0" ) || doc.getEncoding() != FRL_STR( "windows-1251" ) )
 			return frl::False;
 		if( doc.getRoot()->getName() != FRL_STR("VisualStudioProject" ) )
@@ -135,7 +135,7 @@ frl::Bool openLargeFile()
 	frl::poor_xml::Document doc;
 	try
 	{
-		doc.LoadFromCurrenttDir( FRL_STR("largeFile.xml") );
+		doc.loadFromCurrenttDir( FRL_STR("largeFile.xml") );
 		if( doc.getVersion() != FRL_STR("1.0" ) || doc.getEncoding() != FRL_STR( "utf-8" ) )
 			return frl::False;
 		boost::shared_ptr< frl::poor_xml::Node > node;
