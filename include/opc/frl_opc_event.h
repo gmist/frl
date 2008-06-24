@@ -2,9 +2,9 @@
 #define frl_opc_event_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <Windows.h>
 #include <boost/noncopyable.hpp>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/condition.hpp>
+#include "frl_exception.h"
 
 namespace frl
 {
@@ -14,10 +14,9 @@ namespace opc
 class Event : private boost::noncopyable
 {
 private:
-	boost::condition cndt;
-	boost::mutex mtx;
-	volatile bool isEvent;
+	HANDLE handle;
 public:
+	FRL_EXCEPTION_CLASS( InitializeError ); 
 	Event();
 	~Event();
 	void signal();
