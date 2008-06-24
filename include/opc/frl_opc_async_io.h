@@ -62,10 +62,10 @@ public:
 		if( handles.size() > 0 )
 		{
 			GroupElem tmp = GroupElem( pT );
-			AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
+			AsyncRequestListElem request( new AsyncRequest( tmp, async_request::READ, handles) );
 			*pdwCancelID = request->getCancelID();
 			request->setTransactionID( dwTransactionID );
-			pT->server->addAsyncReadRequest( request );
+			pT->server->addAsyncRequest( request );
 		}
 
 		return result;
@@ -119,11 +119,11 @@ public:
 		if( handles.size() > 0 )
 		{
 			GroupElem tmp = GroupElem( pT );
-			AsyncRequestListElem request( new AsyncRequest( tmp ) );
+			AsyncRequestListElem request( new AsyncRequest( tmp, async_request::WRITE ) );
 			request->init( handles, pItemValues );
 			*pdwCancelID = request->getCancelID();
 			request->setTransactionID( dwTransactionID );
-			pT->server->addAsyncWriteRequest( request );
+			pT->server->addAsyncRequest( request );
 		}
 		return result;
 	}
@@ -168,7 +168,7 @@ public:
 			return E_FAIL;
 
 		GroupElem tmp = GroupElem( pT );
-		AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
+		AsyncRequestListElem request( new AsyncRequest( tmp, async_request::UPDATE, handles) );
 		*pdwCancelID = request->getCancelID();
 		request->setTransactionID( dwTransactionID );
 		request->setSource( dwSource );
@@ -319,10 +319,10 @@ public:
 		if( itemsHVQTList.size() > 0 )
 		{
 			GroupElem tmp = GroupElem( pT );
-			AsyncRequestListElem request( new AsyncRequest( tmp, itemsHVQTList ) );
+			AsyncRequestListElem request( new AsyncRequest( tmp, async_request::WRITE, itemsHVQTList ) );
 			*pdwCancelID = request->getCancelID();
 			request->setTransactionID( dwTransactionID );
-			pT->server->addAsyncWriteRequest( request );
+			pT->server->addAsyncRequest( request );
 		}
 		return result;
 	}

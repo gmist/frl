@@ -7,6 +7,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/noncopyable.hpp>
 #include "opc/frl_opc_async_request.h"
+#include "opc/frl_opc_event.h"
 
 namespace frl
 {
@@ -17,17 +18,17 @@ class RequestManager : private boost::noncopyable
 {
 private:
 	std::map< OPCHANDLE, AsyncRequestListElem > request_map;
-	boost::thread_group *thr_group;
 	boost::mutex scopeGuard;
-	void forceCleanup();
+	Event stopUpdate;
+	boost::thread updateThread;
+
+	void process();
+	void doAsync( AsyncRequestListElem &request );
 public:
 	RequestManager();
 	~RequestManager();
-	void addReadRequest( AsyncRequestListElem &request );
-	void addWriteRequest( AsyncRequestListElem &request );
+	void addRequest( AsyncRequestListElem &request );
 	bool cancelRequest( OPCHANDLE handle );
-	void doAsyncRead( AsyncRequestListElem &request );
-	void doAsyncWrite( AsyncRequestListElem &request );
 	void removeItemFromRequest( OPCHANDLE item_id );
 	void removeGroupFromRequest( OPCHANDLE group_id );
 }; // class RequestManager

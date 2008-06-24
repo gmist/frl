@@ -58,8 +58,7 @@ public:
 	OPCServer();
 	~OPCServer();
 
-	void addAsyncReadRequest( AsyncRequestListElem &request );
-	void addAsyncWriteRequest( AsyncRequestListElem &request );
+	void addAsyncRequest( AsyncRequestListElem &request );
 	Bool asyncRequestCancel( DWORD id );
 	void removeItemFromRequestList( OPCHANDLE handle_ );
 	void removeGroupFromRequestList( OPCHANDLE group_handle );

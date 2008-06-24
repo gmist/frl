@@ -19,6 +19,16 @@ namespace opc
 class Group;
 typedef ComPtr< Group > GroupElem;
 
+namespace async_request
+{
+enum RequestType
+{
+	READ,
+	WRITE,
+	UPDATE
+};
+}
+
 class AsyncRequest : private boost::noncopyable
 {
 private:
@@ -28,12 +38,17 @@ private:
 	std::list< ItemHVQT > itemHVQTList;
 	DWORD source;
 	GroupElem group;
+	async_request::RequestType type;
 
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
-	AsyncRequest( GroupElem& group_ );
-	AsyncRequest( GroupElem& group_, const std::list< OPCHANDLE > &handles_ );
-	AsyncRequest( GroupElem& group_, const std::list< ItemHVQT >& itemsList );
+	AsyncRequest( GroupElem& group_, async_request::RequestType type_ );
+	AsyncRequest(	GroupElem& group_,
+							async_request::RequestType type_,
+							const std::list< OPCHANDLE > &handles_ );
+	AsyncRequest(	GroupElem& group_,
+							async_request::RequestType type_,
+							const std::list< ItemHVQT >& itemsList );
 	~AsyncRequest();
 	void setTransactionID( DWORD id_ );
 	DWORD getTransactionID() const;
@@ -49,6 +64,9 @@ public:
 	void setSource( DWORD source_ );
 	static DWORD getUniqueCancelID();
 	GroupElem getGroup();
+	Bool isRead();
+	Bool isWrite();
+	Bool isUpdate();
 }; // class AsyncRequest
 
 typedef boost::shared_ptr< AsyncRequest > AsyncRequestListElem;

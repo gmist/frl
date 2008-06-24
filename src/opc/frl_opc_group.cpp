@@ -194,7 +194,7 @@ void Group::onUpdateTimer()
 	{
 		renewUpdateRate();
 		GroupElem tmp = GroupElem( this );
-		AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
+		AsyncRequestListElem request( new AsyncRequest( tmp, async_request::UPDATE, handles) );
 		request->setTransactionID( 0 );
 		doAsyncRefresh( request );	
 	}
@@ -211,7 +211,7 @@ void Group::onUpdateTimer()
 	{
 		renewUpdateRate();
 		GroupElem tmp = GroupElem( this );
-		AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
+		AsyncRequestListElem request( new AsyncRequest( tmp, async_request::UPDATE, handles) );
 		request->setTransactionID( 0 );
 		doAsyncRefresh( request );	
 	}

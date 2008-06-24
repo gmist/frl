@@ -119,7 +119,7 @@ public:
 							if( handles.size() )
 							{
 								GroupElem tmp = GroupElem( pT );
-								AsyncRequestListElem request( new AsyncRequest( tmp, handles) );
+								AsyncRequestListElem request( new AsyncRequest( tmp, async_request::UPDATE, handles) );
 								pT->doAsyncRefresh( request );
 							}
 						}

@@ -39,14 +39,9 @@ OPCServer::~OPCServer()
 	factory.LockServer( FALSE );
 }
 
-void OPCServer::addAsyncReadRequest( AsyncRequestListElem &request )
+void OPCServer::addAsyncRequest( AsyncRequestListElem &request )
 {
-	request_manager.addReadRequest( request );
-}
-
-void OPCServer::addAsyncWriteRequest( AsyncRequestListElem &request )
-{
-	request_manager.addWriteRequest( request );
+	request_manager.addRequest( request );
 }
 
 STDMETHODIMP OPCServer::QueryInterface( REFIID iid, LPVOID* ppInterface )
