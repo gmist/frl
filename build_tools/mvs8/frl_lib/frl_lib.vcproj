@@ -645,10 +645,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_timer.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\opc\frl_opc_util.h"
 					>
 				</File>
