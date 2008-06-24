@@ -293,7 +293,7 @@ Bool Tag::isValidProperties( DWORD propertyID )
 
 Bool Tag::checkAccessRight( DWORD checkingAccessRight )
 {
-	return ( accessRights & checkingAccessRight ) == 1;
+	return ( accessRights & checkingAccessRight ) == checkingAccessRight;
 }
 
 std::vector< DWORD > Tag::getAvailableProperties()
