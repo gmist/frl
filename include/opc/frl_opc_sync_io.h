@@ -64,7 +64,7 @@ public:
 				continue;
 			}
 
-			if( ! ( (*it).second->getAccessRights() & OPC_READABLE ) )
+			if( ! (*it).second->isReadable() )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;
@@ -209,7 +209,7 @@ public:
 				(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
 				continue;
 			}
-			if( ! ( (*it).second->getAccessRights() & OPC_READABLE ) )
+			if( ! (*it).second->isReadable() )
 			{
 				result = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;

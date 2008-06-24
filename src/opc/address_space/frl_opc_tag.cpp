@@ -366,6 +366,11 @@ Tag* Tag::getTag( const String &name )
 	return (*it).second;
 }
 
+frl::Bool Tag::isReadable()
+{
+	return ( accessRights & OPC_READABLE ) == OPC_READABLE;	
+}
+
 } // namespace address_space
 } // namespace opc
 } // FatRat Library

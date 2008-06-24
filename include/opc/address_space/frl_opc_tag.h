@@ -79,6 +79,8 @@ public:
 	void isWritable( Bool writeable );
 
 	Bool isWritable();
+	
+	Bool isReadable();
 
 	Tag* addLeaf( const String &name );
 

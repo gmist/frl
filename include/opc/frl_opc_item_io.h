@@ -72,7 +72,7 @@ public:
 				continue;
 			}
 
-			if( ! ( item->getAccessRights() & OPC_READABLE ) )
+			if( ! ( item->isReadable() ) )
 			{
 				res = S_FALSE;
 				(*ppErrors)[i] = OPC_E_BADRIGHTS;

@@ -62,6 +62,7 @@ public:
 	void setDeadBand( Float newDeadBand );
 	Float getDeadBand();
 	Bool isWritable();
+	Bool isReadable();
 }; // GroupItem
 
 typedef boost::shared_ptr< GroupItem > GroupItemElem;

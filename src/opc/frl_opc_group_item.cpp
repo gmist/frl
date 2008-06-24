@@ -198,6 +198,14 @@ frl::Bool GroupItem::isWritable()
 		tagRef = opcAddressSpace::getInstance().getLeaf( itemID );
 	return tagRef->isWritable();
 }
+
+frl::Bool GroupItem::isReadable()
+{
+	if( tagRef == NULL )
+		tagRef = opcAddressSpace::getInstance().getLeaf( itemID );
+	return tagRef->isReadable();
+}
+
 } // namespace opc
 } // FatRat Library
 
