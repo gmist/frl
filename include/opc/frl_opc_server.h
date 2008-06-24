@@ -51,10 +51,7 @@ private:
 	address_space::AddrSpaceCrawler crawler;
 
 	boost::mutex scopeGuard;
-	OPCSERVERSTATUS serverStatus;
-
-	Event stopUpdate;
-	boost::thread updateThread;
+	OPCSERVERSTATUS serverStatus;	
 public:
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 

@@ -10,6 +10,17 @@ namespace frl
 namespace opc
 {
 
+GroupManager::GroupManager()
+{
+	updateThread = boost::thread(boost::bind( &GroupManager::updateGroups, this ) );
+}
+
+GroupManager::~GroupManager()
+{
+	stopUpdate.signal();
+	updateThread.join();
+}
+
 void GroupManager::insert( GroupElem& group )
 {
 	handles_map.insert( std::pair< OPCHANDLE, GroupElem >( group->getServerHandle(), group ) );
@@ -169,22 +180,25 @@ size_t GroupManager::getGroupCount()
 
 void GroupManager::updateGroups()
 {
-	boost::mutex::scoped_lock lock( guard );
-	boost::thread_group gr;
-	FILETIME ftime;
-	::GetSystemTimeAsFileTime( &ftime );
-	ULONGLONG time = *(reinterpret_cast< ULONGLONG* >( &ftime ) );
-	GroupElemNamesMap::iterator end = names_map.end();
-	for(	GroupElemNamesMap::iterator it = names_map.begin();
+	while( ! stopUpdate.timedWait( 50 ) )
+	{
+		boost::mutex::scoped_lock lock( guard );
+		boost::thread_group gr;
+		FILETIME ftime;
+		::GetSystemTimeAsFileTime( &ftime );
+		ULONGLONG time = *(reinterpret_cast< ULONGLONG* >( &ftime ) );
+		GroupElemNamesMap::iterator end = names_map.end();
+		for(	GroupElemNamesMap::iterator it = names_map.begin();
 			it != end;
 			++it )
-	{
-		if( ( ( time - it->second->getLastUpdateTick() ) / 10000 ) >= it->second->getUpdateRate() )
 		{
-			gr.create_thread( boost::bind( &Group::onUpdateTimer, it->second.get() ) );
+			if( ( ( time - it->second->getLastUpdateTick() ) / 10000 ) >= it->second->getUpdateRate() )
+			{
+				gr.create_thread( boost::bind( &Group::onUpdateTimer, it->second.get() ) );
+			}
 		}
+		gr.join_all();
 	}
-	gr.join_all();
 }
 
 } // namespace opc

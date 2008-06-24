@@ -4,9 +4,11 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include <vector>
+#include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
+#include "opc/frl_opc_event.h"
 #include "frl_types.h"
 #include "frl_smart_ptr.h"
 #include "frl_exception.h"
@@ -29,10 +31,15 @@ private:
 	GroupElemHandlesMap handles_map;
 	GroupElemNamesMap names_map;
 	void insert( GroupElem& group );
+	Event stopUpdate;
+	boost::thread updateThread;
+
+	void updateGroups();
 public:
 	FRL_EXCEPTION_CLASS( IsExistGroup );
 	FRL_EXCEPTION_CLASS( NotExistGroup );
-
+	GroupManager();
+	~GroupManager();
 	GroupElem addGroup( String &name );
 	bool removeGroup( String &name );
 	bool removeGroup( OPCHANDLE handle );
@@ -43,7 +50,6 @@ public:
 	std::vector< String > getNamesEnum();
 	std::vector< GroupElem > getGroupEnum();
 	size_t getGroupCount();
-	void updateGroups();
 }; // class GroupManager
 
 } // namespace opc

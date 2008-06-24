@@ -30,18 +30,12 @@ OPCServer::OPCServer()
 	serverStatus.dwServerState = OPC_STATUS_NOCONFIG;
 	serverStatus.dwBandWidth = 0xFFFFFFFF;
 	serverStatus.wMajorVersion = 2;
-
-	updateThread = boost::thread(boost::bind( &OPCServer::updateGroups, this ) );
-
 	registerInterface( IID_IOPCShutdown );
 	factory.LockServer( TRUE );
 }
 
 OPCServer::~OPCServer()
 {
-	stopUpdate.signal();
-	updateThread.join();
-
 	factory.LockServer( FALSE );
 }
 
@@ -408,14 +402,6 @@ void OPCServer::removeItemFromRequestList( OPCHANDLE item_handle )
 void OPCServer::removeGroupFromRequestList( OPCHANDLE group_handle )
 {
 	request_manager.removeGroupFromRequest( group_handle );
-}
-
-void OPCServer::updateGroups()
-{
-	while( ! stopUpdate.timedWait( 50 ) )
-	{
-		group_manager.updateGroups();
-	}
 }
 
 } // namespace opc
