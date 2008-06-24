@@ -73,8 +73,8 @@ OPCITEMATTRIBUTES* EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES *i )
 	if( i == NULL )
 		return NULL;
 
-	OPCITEMATTRIBUTES *c = (OPCITEMATTRIBUTES *)CoTaskMemAlloc( sizeof(OPCITEMATTRIBUTES) );
-	ZeroMemory( c, sizeof(OPCITEMATTRIBUTES) );
+	OPCITEMATTRIBUTES *c = os::win32::com::allocMemory< OPCITEMATTRIBUTES >();
+	os::win32::com::zeroMemory( c );
 	c->bActive = i->bActive;
 	c->dwAccessRights = i->dwAccessRights;
 	c->dwBlobSize = i->dwBlobSize;
@@ -92,8 +92,8 @@ OPCITEMATTRIBUTES* EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES *i )
 
 void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 {
-	OPCITEMATTRIBUTES *attributes = (OPCITEMATTRIBUTES *)CoTaskMemAlloc( sizeof(OPCITEMATTRIBUTES) );
-	ZeroMemory( attributes, sizeof(OPCITEMATTRIBUTES) );
+	OPCITEMATTRIBUTES *attributes = os::win32::com::allocMemory<OPCITEMATTRIBUTES>();
+	os::win32::com::zeroMemory( attributes );
 	attributes->bActive = i->isActived();
 	attributes->hClient = i->getClientHandle();
 	attributes->hServer = first;
