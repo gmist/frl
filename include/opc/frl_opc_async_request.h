@@ -40,6 +40,7 @@ private:
 	GroupElem group;
 	async_request::RequestType type;
 
+	static DWORD getUniqueCancelID();
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
 	AsyncRequest( GroupElem& group_, async_request::RequestType type_ );
@@ -62,7 +63,6 @@ public:
 	void removeHandle( OPCHANDLE handle );
 	DWORD getSource() const;
 	void setSource( DWORD source_ );
-	static DWORD getUniqueCancelID();
 	GroupElem getGroup();
 	Bool isRead();
 	Bool isWrite();
