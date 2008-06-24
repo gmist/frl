@@ -95,7 +95,7 @@ namespace psoi2util
 	{
 		opc::DAServer tmp( frl::opc::ServerTypes::localSever32 );
 		setServerInfo( tmp );
-		tmp.registrerServer();
+		tmp.registrerServer3();
 	}
 	
 	void unregServer()
