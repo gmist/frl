@@ -11,20 +11,23 @@ namespace opc
 {
 
 RequestManager::RequestManager()
+	:	stopIt( false )
 {
-	updateThread = boost::thread(boost::bind( &RequestManager::process, this ) );
+	processThread = boost::thread(boost::bind( &RequestManager::process, this ) );
 }
 
 RequestManager::~RequestManager()
 {
-	stopUpdate.signal();
-	updateThread.join();
+	stopIt = true;
+	addReqEvent.signal();
+	processThread.join();
 }
 
 void RequestManager::addRequest( AsyncRequestListElem& request )
 {
 	boost::mutex::scoped_lock lock( scopeGuard );
 	request_map.insert( std::pair< OPCHANDLE, AsyncRequestListElem >( request->getCancelID(), request ) );
+	addReqEvent.signal();
 }
 
 bool RequestManager::cancelRequest( OPCHANDLE handle )
@@ -95,21 +98,26 @@ void RequestManager::removeGroupFromRequest( OPCHANDLE group_id )
 
 void RequestManager::process()
 {
-	while( ! stopUpdate.timedWait( 0 ) )
+	AsyncRequestListElem request;
+	while( ! stopIt )
 	{
-		if( request_map.empty() )
-			continue;
+		addReqEvent.wait();
+		while( getNextRequest( request ) )
 		{
-			boost::mutex::scoped_lock lock( scopeGuard );
-			std::map< OPCHANDLE, AsyncRequestListElem >::iterator end = request_map.end();
-			std::map< OPCHANDLE, AsyncRequestListElem >::iterator it;
-			for( it = request_map.begin(); it != request_map.end(); )
-			{
-				doAsync( it->second );
-				request_map.erase( it++ );
-			}
+			doAsync( request );
 		}
 	}
+}
+
+bool RequestManager::getNextRequest( AsyncRequestListElem &request )
+{
+	boost::mutex::scoped_lock lock( scopeGuard );
+	if( request_map.empty() )
+		return false;
+	std::map< OPCHANDLE, AsyncRequestListElem >::iterator req = request_map.begin();
+	request = req->second;
+	request_map.erase( req );
+	return true;
 }
 
 } // namespace opc

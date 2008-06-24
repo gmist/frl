@@ -19,9 +19,11 @@ class RequestManager : private boost::noncopyable
 private:
 	std::map< OPCHANDLE, AsyncRequestListElem > request_map;
 	boost::mutex scopeGuard;
-	Event stopUpdate;
-	boost::thread updateThread;
+	Event addReqEvent;
+	boost::thread processThread;
+	volatile bool stopIt;
 
+	bool getNextRequest( AsyncRequestListElem &request );
 	void process();
 	void doAsync( AsyncRequestListElem &request );
 public:
