@@ -7,7 +7,6 @@
 #include "frl_types.h"
 #include "frl_string.h"
 #include <boost/noncopyable.hpp>
-#include "frl_auto_value.h"
 #include "sys/frl_sys_util.h"
 
 namespace frl
@@ -30,12 +29,12 @@ class Exception
 	:	public std::exception 
 {
 protected:
-	AutoValue< ULong > line;
+	ULong line;
 	String description;
 	String function;
 	String file;
 	std::string whatDescription;	
-	AutoValue< UShort > stackDepth;
+	UShort stackDepth;
 
 	// Static members.
 	static Exception *last;

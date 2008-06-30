@@ -8,7 +8,8 @@ namespace frl
 	UShort Exception::msStackDepth = 0;
 
 	Exception::Exception( const String &description_ )
-		:	description( description_ ),
+		:	line( 0 ),
+			description( description_ ),
 			function( FRL_STR("") ),
 			stackDepth( msStackDepth )
 	{
@@ -16,7 +17,8 @@ namespace frl
 	}
 
 	Exception::Exception( const String &description_, const String &function_ )
-		:	description( description_ ),
+		:	line( 0 ),
+			description( description_ ),
 			function( function_ ),
 			stackDepth( msStackDepth )
 	{

@@ -398,10 +398,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\..\..\include\frl_auto_value.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\include\frl_config.h"
 				>
 			</File>
