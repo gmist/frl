@@ -31,20 +31,11 @@ class OPCServer
 		public BrowseImpl,
 		public OPCItemIO_Impl
 {
-
 public:
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 
 	OPCServer();
 	virtual ~OPCServer();
-
-	void addAsyncRequest( AsyncRequestListElem &request );
-	Bool asyncRequestCancel( DWORD id );
-	void removeItemFromRequestList( OPCHANDLE handle_ );
-	void updateGroups();
-
-	void setServerState( OPCSERVERSTATE newState );
-	OPCSERVERSTATE getServerState();
 
 	// IUnknown implementation
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface);

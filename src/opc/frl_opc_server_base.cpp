@@ -40,6 +40,21 @@ frl::opc::GroupElem OPCServerBase::cloneGroup( String &name , String &to_name )
 	return group_manager.cloneGroup( name, to_name );
 }
 
+frl::Bool OPCServerBase::asyncRequestCancel( DWORD id )
+{	
+	return ( request_manager.cancelRequest( id ) );
+}
+
+void OPCServerBase::removeItemFromRequestList( OPCHANDLE item_handle )
+{
+	request_manager.removeItemFromRequest( item_handle );
+}
+
+void OPCServerBase::addAsyncRequest( AsyncRequestListElem &request )
+{
+	request_manager.addRequest( request );
+}
+
 } // namespace opc
 } // FatRat Library
 

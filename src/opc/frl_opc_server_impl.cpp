@@ -15,6 +15,19 @@ OPCServerImpl::~OPCServerImpl()
 {
 }
 
+void OPCServerImpl::setServerState( OPCSERVERSTATE newState )
+{
+	if( newState < OPC_STATUS_RUNNING || newState > OPC_STATUS_TEST )
+		FRL_THROW_S_CLASS( OPCServer::InvalidServerState );
+	serverStatus.dwServerState = newState;
+	CoFileTimeNow( &serverStatus.ftCurrentTime );
+}
+
+OPCSERVERSTATE OPCServerImpl::getServerState()
+{
+	return serverStatus.dwServerState;
+}
+
 HRESULT STDMETHODCALLTYPE OPCServerImpl::AddGroup(	/* [string][in] */ LPCWSTR szName,
 	/* [in] */ BOOL bActive,
 	/* [in] */ DWORD dwRequestedUpdateRate,

@@ -15,8 +15,14 @@ class OPCServerImpl
 	:	virtual public OPCServerBase,
 		virtual public IOPCServer
 {
+protected:
+	OPCSERVERSTATUS serverStatus;
+	
 public:
 	virtual ~OPCServerImpl();
+
+	void setServerState( OPCSERVERSTATE newState );
+	OPCSERVERSTATE getServerState();
 
 	// IOPCServer implementation
 	HRESULT STDMETHODCALLTYPE AddGroup( 

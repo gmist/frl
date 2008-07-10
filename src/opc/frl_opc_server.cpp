@@ -38,11 +38,6 @@ OPCServer::~OPCServer()
 	factory.LockServer( FALSE );
 }
 
-void OPCServer::addAsyncRequest( AsyncRequestListElem &request )
-{
-	request_manager.addRequest( request );
-}
-
 STDMETHODIMP OPCServer::QueryInterface( REFIID iid, LPVOID* ppInterface )
 {
 	if( ppInterface == NULL )
@@ -114,39 +109,6 @@ ULONG OPCServer::Release( void )
 		delete this;
 	return tmp;
 }
-
-void OPCServer::setServerState( OPCSERVERSTATE newState )
-{
-	if( newState < OPC_STATUS_RUNNING || newState > OPC_STATUS_TEST )
-		FRL_THROW_S_CLASS( OPCServer::InvalidServerState );
-	serverStatus.dwServerState = newState;
-	CoFileTimeNow( &serverStatus.ftCurrentTime );
-}
-
-OPCSERVERSTATE OPCServer::getServerState()
-{
-	return serverStatus.dwServerState;
-}
-
-frl::Bool OPCServer::asyncRequestCancel( DWORD id )
-{	
-	return ( request_manager.cancelRequest( id ) );
-}
-
-void OPCServer::removeItemFromRequestList( OPCHANDLE item_handle )
-{
-	request_manager.removeItemFromRequest( item_handle );
-}
-
-/*OPCServerBase* OPCServer::getOPCServerBase()
-{
-	return dynamic_cast< OPCServerBase* >( this );
-}
-
-OPCServerImpl* OPCServer::getOPCServerImpl()
-{
-	return dynamic_cast< OPCServerImpl* >( this );
-}*/
 
 } // namespace opc
 } // FatRat Library

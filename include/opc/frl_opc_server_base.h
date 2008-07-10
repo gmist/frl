@@ -25,15 +25,16 @@ protected:
 	GroupManager group_manager;
 	RequestManager request_manager;
 	address_space::AddrSpaceCrawler crawler;
-
 	boost::mutex scopeGuard;
-	OPCSERVERSTATUS serverStatus;
 	
 	OPCServerBase();
 public:
 	HRESULT setGroupName( const String &oldName, const String &newName );
-	void removeGroupFromRequestList( OPCHANDLE group_handle );
 	GroupElem cloneGroup( String &name , String &to_name );
+	void addAsyncRequest( AsyncRequestListElem &request );
+	Bool asyncRequestCancel( DWORD id );
+	void removeItemFromRequestList( OPCHANDLE handle_ );
+	void removeGroupFromRequestList( OPCHANDLE group_handle );
 };
 
 } // namespace opc
