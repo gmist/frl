@@ -5,13 +5,10 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_server_base.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
 class BrowseImpl
-	:	virtual public IOPCBrowse,
+	:	public IOPCBrowse,
 		virtual public opc::OPCServerBase
 {
 public:
@@ -42,6 +39,7 @@ public:
 		/* [size_is][size_is][out] */ OPCBROWSEELEMENT **ppBrowseElements );
 }; // class BrowseImpl
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

@@ -1,21 +1,18 @@
-#include "opc/frl_opc_item_properties_impl.h"
+#include "opc/impl/frl_opc_impl_item_properties.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_util.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-OPCItemPropertiesImpl::~OPCItemPropertiesImpl()
+OPCItemProperties::~OPCItemProperties()
 {
 }
 
 HRESULT STDMETHODCALLTYPE
-OPCItemPropertiesImpl::QueryAvailableProperties(
+OPCItemProperties::QueryAvailableProperties(
 	/* [in] */ LPWSTR szItemID,
 	/* [out] */ DWORD *pdwCount,
 	/* [size_is][size_is][out] */ DWORD **ppPropertyIDs,
@@ -41,11 +38,11 @@ OPCItemPropertiesImpl::QueryAvailableProperties(
 	if( wcslen( szItemID ) == 0 )
 		return OPC_E_INVALIDITEMID;
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	String itemID = szItemID;
-	#else
+#else
 	String itemID = wstring2string( szItemID );
-	#endif
+#endif
 
 	if( opcAddressSpace::getInstance().isExistBranch( itemID ) )
 		return S_OK;
@@ -96,7 +93,7 @@ OPCItemPropertiesImpl::QueryAvailableProperties(
 }
 
 HRESULT STDMETHODCALLTYPE
-OPCItemPropertiesImpl::GetItemProperties(
+	OPCItemProperties::GetItemProperties(
 	/* [in] */ LPWSTR szItemID,
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ DWORD *pdwPropertyIDs,
@@ -115,11 +112,11 @@ OPCItemPropertiesImpl::GetItemProperties(
 	if( wcslen( szItemID ) == 0 )
 		return OPC_E_INVALIDITEMID;
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String itemID = szItemID;
-	#else
-		String itemID = wstring2string( szItemID );
-	#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	String itemID = szItemID;
+#else
+	String itemID = wstring2string( szItemID );
+#endif
 
 	address_space::Tag *item = NULL;
 	try
@@ -152,7 +149,7 @@ OPCItemPropertiesImpl::GetItemProperties(
 }
 
 HRESULT STDMETHODCALLTYPE
-OPCItemPropertiesImpl::LookupItemIDs(
+	OPCItemProperties::LookupItemIDs(
 	/* [in] */ LPWSTR szItemID,
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ DWORD *pdwPropertyIDs,
@@ -171,11 +168,11 @@ OPCItemPropertiesImpl::LookupItemIDs(
 	if( wcslen( szItemID ) == 0 )
 		return OPC_E_INVALIDITEMID;
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String itemID = szItemID;
-	#else
-		String itemID = wstring2string( szItemID );
-	#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	String itemID = szItemID;
+#else
+	String itemID = wstring2string( szItemID );
+#endif
 
 	address_space::Tag *item = NULL;
 	try
@@ -223,6 +220,7 @@ OPCItemPropertiesImpl::LookupItemIDs(
 	return ret;
 }
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

@@ -5,12 +5,9 @@
 #include "frl_types.h"
 #include "../dependency/vendors/opc_foundation/opccomn.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-class OPCCommonImpl
+class OPCCommon
 	:	public IOPCCommon
 {
 private:
@@ -19,8 +16,8 @@ private:
 
 public:
 
-	OPCCommonImpl();
-	virtual ~OPCCommonImpl();
+	OPCCommon();
+	virtual ~OPCCommon();
 
 	// IOPCCommon implementation
 	virtual HRESULT STDMETHODCALLTYPE SetLocaleID( 
@@ -39,8 +36,9 @@ public:
 
 	virtual HRESULT STDMETHODCALLTYPE SetClientName( 
 		/* [string][in] */ LPCWSTR szName);
-};
+}; // OPCCommon
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

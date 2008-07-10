@@ -6,20 +6,18 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_server_base.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-class BrowseServerAddressSpaceImpl
-	:	virtual public IOPCBrowseServerAddressSpace,
+class BrowseServerAddressSpace
+	:	public IOPCBrowseServerAddressSpace,
 		virtual public opc::OPCServerBase
 {
 private:
 	boost::mutex bsaScopeGuard;
+
 public:
 
-	virtual ~BrowseServerAddressSpaceImpl();
+	virtual ~BrowseServerAddressSpace();
 
 	// IOPCBrowseServerAddressSpace implementation
 	HRESULT STDMETHODCALLTYPE QueryOrganization( 
@@ -43,8 +41,9 @@ public:
 	HRESULT STDMETHODCALLTYPE BrowseAccessPaths( 
 		/* [string][in] */ LPCWSTR szItemID,
 		/* [out] */ LPENUMSTRING *ppIEnumString );
-};
+}; // class BrowseServerAddressSpace
 
+} // namespace impl
 }
 }
 

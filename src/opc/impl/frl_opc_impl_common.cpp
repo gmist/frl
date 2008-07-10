@@ -1,4 +1,4 @@
-#include "opc/frl_opc_common_impl.h"
+#include "opc/impl/frl_opc_impl_common.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <WinNT.h>
 #include "../dependency/vendors/opc_foundation/opcerror.h"
@@ -6,37 +6,35 @@
 #include "opc/frl_opc_util.h"
 #include "sys/frl_sys_util.h"
 
-namespace frl
-{
-namespace opc
-{
-OPCCommonImpl::OPCCommonImpl() : lcid( 0 )
+namespace frl { namespace opc { namespace impl {
+
+OPCCommon::OPCCommon() : lcid( 0 )
 {
 }
 
-OPCCommonImpl::~OPCCommonImpl()
+OPCCommon::~OPCCommon()
 {
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommonImpl::SetLocaleID( /* [in] */ LCID dwLcid )
+HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
 {
 	switch( dwLcid )
 	{
-		case MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT):
-		case MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), SORT_DEFAULT):
-		case LOCALE_NEUTRAL:
-		case LOCALE_INVARIANT:
-		case LOCALE_SYSTEM_DEFAULT:
-		case LOCALE_USER_DEFAULT:
+	case MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_ENGLISH_US), SORT_DEFAULT):
+	case MAKELCID(MAKELANGID(LANG_ENGLISH, SUBLANG_NEUTRAL), SORT_DEFAULT):
+	case LOCALE_NEUTRAL:
+	case LOCALE_INVARIANT:
+	case LOCALE_SYSTEM_DEFAULT:
+	case LOCALE_USER_DEFAULT:
 		{
-				lcid = dwLcid;
-				return S_OK;
+			lcid = dwLcid;
+			return S_OK;
 		}
 	}
 	return E_INVALIDARG;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommonImpl::GetLocaleID( /* [out] */ LCID *pdwLcid )
+HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
 {
 	if( pdwLcid == NULL )
 		return E_INVALIDARG;
@@ -44,7 +42,7 @@ HRESULT STDMETHODCALLTYPE OPCCommonImpl::GetLocaleID( /* [out] */ LCID *pdwLcid 
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommonImpl::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
+HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
 {
 	if( pdwCount == NULL || pdwLcid == NULL )
 		return E_INVALIDARG;
@@ -62,7 +60,7 @@ HRESULT STDMETHODCALLTYPE OPCCommonImpl::QueryAvailableLocaleIDs( /* [out] */ DW
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommonImpl::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
+HRESULT STDMETHODCALLTYPE OPCCommon::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
 {
 	if( ppString == NULL )
 		return E_INVALIDARG;
@@ -71,7 +69,7 @@ HRESULT STDMETHODCALLTYPE OPCCommonImpl::GetErrorString( /* [in] */ HRESULT dwEr
 	return util::getErrorString( dwError, lcid, &ppString );
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommonImpl::SetClientName( /* [string][in] */ LPCWSTR szName )
+HRESULT STDMETHODCALLTYPE OPCCommon::SetClientName( /* [string][in] */ LPCWSTR szName )
 {
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		clientName = szName;
@@ -81,6 +79,8 @@ HRESULT STDMETHODCALLTYPE OPCCommonImpl::SetClientName( /* [string][in] */ LPCWS
 
 	return S_OK;
 }
+
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

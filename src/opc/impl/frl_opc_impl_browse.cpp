@@ -1,12 +1,9 @@
-#include "opc/frl_opc_browse_impl.h"
+#include "opc/impl/frl_opc_impl_browse.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_address_space.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
 BrowseImpl::~BrowseImpl()
 {
@@ -234,11 +231,11 @@ HRESULT STDMETHODCALLTYPE BrowseImpl::Browse(
 	if( dwMaxElementsReturned != 0
 		&& ( dwMaxElementsReturned < (DWORD)itemsList.size() ) )
 	{
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			*pszContinuationPoint = util::duplicateString( itemsList[dwMaxElementsReturned].fullID );
-		#else
-			*pszContinuationPoint = util::duplicateString( string2wstring( itemsList[dwMaxElementsReturned].fullID ) );
-		#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		*pszContinuationPoint = util::duplicateString( itemsList[dwMaxElementsReturned].fullID );
+#else
+		*pszContinuationPoint = util::duplicateString( string2wstring( itemsList[dwMaxElementsReturned].fullID ) );
+#endif
 
 		std::vector< address_space::TagBrowseInfo > tmp;
 		tmp.reserve( dwMaxElementsReturned );
@@ -318,6 +315,7 @@ HRESULT STDMETHODCALLTYPE BrowseImpl::Browse(
 	return ret;
 }
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

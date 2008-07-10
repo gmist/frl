@@ -1,20 +1,17 @@
-#include "opc/frl_opc_browse_server_address_space_impl.h"
+#include "opc/impl/frl_opc_impl_browse_server_address_space.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_string.h"
 #include "opc/frl_opc_enum_string.h"
 #include "opc/address_space/frl_opc_address_space.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-BrowseServerAddressSpaceImpl::~BrowseServerAddressSpaceImpl()
+BrowseServerAddressSpace::~BrowseServerAddressSpace()
 {
 }
 
 HRESULT STDMETHODCALLTYPE
-BrowseServerAddressSpaceImpl::QueryOrganization(
+	BrowseServerAddressSpace::QueryOrganization(
 	/* [out] */ OPCNAMESPACETYPE *pNameSpaceType )
 {
 	if( pNameSpaceType == NULL )
@@ -24,7 +21,7 @@ BrowseServerAddressSpaceImpl::QueryOrganization(
 }
 
 HRESULT STDMETHODCALLTYPE
-BrowseServerAddressSpaceImpl::ChangeBrowsePosition(
+	BrowseServerAddressSpace::ChangeBrowsePosition(
 	/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 	/* [string][in] */ LPCWSTR szString )
 {
@@ -43,11 +40,11 @@ BrowseServerAddressSpaceImpl::ChangeBrowsePosition(
 			if( szString == NULL || wcslen( szString ) == 0 )
 				return E_INVALIDARG;
 
-			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				String inString = szString;
-			#else
-				String inString = wstring2string( szString );
-			#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			String inString = szString;
+#else
+			String inString = wstring2string( szString );
+#endif
 
 			try
 			{
@@ -68,11 +65,11 @@ BrowseServerAddressSpaceImpl::ChangeBrowsePosition(
 				return S_OK;
 			}
 
-			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				String inString = szString;
-			#else
-				String inString = wstring2string( szString );
-			#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			String inString = szString;
+#else
+			String inString = wstring2string( szString );
+#endif
 
 			try
 			{
@@ -89,7 +86,7 @@ BrowseServerAddressSpaceImpl::ChangeBrowsePosition(
 }
 
 HRESULT STDMETHODCALLTYPE
-BrowseServerAddressSpaceImpl::BrowseOPCItemIDs(
+	BrowseServerAddressSpace::BrowseOPCItemIDs(
 	/* [in] */ OPCBROWSETYPE dwBrowseFilterType,
 	/* [string][in] */ LPCWSTR szFilterCriteria,
 	/* [in] */ VARTYPE vtDataTypeFilter,
@@ -133,11 +130,11 @@ BrowseServerAddressSpaceImpl::BrowseOPCItemIDs(
 	// filtration by name
 	if( szFilterCriteria != NULL && wcslen( szFilterCriteria ) != 0 )
 	{			
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String filter = szFilterCriteria;
-		#else
-			String filter = wstring2string( szFilterCriteria );
-		#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String filter = szFilterCriteria;
+#else
+		String filter = wstring2string( szFilterCriteria );
+#endif
 		std::vector< String > filtredItems;
 		filtredItems.reserve( items.size() );
 		std::vector< String >::iterator end = items.end();
@@ -162,7 +159,7 @@ BrowseServerAddressSpaceImpl::BrowseOPCItemIDs(
 }
 
 HRESULT STDMETHODCALLTYPE
-BrowseServerAddressSpaceImpl::GetItemID(
+	BrowseServerAddressSpace::GetItemID(
 	/* [in] */ LPWSTR szItemDataID,
 	/* [string][out] */ LPWSTR *szItemID )
 {
@@ -171,11 +168,11 @@ BrowseServerAddressSpaceImpl::GetItemID(
 
 	*szItemID = NULL;
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String itemDataID = szItemDataID;
-	#else
-		String itemDataID = wstring2string( szItemDataID );
-	#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	String itemDataID = szItemDataID;
+#else
+	String itemDataID = wstring2string( szItemDataID );
+#endif
 
 	boost::mutex::scoped_lock guard( bsaScopeGuard );
 
@@ -188,11 +185,11 @@ BrowseServerAddressSpaceImpl::GetItemID(
 		}
 		else
 		{
-			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				*szItemID = util::duplicateString( tmp ); // return current position
-			#else
-				*szItemID = util::duplicateString( string2wstring( tmp ) ); // return current position
-			#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			*szItemID = util::duplicateString( tmp ); // return current position
+#else
+			*szItemID = util::duplicateString( string2wstring( tmp ) ); // return current position
+#endif
 		}
 		return S_OK;
 	}
@@ -212,23 +209,24 @@ BrowseServerAddressSpaceImpl::GetItemID(
 		tag = opcAddressSpace::getInstance().getTag( itemDataID );
 	}
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		*szItemID = util::duplicateString( tag->getID() );
-	#else
-		*szItemID = util::duplicateString( string2wstring(tag->getID()) );
-	#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	*szItemID = util::duplicateString( tag->getID() );
+#else
+	*szItemID = util::duplicateString( string2wstring(tag->getID()) );
+#endif
 
 	return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE 
-BrowseServerAddressSpaceImpl::BrowseAccessPaths(
+	BrowseServerAddressSpace::BrowseAccessPaths(
 	/* [string][in] */ LPCWSTR szItemID,
 	/* [out] */ LPENUMSTRING *ppIEnumString )
 {
 	return E_NOTIMPL;
 }
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

@@ -5,20 +5,17 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_server_base.h"
 
-namespace frl
-{ 
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-class OPCItemIO_Impl
-	:	virtual public IOPCItemIO,
+class OPCItemIO
+	:	public IOPCItemIO,
 		virtual public OPCServerBase
 {
 public:
-	virtual ~OPCItemIO_Impl();
+	virtual ~OPCItemIO();
 
 	// IOPCItemIO implementation
-	virtual HRESULT STDMETHODCALLTYPE Read( 
+	HRESULT STDMETHODCALLTYPE Read( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ LPCWSTR *pszItemIDs,
 		/* [size_is][in] */ DWORD *pdwMaxAge,
@@ -27,13 +24,14 @@ public:
 		/* [size_is][size_is][out] */ FILETIME **ppftTimeStamps,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	virtual HRESULT STDMETHODCALLTYPE WriteVQT( 
+	HRESULT STDMETHODCALLTYPE WriteVQT( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ LPCWSTR *pszItemIDs,
 		/* [size_is][in] */ OPCITEMVQT *pItemVQT,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
-};
+}; // class OPCItemIO
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

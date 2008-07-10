@@ -1,4 +1,4 @@
-#include "opc/frl_opc_server_impl.h"
+#include "opc/impl/frl_opc_impl_server.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_enum_string.h"
@@ -6,29 +6,26 @@
 #include "opc/frl_opc_group.h"
 #include "opc/frl_opc_enum_group.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-OPCServerImpl::~OPCServerImpl()
+OPCServer::~OPCServer()
 {
 }
 
-void OPCServerImpl::setServerState( OPCSERVERSTATE newState )
+void OPCServer::setServerState( OPCSERVERSTATE newState )
 {
 	if( newState < OPC_STATUS_RUNNING || newState > OPC_STATUS_TEST )
-		FRL_THROW_S_CLASS( OPCServer::InvalidServerState );
+		FRL_THROW_S_CLASS( InvalidServerState );
 	serverStatus.dwServerState = newState;
 	CoFileTimeNow( &serverStatus.ftCurrentTime );
 }
 
-OPCSERVERSTATE OPCServerImpl::getServerState()
+OPCSERVERSTATE OPCServer::getServerState()
 {
 	return serverStatus.dwServerState;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerImpl::AddGroup(	/* [string][in] */ LPCWSTR szName,
+HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName,
 	/* [in] */ BOOL bActive,
 	/* [in] */ DWORD dwRequestedUpdateRate,
 	/* [in] */ OPCHANDLE hClientGroup,
@@ -64,11 +61,11 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::AddGroup(	/* [string][in] */ LPCWSTR sz
 	}
 	else
 	{
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			name = szName;
-		#else	
-			name = wstring2string( szName );
-		#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		name = szName;
+#else	
+		name = wstring2string( szName );
+#endif
 	}
 
 	try
@@ -92,7 +89,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::AddGroup(	/* [string][in] */ LPCWSTR sz
 		lTimeBias = *pTimeBias;
 	}
 
-	new_group->setServerPtr( dynamic_cast< OPCServer*>( this ) );
+	new_group->setServerPtr( dynamic_cast< opc::OPCServer*>( this ) );
 	HRESULT res = new_group->SetState(
 		&dwRequestedUpdateRate,
 		pRevisedUpdateRate,
@@ -121,7 +118,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::AddGroup(	/* [string][in] */ LPCWSTR sz
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerImpl::GetErrorString( /* [in] */ HRESULT dwError, /* [in] */ LCID dwLocale, /* [string][out] */ LPWSTR *ppString )
+HRESULT STDMETHODCALLTYPE OPCServer::GetErrorString( /* [in] */ HRESULT dwError, /* [in] */ LCID dwLocale, /* [string][out] */ LPWSTR *ppString )
 {
 	if( ppString == NULL )
 	{
@@ -131,7 +128,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::GetErrorString( /* [in] */ HRESULT dwEr
 	return util::getErrorString( dwError, dwLocale, &ppString );
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerImpl::GetGroupByName( /* [string][in] */ LPCWSTR szName, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR szName, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	if( ppUnk == NULL )
 		return E_INVALIDARG;
@@ -142,11 +139,11 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::GetGroupByName( /* [string][in] */ LPCW
 
 	boost::mutex::scoped_lock guard( scopeGuard );
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String name = szName;
-	#else
-		String name = wstring2string( szName );
-	#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	String name = szName;
+#else
+	String name = wstring2string( szName );
+#endif
 
 	GroupElem group;
 	try
@@ -167,7 +164,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::GetGroupByName( /* [string][in] */ LPCW
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerImpl::GetStatus( /* [out] */ OPCSERVERSTATUS **ppServerStatus )
+HRESULT STDMETHODCALLTYPE OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **ppServerStatus )
 {
 	if(ppServerStatus == NULL)
 		return E_INVALIDARG;
@@ -184,7 +181,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::GetStatus( /* [out] */ OPCSERVERSTATUS 
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerImpl::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
+HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
 	try
@@ -202,7 +199,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::RemoveGroup( /* [in] */ OPCHANDLE hServ
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerImpl::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
 	if( riid == IID_IEnumUnknown )
@@ -260,6 +257,7 @@ HRESULT STDMETHODCALLTYPE OPCServerImpl::CreateGroupEnumerator( /* [in] */ OPCEN
 	return E_NOINTERFACE;
 }
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

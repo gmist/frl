@@ -160,6 +160,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\src\opc\frl_opc_group_base.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\frl_string.cpp"
 				>
 			</File>
@@ -176,18 +180,6 @@
 				>
 				<File
 					RelativePath="..\..\..\src\opc\frl_opc_async_request.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_browse_impl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_browse_server_address_space_impl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_common_impl.cpp"
 					>
 				</File>
 				<File
@@ -239,14 +231,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\opc\frl_opc_item_io_impl.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_item_properties_impl.cpp"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\src\opc\frl_opc_request_manager.cpp"
 					>
 				</File>
@@ -260,10 +244,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\src\opc\frl_opc_server_factory.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\src\opc\frl_opc_server_impl.cpp"
 					>
 				</File>
 				<File
@@ -295,6 +275,72 @@
 					</File>
 					<File
 						RelativePath="..\..\..\src\opc\address_space\frl_opc_tag.cpp"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="impl"
+					>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_async_io.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_browse.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_browse_server_address_space.cpp"
+						>
+						<FileConfiguration
+							Name="Debug|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								ObjectFile="$(IntDir)\$(InputName)1.obj"
+								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+							/>
+						</FileConfiguration>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_common.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_group_state_mgt.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_item_deadband_mgt.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_item_io.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_item_mgt.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_item_properties.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_server.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\src\opc\impl\frl_opc_impl_sync_io.cpp"
 						>
 					</File>
 				</Filter>
@@ -541,23 +587,7 @@
 				Name="opc"
 				>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_async_io.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\opc\frl_opc_async_request.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_browse_impl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_browse_server_address_space_impl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_common_impl.h"
 					>
 				</File>
 				<File
@@ -597,7 +627,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_group_item.h"
+					RelativePath="..\..\..\include\opc\frl_opc_group_base.h"
 					>
 				</File>
 				<File
@@ -605,27 +635,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_group_state_mgt.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_item_deadband_mgt.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\opc\frl_opc_item_hvqt.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_item_io_impl.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_item_mgt.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_item_properties_impl.h"
 					>
 				</File>
 				<File
@@ -649,10 +659,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_server_impl.h"
-					>
-				</File>
-				<File
 					RelativePath="..\..\..\include\opc\frl_opc_server_kind.h"
 					>
 				</File>
@@ -662,10 +668,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\opc\frl_opc_server_types.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\opc\frl_opc_sync_io.h"
 					>
 				</File>
 				<File
@@ -685,6 +687,54 @@
 					</File>
 					<File
 						RelativePath="..\..\..\include\opc\address_space\frl_opc_tag.h"
+						>
+					</File>
+				</Filter>
+				<Filter
+					Name="impl"
+					>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_async_io.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_browse.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_browse_server_address_space.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_common.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_group_state_mgt.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_item_deadband_mgt.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_item_io.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_item_mgt.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_item_properties.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_server.h"
+						>
+					</File>
+					<File
+						RelativePath="..\..\..\include\opc\impl\frl_opc_impl_sync_io.h"
 						>
 					</File>
 				</Filter>

@@ -1,5 +1,6 @@
 #include "opc/frl_opc_server_base.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_group.h"
 
 namespace frl

@@ -1,36 +1,26 @@
-#ifndef frl_opc_item_mgt_h_
-#define frl_opc_item_mgt_h_
-#include "frl_platform.h"
+#include "opc/impl/frl_opc_impl_item_mgt.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include "../dependency/vendors/opc_foundation/opcda.h"
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_enum_item_attributes.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_async_request.h"
+#include "opc/frl_opc_group_base.h"
+#include "opc/frl_opc_server.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
+ItemMgt::~ItemMgt()
+{
+}
 
-template< class T >
-class ItemMgt : public IOPCItemMgt
+HRESULT STDMETHODCALLTYPE ItemMgt::AddItems( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCITEMDEF *pItemArray, /* [size_is][size_is][out] */ OPCITEMRESULT **ppAddResults, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
-public:
-HRESULT STDMETHODCALLTYPE AddItems( 
-	/* [in] */ DWORD dwCount,
-	/* [size_is][in] */ OPCITEMDEF *pItemArray,
-	/* [size_is][size_is][out] */ OPCITEMRESULT **ppAddResults,
-	/* [size_is][size_is][out] */ HRESULT **ppErrors)
-{
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
-	
+
 	if( pItemArray == NULL || ppAddResults == NULL || ppErrors == NULL )
 		return E_INVALIDARG;
-	
+
 	*ppAddResults = NULL;
 	*ppErrors = NULL;
 
@@ -50,7 +40,7 @@ HRESULT STDMETHODCALLTYPE AddItems(
 	}
 
 	HRESULT res = S_OK;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( groupGuard );
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen( pItemArray[i].szItemID ) == 0 )
@@ -59,12 +49,12 @@ HRESULT STDMETHODCALLTYPE AddItems(
 			res = S_FALSE;
 			continue;
 		}
-		
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		String itemID = pItemArray[i].szItemID;
-		#else
+#else
 		String itemID = wstring2string( pItemArray[i].szItemID );
-		#endif
+#endif
 
 		if( ! opcAddressSpace::getInstance().isExistLeaf( itemID ) )
 		{
@@ -89,21 +79,15 @@ HRESULT STDMETHODCALLTYPE AddItems(
 		(*ppAddResults)[i].dwAccessRights = tag->getAccessRights();
 		(*ppAddResults)[i].dwBlobSize = 0;
 		(*ppAddResults)[i].pBlob = NULL;
-		pT->itemList.insert( std::pair< OPCHANDLE, GroupItemElem > ( item->getServerHandle(), item ));
+		itemList.insert( std::pair< OPCHANDLE, GroupItemElem > ( item->getServerHandle(), item ));
 		(*ppErrors)[i] = S_OK;
 	}
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ValidateItems( 
-	/* [in] */ DWORD dwCount,
-	/* [size_is][in] */ OPCITEMDEF *pItemArray,
-	/* [in] */ BOOL bBlobUpdate,
-	/* [size_is][size_is][out] */ OPCITEMRESULT **ppValidationResults,
-	/* [size_is][size_is][out] */ HRESULT **ppErrors)
+HRESULT STDMETHODCALLTYPE ItemMgt::ValidateItems( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCITEMDEF *pItemArray, /* [in] */ BOOL bBlobUpdate, /* [size_is][size_is][out] */ OPCITEMRESULT **ppValidationResults, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
 	if (pItemArray == NULL || ppValidationResults == NULL || ppErrors == NULL )
 		return E_INVALIDARG;
@@ -112,7 +96,7 @@ HRESULT STDMETHODCALLTYPE ValidateItems(
 
 	if( dwCount == 0 )
 		return E_INVALIDARG;
-	
+
 	*ppValidationResults = os::win32::com::allocMemory< OPCITEMRESULT >( dwCount );
 	if( *ppValidationResults == NULL )
 		return E_OUTOFMEMORY;
@@ -127,7 +111,7 @@ HRESULT STDMETHODCALLTYPE ValidateItems(
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( groupGuard );
 	for( DWORD i=0; i<dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0 )
@@ -137,11 +121,11 @@ HRESULT STDMETHODCALLTYPE ValidateItems(
 			continue;
 		}
 
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String itemID = pItemArray[i].szItemID;
-		#else
-			String itemID = wstring2string( pItemArray[i].szItemID );
-		#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String itemID = pItemArray[i].szItemID;
+#else
+		String itemID = wstring2string( pItemArray[i].szItemID );
+#endif
 
 		if( ! opcAddressSpace::getInstance().isExistLeaf( itemID ) )
 		{
@@ -167,18 +151,14 @@ HRESULT STDMETHODCALLTYPE ValidateItems(
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE RemoveItems( 
-	/* [in] */ DWORD dwCount,
-	/* [size_is][in] */ OPCHANDLE *phServer,
-	/* [size_is][size_is][out] */ HRESULT **ppErrors)
+HRESULT STDMETHODCALLTYPE ItemMgt::RemoveItems( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
 
 	if( phServer == NULL || ppErrors == NULL )
 		return E_INVALIDARG;
-	
+
 	*ppErrors = NULL;
 	if( dwCount == 0 )
 		return E_INVALIDARG;
@@ -190,11 +170,11 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
-	GroupItemElemList::iterator end = pT->itemList.end();
+	boost::mutex::scoped_lock guard( groupGuard );
+	GroupItemElemList::iterator end = itemList.end();
 	for( DWORD i=0; i<dwCount; ++i )
 	{
-		it = pT->itemList.find( phServer[i] );
+		it = itemList.find( phServer[i] );
 		if( it == end ) 
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -202,20 +182,15 @@ HRESULT STDMETHODCALLTYPE RemoveItems(
 			continue;
 		}
 		// and disconnected from all async requests
-		pT->server->removeItemFromRequestList( phServer[i] );
-		pT->itemList.erase( it );
+		server->removeItemFromRequestList( phServer[i] );
+		itemList.erase( it );
 	}
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE SetActiveState( 
-	/* [in] */ DWORD dwCount,
-	/* [size_is][in] */ OPCHANDLE *phServer,
-	/* [in] */ BOOL bActive,
-	/* [size_is][size_is][out] */ HRESULT **ppErrors)
+HRESULT STDMETHODCALLTYPE ItemMgt::SetActiveState( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [in] */ BOOL bActive, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
 	if (phServer == NULL || ppErrors == NULL )
 		return E_INVALIDARG;
@@ -231,11 +206,11 @@ HRESULT STDMETHODCALLTYPE SetActiveState(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
-	GroupItemElemList::iterator end = pT->itemList.end();
+	boost::mutex::scoped_lock guard( groupGuard );
+	GroupItemElemList::iterator end = itemList.end();
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
-		it = pT->itemList.find( phServer[i] );
+		it = itemList.find( phServer[i] );
 		if ( it == end )
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -248,14 +223,9 @@ HRESULT STDMETHODCALLTYPE SetActiveState(
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE SetClientHandles( 
-	/* [in] */ DWORD dwCount,
-	/* [size_is][in] */ OPCHANDLE *phServer,
-	/* [size_is][in] */ OPCHANDLE *phClient,
-	/* [size_is][size_is][out] */ HRESULT **ppErrors)
+HRESULT STDMETHODCALLTYPE ItemMgt::SetClientHandles( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ OPCHANDLE *phClient, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
 	if ( phServer == NULL || phClient == NULL || ppErrors == NULL )
 		return E_INVALIDARG;
@@ -270,11 +240,11 @@ HRESULT STDMETHODCALLTYPE SetClientHandles(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
-	GroupItemElemList::iterator end = pT->itemList.end();
+	boost::mutex::scoped_lock guard( groupGuard );
+	GroupItemElemList::iterator end = itemList.end();
 	for( DWORD i=0; i<dwCount; ++i )
 	{
-		it = pT->itemList.find( phServer[i] );
+		it = itemList.find( phServer[i] );
 		if( it == end )
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -286,14 +256,9 @@ HRESULT STDMETHODCALLTYPE SetClientHandles(
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE SetDatatypes( 
-	/* [in] */ DWORD dwCount,
-	/* [size_is][in] */ OPCHANDLE *phServer,
-	/* [size_is][in] */ VARTYPE *pRequestedDatatypes,
-	/* [size_is][size_is][out] */ HRESULT **ppErrors)
+HRESULT STDMETHODCALLTYPE ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ VARTYPE *pRequestedDatatypes, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
 
 	if( phServer == NULL || pRequestedDatatypes == NULL || ppErrors == NULL )
@@ -310,11 +275,11 @@ HRESULT STDMETHODCALLTYPE SetDatatypes(
 
 	HRESULT res = S_OK;
 	GroupItemElemList::iterator it;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
-	GroupItemElemList::iterator end = pT->itemList.end();
+	boost::mutex::scoped_lock guard( groupGuard );
+	GroupItemElemList::iterator end = itemList.end();
 	for( DWORD i=0; i<dwCount; ++i )
 	{
-		it = pT->itemList.find( phServer[i] );
+		it = itemList.find( phServer[i] );
 		if( it == end )
 		{
 			(*ppErrors)[i] = OPC_E_INVALIDHANDLE;
@@ -332,28 +297,25 @@ HRESULT STDMETHODCALLTYPE SetDatatypes(
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE CreateEnumerator( 
-	/* [in] */ REFIID riid,
-	/* [iid_is][out] */ LPUNKNOWN *ppUnk)
+HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
-	T* pT = static_cast<T*> (this);
-	if( pT->deleted )
+	if( deleted )
 		return E_FAIL;
-	boost::mutex::scoped_lock guard( pT->groupGuard );
+	boost::mutex::scoped_lock guard( groupGuard );
 	if (ppUnk == NULL)
 		return E_INVALIDARG;
 
 	if ( riid == IID_IEnumOPCItemAttributes)
 	{
-		if( pT->itemList.empty() )
+		if( itemList.empty() )
 			return S_FALSE;
 
 		EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 		if (temp == NULL)
 			return (E_OUTOFMEMORY);
 		GroupItemElemList::iterator it;
-		GroupItemElemList::iterator end = pT->itemList.end();
-		for( it = pT->itemList.begin(); it != end; ++it )
+		GroupItemElemList::iterator end = itemList.end();
+		for( it = itemList.begin(); it != end; ++it )
 		{
 			OPCHANDLE h = it->first;
 			temp->addItem ( h, (*it).second );
@@ -362,9 +324,9 @@ HRESULT STDMETHODCALLTYPE CreateEnumerator(
 	}
 	return E_INVALIDARG;
 }
-}; // class ItemMgt
+
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_item_mgt_h_ */

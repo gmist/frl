@@ -4,23 +4,21 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_server_base.h"
+#include "frl_exception.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl { namespace opc { namespace impl {
 
-class OPCServer;
-class OPCServerImpl
-	:	virtual public OPCServerBase,
-		virtual public IOPCServer
+class OPCServer
+	:	public IOPCServer,
+		virtual public opc::OPCServerBase
 {
 protected:
 	OPCSERVERSTATUS serverStatus;
-	
-public:
-	virtual ~OPCServerImpl();
 
+public:
+	FRL_EXCEPTION_CLASS( InvalidServerState );
+
+	virtual ~OPCServer();
 	void setServerState( OPCSERVERSTATE newState );
 	OPCSERVERSTATE getServerState();
 
@@ -59,7 +57,9 @@ public:
 		/* [in] */ OPCENUMSCOPE dwScope,
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);
-};
+}; // class OPCServer
+
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 
