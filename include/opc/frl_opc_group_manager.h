@@ -4,9 +4,9 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <map>
 #include <vector>
-#include <boost/thread/thread.hpp>
-#include <boost/thread/mutex.hpp>
 #include <boost/noncopyable.hpp>
+#include <boost/thread/mutex.hpp>
+#include <boost/thread/thread.hpp>
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_event.h"
 #include "frl_types.h"

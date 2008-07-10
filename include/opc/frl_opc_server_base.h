@@ -15,20 +15,13 @@ namespace opc
 class OPCServerBase : private boost::noncopyable
 {
 protected:
-
-	// reference counter
-	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		volatile LONG refCount;
-	#else
-		LONG refCount;
-	#endif
 	GroupManager group_manager;
 	RequestManager request_manager;
 	address_space::AddrSpaceCrawler crawler;
 	boost::mutex scopeGuard;
-	
-	OPCServerBase();
+
 public:
+	virtual ~OPCServerBase();
 	HRESULT setGroupName( const String &oldName, const String &newName );
 	GroupElem cloneGroup( String &name , String &to_name );
 	void addAsyncRequest( AsyncRequestListElem &request );

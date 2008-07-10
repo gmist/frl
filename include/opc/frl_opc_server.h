@@ -2,10 +2,6 @@
 #define frl_opc_server_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include <map>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/thread.hpp>
-#include <boost/noncopyable.hpp>
 #include "opc/frl_opc_common_impl.h"
 #include "opc/frl_opc_item_properties_impl.h"
 #include "opc/frl_opc_browse_server_address_space_impl.h"
@@ -14,7 +10,6 @@
 #include "opc/frl_opc_browse_impl.h"
 #include "opc/frl_opc_item_io_impl.h"
 #include "opc/frl_opc_server_impl.h"
-
 
 namespace frl
 {
@@ -31,6 +26,13 @@ class OPCServer
 		public BrowseImpl,
 		public OPCItemIO_Impl
 {
+private:
+	// reference counter
+	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
+		volatile LONG refCount;
+	#else
+		LONG refCount;
+	#endif
 public:
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 

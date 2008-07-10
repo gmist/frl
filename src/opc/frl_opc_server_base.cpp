@@ -7,8 +7,7 @@ namespace frl
 namespace opc
 {
 
-OPCServerBase::OPCServerBase()
-	:	refCount( 0 )
+OPCServerBase::~OPCServerBase()
 {
 }
 

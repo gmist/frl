@@ -18,6 +18,7 @@ namespace opc
 {
 
 OPCServer::OPCServer()
+	:	refCount( 0 )
 {
 	// call opcAddressSpace::getInstance().finalConstruct first !
 	if( ! opcAddressSpace::getInstance().isInit() )

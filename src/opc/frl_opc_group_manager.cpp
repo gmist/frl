@@ -1,7 +1,6 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
-#include <boost/thread/thread.hpp>
 #include "opc/frl_opc_group_manager.h"
 #include "opc/frl_opc_group.h"
 
