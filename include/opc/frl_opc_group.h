@@ -22,7 +22,7 @@ namespace frl
 {
 namespace opc
 {
-
+class OPCServer;
 class Group :
 	public ServerHandleCounter,
 	public GroupStateMgt< Group >,
@@ -50,7 +50,7 @@ private:
 	const CLSID* clsid;
 	String name;
 	OPCHANDLE clientHandle;
-	OPCServer *server;
+	OPCServer* server;
 
 	Bool actived;
 	Bool enabled;
@@ -94,6 +94,8 @@ public:
 	ULONGLONG getLastUpdateTick();
 	void renewUpdateRate();
 }; // class Group
+
+typedef ComPtr< Group > GroupElem;
 
 } // namespace opc
 } // FatRat Library

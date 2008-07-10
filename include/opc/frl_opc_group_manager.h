@@ -23,9 +23,9 @@ typedef ComPtr< Group > GroupElem;
 class GroupManager : private boost::noncopyable
 {
 public:
-
 	typedef std::map< OPCHANDLE, GroupElem > GroupElemHandlesMap;
 	typedef std::map< String, GroupElem > GroupElemNamesMap;
+
 private:
 	boost::mutex guard;
 	GroupElemHandlesMap handles_map;

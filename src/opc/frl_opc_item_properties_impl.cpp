@@ -1,12 +1,21 @@
-#include "frl_platform.h"
+#include "opc/frl_opc_item_properties_impl.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include "opc/frl_opc_item_properties.h"
+#include "../dependency/vendors/opc_foundation/opcerror.h"
+#include "opc/address_space/frl_opc_address_space.h"
+#include "opc/frl_opc_util.h"
+#include "os/win32/com/frl_os_win32_com_variant.h"
 
 namespace frl
 {
 namespace opc
 {
-HRESULT STDMETHODCALLTYPE ItemProperties::QueryAvailableProperties(
+
+OPCItemPropertiesImpl::~OPCItemPropertiesImpl()
+{
+}
+
+HRESULT STDMETHODCALLTYPE
+OPCItemPropertiesImpl::QueryAvailableProperties(
 	/* [in] */ LPWSTR szItemID,
 	/* [out] */ DWORD *pdwCount,
 	/* [size_is][size_is][out] */ DWORD **ppPropertyIDs,
@@ -86,7 +95,8 @@ HRESULT STDMETHODCALLTYPE ItemProperties::QueryAvailableProperties(
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE ItemProperties::GetItemProperties(
+HRESULT STDMETHODCALLTYPE
+OPCItemPropertiesImpl::GetItemProperties(
 	/* [in] */ LPWSTR szItemID,
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ DWORD *pdwPropertyIDs,
@@ -141,7 +151,8 @@ HRESULT STDMETHODCALLTYPE ItemProperties::GetItemProperties(
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemProperties::LookupItemIDs(
+HRESULT STDMETHODCALLTYPE
+OPCItemPropertiesImpl::LookupItemIDs(
 	/* [in] */ LPWSTR szItemID,
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ DWORD *pdwPropertyIDs,
@@ -211,7 +222,8 @@ HRESULT STDMETHODCALLTYPE ItemProperties::LookupItemIDs(
 	}
 	return ret;
 }
+
 } // namespace opc
 } // FatRat Library
 
-#endif
+#endif // FRL_PLATFORM_WIN32

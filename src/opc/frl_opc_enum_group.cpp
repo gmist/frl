@@ -1,6 +1,5 @@
-#include "frl_platform.h"
-#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_enum_group.h"
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_group.h"
 
 namespace frl

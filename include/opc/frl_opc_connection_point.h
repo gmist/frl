@@ -2,7 +2,7 @@
 #define frl_opc_connection_point_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include <Windows.h>
+#include <OCIdl.h>
 #include "frl_types.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 

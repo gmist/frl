@@ -1,8 +1,7 @@
-#include "frl_platform.h"
+#include "opc/frl_opc_connection_point_container.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <algorithm>
 #include <OleCtl.h>
-#include "opc/frl_opc_connection_point_container.h"
 #include "opc/frl_opc_enum_connection_points.h"
 #include "opc/frl_opc_connection_point.h"
 #include "frl_util_functors.h"

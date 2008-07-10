@@ -179,7 +179,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\opc\frl_opc_common.cpp"
+					RelativePath="..\..\..\src\opc\frl_opc_browse_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_browse_server_address_space_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_common_impl.cpp"
 					>
 				</File>
 				<File
@@ -231,7 +239,11 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\src\opc\frl_opc_item_properties.cpp"
+					RelativePath="..\..\..\src\opc\frl_opc_item_io_impl.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_item_properties_impl.cpp"
 					>
 				</File>
 				<File
@@ -243,7 +255,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\opc\frl_opc_server_base.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\opc\frl_opc_server_factory.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_server_impl.cpp"
 					>
 				</File>
 				<File
@@ -529,15 +549,15 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_browse.h"
+					RelativePath="..\..\..\include\opc\frl_opc_browse_impl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_browse_server_address_space.h"
+					RelativePath="..\..\..\include\opc\frl_opc_browse_server_address_space_impl.h"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_common.h"
+					RelativePath="..\..\..\include\opc\frl_opc_common_impl.h"
 					>
 				</File>
 				<File
@@ -597,7 +617,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_item_io.h"
+					RelativePath="..\..\..\include\opc\frl_opc_item_io_impl.h"
 					>
 				</File>
 				<File
@@ -605,7 +625,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\include\opc\frl_opc_item_properties.h"
+					RelativePath="..\..\..\include\opc\frl_opc_item_properties_impl.h"
 					>
 				</File>
 				<File
@@ -621,7 +641,15 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\include\opc\frl_opc_server_base.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\include\opc\frl_opc_server_factory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\include\opc\frl_opc_server_impl.h"
 					>
 				</File>
 				<File

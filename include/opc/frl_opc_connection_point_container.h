@@ -2,7 +2,7 @@
 #define frl_opc_connection_point_container_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include <Windows.h>
+#include <OCIdl.h>
 #include <list>
 #include <boost/thread/mutex.hpp>
 #include "frl_types.h"

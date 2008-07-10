@@ -1,4 +1,4 @@
-#include "opc/frl_opc_common.h"
+#include "opc/frl_opc_common_impl.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <WinNT.h>
 #include "../dependency/vendors/opc_foundation/opcerror.h"
@@ -10,15 +10,15 @@ namespace frl
 {
 namespace opc
 {
-OPCCommon::OPCCommon() : lcid( 0 )
+OPCCommonImpl::OPCCommonImpl() : lcid( 0 )
 {
 }
 
-OPCCommon::~OPCCommon()
+OPCCommonImpl::~OPCCommonImpl()
 {
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
+HRESULT STDMETHODCALLTYPE OPCCommonImpl::SetLocaleID( /* [in] */ LCID dwLcid )
 {
 	switch( dwLcid )
 	{
@@ -36,7 +36,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
 	return E_INVALIDARG;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
+HRESULT STDMETHODCALLTYPE OPCCommonImpl::GetLocaleID( /* [out] */ LCID *pdwLcid )
 {
 	if( pdwLcid == NULL )
 		return E_INVALIDARG;
@@ -44,7 +44,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
+HRESULT STDMETHODCALLTYPE OPCCommonImpl::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
 {
 	if( pdwCount == NULL || pdwLcid == NULL )
 		return E_INVALIDARG;
@@ -62,7 +62,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD 
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
+HRESULT STDMETHODCALLTYPE OPCCommonImpl::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
 {
 	if( ppString == NULL )
 		return E_INVALIDARG;
@@ -71,7 +71,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::GetErrorString( /* [in] */ HRESULT dwError,
 	return util::getErrorString( dwError, lcid, &ppString );
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::SetClientName( /* [string][in] */ LPCWSTR szName )
+HRESULT STDMETHODCALLTYPE OPCCommonImpl::SetClientName( /* [string][in] */ LPCWSTR szName )
 {
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		clientName = szName;
