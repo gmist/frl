@@ -162,19 +162,11 @@ HRESULT STDMETHODCALLTYPE GroupStateMgt::CloneGroup( /* [string][in] */ LPCWSTR 
 		return E_INVALIDARG;
 	}
 
-	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		HRESULT result = group->QueryInterface( riid, (void**)ppUnk );
-	#else
-		HRESULT result = group.get()->QueryInterface( riid, (void**)ppUnk );
-	#endif
+	HRESULT result = group->QueryInterface( riid, (void**)ppUnk );
 
 	if( FAILED( result ) )
 	{
-		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			server->RemoveGroup( group->getServerHandle(), FALSE );
-		#else
-			server->RemoveGroup( group.get()->getServerHandle(), FALSE );
-		#endif
+		server->RemoveGroup( group->getServerHandle(), FALSE );
 	}
 
 	return result;

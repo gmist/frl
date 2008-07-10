@@ -16,9 +16,9 @@ class OPCServerFactory : public IClassFactory, public os::win32::com::Allocator
 private:
 	// reference counter
 	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-	volatile LONG refCount;
+		volatile LONG refCount;
 	#else
-	LONG refCount;
+		LONG refCount;
 	#endif
 
 	static LONG serverLocks;

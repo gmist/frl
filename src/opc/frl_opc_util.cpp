@@ -35,9 +35,9 @@ char* duplicateString( const char *str )
 		size_t size = strlen( str ) + 1;
 		ret = os::win32::com::allocMemory< char >( size );
 		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		strcpy_s( ret, size, str );
+			strcpy_s( ret, size, str );
 		#else
-		strcpy( ret, str );
+			strcpy( ret, str );
 		#endif
 	}
 	return ret;
@@ -51,9 +51,9 @@ wchar_t* duplicateString( const wchar_t *str )
 		size_t size = wcslen( str ) + 2;
 		ret = os::win32::com::allocMemory< wchar_t >( size );
 		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		wcscpy_s( ret, size, str );
+			wcscpy_s( ret, size, str );
 		#else
-		wcscpy( ret, str );
+			wcscpy( ret, str );
 		#endif
 		
 	}

@@ -88,7 +88,7 @@ struct lower
 		}
 
 		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		ToLowerF& operator = ( const ToLowerF& ){} // for make compiler happy (C4512 )
+			ToLowerF& operator = ( const ToLowerF& ){} // for make compiler happy (C4512 )
 		#endif
 
 		Char operator ()( Char Ch ) const
@@ -111,7 +111,7 @@ struct upper
 		}
 
 		#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		ToUpperF& operator = ( const ToUpperF& ){} // for make compiler happy (C4512)
+			ToUpperF& operator = ( const ToUpperF& ){} // for make compiler happy (C4512)
 		#endif
 
 		Char operator ()( Char Ch ) const

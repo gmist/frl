@@ -19,9 +19,9 @@ class EnumOPCItemAttributes : public IEnumOPCItemAttributes, public os::win32::c
 private:
 	// reference counter
 	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-	volatile LONG refCount;
+		volatile LONG refCount;
 	#else
-	LONG refCount;
+		LONG refCount;
 	#endif
 
 	std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array

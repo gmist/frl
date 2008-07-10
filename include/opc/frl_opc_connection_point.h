@@ -17,9 +17,9 @@ class ConnectionPoint : public IConnectionPoint, public os::win32::com::Allocato
 private:
 	// reference counter
 	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-	volatile LONG refCount;
+		volatile LONG refCount;
 	#else
-	LONG refCount;
+		LONG refCount;
 	#endif
 
 	IID iid_interface;

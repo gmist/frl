@@ -19,45 +19,45 @@ frl::Bool access( const frl::String &fileName, AccessMode mode )
 	case accessRead:
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_waccess_s( fileName.c_str(), 4 ) == 0;
+				return ::_waccess_s( fileName.c_str(), 4 ) == 0;
 			#else
-			return ::_waccess( fileName.c_str(), 4 ) == 0;
+				return ::_waccess( fileName.c_str(), 4 ) == 0;
 			#endif
 		#else
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_access_s( fileName.c_str(), 4 ) == 0;
+				return ::_access_s( fileName.c_str(), 4 ) == 0;
 			#else
-			return ::_access( fileName.c_str(), 4 ) == 0;
+				return ::_access( fileName.c_str(), 4 ) == 0;
 			#endif
 		#endif
 		break;
 	case accessWrite:
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_waccess_s( fileName.c_str(), 2 ) == 0;
+				return ::_waccess_s( fileName.c_str(), 2 ) == 0;
 			#else
-			return ::_waccess( fileName.c_str(), 2 ) == 0;
+				return ::_waccess( fileName.c_str(), 2 ) == 0;
 			#endif
 		#else
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_access_s( fileName.c_str(), 2 ) == 0;
+				return ::_access_s( fileName.c_str(), 2 ) == 0;
 			#else
-			return ::_access( fileName.c_str(), 2 ) == 0;
+				return ::_access( fileName.c_str(), 2 ) == 0;
 			#endif
 		#endif
 			break;
 	case accessReadWrite:
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_waccess_s( fileName.c_str(), 6 ) == 0;
+				return ::_waccess_s( fileName.c_str(), 6 ) == 0;
 			#else
-			return ::_waccess( fileName.c_str(), 6 ) == 0;
+				return ::_waccess( fileName.c_str(), 6 ) == 0;
 			#endif
 		#else
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_access_s( fileName.c_str(), 6 ) == 0;
+				return ::_access_s( fileName.c_str(), 6 ) == 0;
 			#else
-			return ::_access( fileName.c_str(), 6 ) == 0;
+				return ::_access( fileName.c_str(), 6 ) == 0;
 			#endif
 		#endif
 		break;
@@ -71,15 +71,15 @@ frl::Bool access( const frl::String &fileName, AccessMode mode )
 	case accessExist:
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_waccess_s( fileName.c_str(), 0 ) == 0;
+				return ::_waccess_s( fileName.c_str(), 0 ) == 0;
 			#else
-			return ::_waccess( fileName.c_str(), 0 ) == 0;
+				return ::_waccess( fileName.c_str(), 0 ) == 0;
 			#endif
 		#else
 			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-			return ::_access_s( fileName.c_str(), 0 ) == 0;
+				return ::_access_s( fileName.c_str(), 0 ) == 0;
 			#else
-			return ::_access( fileName.c_str(), 0 ) == 0;
+				return ::_access( fileName.c_str(), 0 ) == 0;
 			#endif
 		#endif
 		break;

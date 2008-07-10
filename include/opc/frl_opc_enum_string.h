@@ -35,9 +35,9 @@ private:
 
 	// reference counter
 	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-	volatile LONG refCount;
+		volatile LONG refCount;
 	#else
-	LONG refCount;
+		LONG refCount;
 	#endif
 
 	size_t curIndex;						// current element
