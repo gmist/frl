@@ -1,5 +1,5 @@
-#ifndef frl_opc_common_impl_h_
-#define frl_opc_common_impl_h_
+#ifndef frl_opc_impl_common_h_
+#define frl_opc_impl_common_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "frl_types.h"
@@ -43,4 +43,4 @@ public:
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif // frl_opc_common_impl_h_
+#endif // frl_opc_impl_common_h_

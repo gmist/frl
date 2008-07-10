@@ -1,5 +1,5 @@
-#ifndef frl_opc_sync_io_h_
-#define frl_opc_sync_io_h_
+#ifndef frl_opc_impl_sync_io_h_
+#define frl_opc_impl_sync_io_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
@@ -48,4 +48,4 @@ public:
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_sync_io_h_ */
+#endif // frl_opc_impl_sync_io_h_

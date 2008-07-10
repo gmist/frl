@@ -1,5 +1,5 @@
-#ifndef frl_opc_browse_server_address_space_impl_h_
-#define frl_opc_browse_server_address_space_impl_h_
+#ifndef frl_opc_impl_browse_server_address_space_h_
+#define frl_opc_impl_browse_server_address_space_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <boost/thread/mutex.hpp>
@@ -48,4 +48,4 @@ public:
 }
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_browse_server_address_space_impl_h_ */
+#endif // frl_opc_impl_browse_server_address_space_h_
