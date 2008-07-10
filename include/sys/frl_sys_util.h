@@ -16,4 +16,4 @@ namespace frl
 	}
 }
 
-#endif /* frl_sys_util_h_ */
+#endif // frl_sys_util_h_

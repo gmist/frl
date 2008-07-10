@@ -527,10 +527,6 @@
 				RelativePath="..\..\..\include\frl_unit_test.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\..\include\frl_util_functors.h"
-				>
-			</File>
 			<Filter
 				Name="stream_std"
 				>

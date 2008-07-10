@@ -7,7 +7,6 @@
 #include "opc/frl_opc_enum_group.h"
 #include "frl_exception.h"
 #include "opc/frl_opc_server_factory.h"
-#include "frl_util_functors.h"
 #include "os/win32/com/frl_os_win32_com_uuidof.h"
 #include "opc/frl_opc_group.h"
 #include "opc/address_space/frl_opc_address_space.h"

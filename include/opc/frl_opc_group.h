@@ -3,18 +3,20 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcda.h"
-#include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "opc/impl/frl_opc_impl_item_mgt.h"
 #include "opc/impl/frl_opc_impl_group_state_mgt.h"
 #include "opc/impl/frl_opc_impl_sync_io.h"
 #include "opc/impl/frl_opc_impl_async_io.h"
 #include "opc/impl/frl_opc_impl_item_deadband_mgt.h"
+#include "os/win32/com/frl_os_win32_com_allocator.h"
 
 namespace frl
 {
 namespace opc
 {
+
 class OPCServer;
+
 class Group :
 	public impl::GroupStateMgt,
 	public impl::ItemMgt,
@@ -44,6 +46,7 @@ public:
 	Group();
 	Group( const String &groupName );
 	~Group(); // Destructor
+
 	GroupElem clone();
 }; // class Group
 
@@ -53,4 +56,4 @@ typedef ComPtr< Group > GroupElem;
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_group_h_ */
+#endif // frl_opc_group_h_

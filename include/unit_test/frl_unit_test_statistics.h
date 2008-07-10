@@ -1,5 +1,5 @@
-#ifndef FRL_UNIT_TEST_STATISTICS_H_
-#define FRL_UNIT_TEST_STATISTICS_H_
+#ifndef frl_unit_test_statistics_h_
+#define frl_unit_test_statistics_h_
 
 namespace frl
 {
@@ -15,4 +15,4 @@ struct UnitTestStatistics
 };
 }// FatRat Library
 
-#endif /*FRL_UNIT_TEST_STATISTICS_H_*/
+#endif // frl_unit_test_statistics_h_

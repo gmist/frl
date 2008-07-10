@@ -136,4 +136,4 @@ public:
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_tag_h_*/
+#endif // frl_opc_tag_h_

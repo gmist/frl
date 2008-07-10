@@ -69,4 +69,4 @@ typedef SingletonMeyers< address_space::AddressSpace > opcAddressSpace;
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_address_space_h_*/
+#endif // frl_opc_address_space_h_

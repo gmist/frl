@@ -1,5 +1,5 @@
-#ifndef FRL_UNIT_TEST_H_
-#define FRL_UNIT_TEST_H_
+#ifndef frl_unit_test_h_
+#define frl_unit_test_h_
 
 #include "frl_platform.h"
 
@@ -88,4 +88,4 @@ typedef UnitTest< frl::unit_test::ConsoleOutPolicy > ConsoleUnitTest;
 }// namespace unit_test
 }// FatRat Library
 
-#endif /*FRL_UNIT_TEST_H_*/
+#endif // frl_unit_test_h_

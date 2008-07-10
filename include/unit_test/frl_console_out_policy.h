@@ -1,5 +1,5 @@
-#ifndef FRL_CONSOLE_OUT_POLICY_H_
-#define FRL_CONSOLE_OUT_POLICY_H_
+#ifndef frl_console_out_policy_h_
+#define frl_console_out_policy_h_
 
 #include "frl_platform.h"
 #include "frl_string.h"
@@ -79,4 +79,4 @@ public:
 }; // namespace unit_test
 }; // FatRat Library
 
-#endif /*FRL_CONSOLE_OUT_POLICY_H_*/
+#endif // frl_console_out_policy_h_

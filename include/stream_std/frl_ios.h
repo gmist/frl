@@ -1,5 +1,5 @@
-#ifndef FRL_IOS_H_STREAM_STD_
-#define FRL_IOS_H_STREAM_STD_
+#ifndef frl_ios_h_stream_std_
+#define frl_ios_h_stream_std_
 
 #include "frl_platform.h"
 
@@ -30,4 +30,4 @@ namespace stream_std
 }// namespace stream_std
 }// FatRat Library
 
-#endif /* FRL_IOS_H_STREAM_STD_ */
+#endif // FRL_IOS_H_STREAM_STD_

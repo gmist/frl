@@ -1,5 +1,5 @@
-#ifndef FRL_FSTREAM_H_STREAM_STD_
-#define FRL_FSTREAM_H_STREAM_STD_
+#ifndef frl_fstream_h_stream_std_
+#define frl_fstream_h_stream_std_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -25,4 +25,4 @@ typedef std::basic_filebuf< frl::Char, std::char_traits< frl::Char > > FileBuf;
 }; // namespace stream_std
 }// FatRat Library
 
-#endif /* FRL_STREAM_H_STREAM_STD_ */
+#endif // FRL_STREAM_H_STREAM_STD_

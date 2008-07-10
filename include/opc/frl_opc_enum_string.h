@@ -48,4 +48,4 @@ private:
 } // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
-#endif /* frl_opc_enum_string_h_ */
+#endif // frl_opc_enum_string_h_

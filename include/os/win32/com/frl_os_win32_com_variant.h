@@ -1,5 +1,5 @@
-#ifndef frl_os_win32_com_variant_h__
-#define frl_os_win32_com_variant_h__
+#ifndef frl_os_win32_com_variant_h_
+#define frl_os_win32_com_variant_h_
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <wtypes.h>

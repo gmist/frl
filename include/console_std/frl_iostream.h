@@ -82,4 +82,4 @@ public:
 } // namespace console_std
 } // FatRat Library
 
-#endif /* frl_iostream_h_console_std_ */
+#endif // frl_iostream_h_console_std_

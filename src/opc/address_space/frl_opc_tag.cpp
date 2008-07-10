@@ -1,10 +1,9 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <algorithm>
+#include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_tag.h"
 #include "opc/frl_opc_util.h"
-#include "frl_util_functors.h"
-#include "../dependency/vendors/opc_foundation/opcerror.h"
 
 namespace frl
 {
@@ -12,6 +11,18 @@ namespace opc
 {
 namespace address_space
 {
+
+namespace private_
+{
+
+template< typename T1, typename T2 >
+void MapSecondDeAlloc( const std::pair< T1, T2 > &p )
+{
+	delete p.second;
+}
+
+} // namespace private_
+
 Tag::Tag( Bool is_Branch_, const String &delimiter_ )
 	:	is_Branch( is_Branch_ ),
 		requestedDataType( VT_EMPTY ),
@@ -34,7 +45,7 @@ Tag::Tag( Bool is_Branch_, const String &delimiter_ )
 
 Tag::~Tag()
 {
-	std::for_each( tagsNameCache.begin(), tagsNameCache.end(), util_functors::MapSecondDeAlloc< String, Tag* > );
+	std::for_each( tagsNameCache.begin(), tagsNameCache.end(), private_::MapSecondDeAlloc< String, Tag* > );
 }
 
 void Tag::setID( const String& newID )

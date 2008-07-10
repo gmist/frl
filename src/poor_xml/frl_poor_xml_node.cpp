@@ -1,7 +1,6 @@
 #include <algorithm>
 #include "poor_xml/frl_poor_xml_node.h"
 #include "poor_xml/frl_poor_xml_document.h"
-#include "frl_util_functors.h"
 
 namespace frl
 {

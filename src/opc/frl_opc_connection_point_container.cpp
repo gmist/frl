@@ -4,7 +4,6 @@
 #include <OleCtl.h>
 #include "opc/frl_opc_enum_connection_points.h"
 #include "opc/frl_opc_connection_point.h"
-#include "frl_util_functors.h"
 
 namespace frl
 {

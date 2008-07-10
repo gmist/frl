@@ -1,5 +1,5 @@
-#ifndef FRL_SSTREAM_H_STREAM_STD_
-#define FRL_SSTREAM_H_STREAM_STD_
+#ifndef frl_sstream_h_stream_std_
+#define frl_sstream_h_stream_std_
 
 #if _MSC_VER > 1000
 #pragma once
@@ -24,4 +24,4 @@ namespace stream_std
 }// namespace stream_std
 }// FatRat Library
 
-#endif /* FRL_SSTREAM_H_STREAM_STD_ */
+#endif // frl_sstream_h_stream_std_
