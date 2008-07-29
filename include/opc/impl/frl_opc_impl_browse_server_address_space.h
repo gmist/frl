@@ -20,25 +20,25 @@ public:
 	virtual ~BrowseServerAddressSpace();
 
 	// IOPCBrowseServerAddressSpace implementation
-	HRESULT STDMETHODCALLTYPE QueryOrganization( 
+	STDMETHODIMP QueryOrganization( 
 		/* [out] */ OPCNAMESPACETYPE *pNameSpaceType );
 
-	HRESULT STDMETHODCALLTYPE ChangeBrowsePosition( 
+	STDMETHODIMP ChangeBrowsePosition( 
 		/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 		/* [string][in] */ LPCWSTR szString );
 
-	HRESULT STDMETHODCALLTYPE BrowseOPCItemIDs( 
+	STDMETHODIMP BrowseOPCItemIDs( 
 		/* [in] */ OPCBROWSETYPE dwBrowseFilterType,
 		/* [string][in] */ LPCWSTR szFilterCriteria,
 		/* [in] */ VARTYPE vtDataTypeFilter,
 		/* [in] */ DWORD dwAccessRightsFilter,
 		/* [out] */ LPENUMSTRING *ppIEnumString );
 
-	HRESULT STDMETHODCALLTYPE GetItemID( 
+	STDMETHODIMP GetItemID( 
 		/* [in] */ LPWSTR szItemDataID,
 		/* [string][out] */ LPWSTR *szItemID );
 
-	HRESULT STDMETHODCALLTYPE BrowseAccessPaths( 
+	STDMETHODIMP BrowseAccessPaths( 
 		/* [string][in] */ LPCWSTR szItemID,
 		/* [out] */ LPENUMSTRING *ppIEnumString );
 }; // class BrowseServerAddressSpace

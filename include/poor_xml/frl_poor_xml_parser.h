@@ -4,10 +4,8 @@
 #include "poor_xml/frl_poor_xml_node.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace poor_xml
-{
+namespace frl{ namespace poor_xml{
+
 class Parser
 {
 public:
@@ -24,6 +22,7 @@ public:
 	static size_t findNodeClose( const String &buffer, const String &nodeName, Bool &simple );
 	static size_t findCloseBaracket( const String &buffer, size_t fromPos );
 };
+
 } // namespace poor_xml
 } // FatRat Library
 

@@ -4,16 +4,15 @@
 #include "frl_types.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace time
-{
+namespace frl{ namespace time{
+
 class SysTime
 {
 private:
 	String timeSeparator;
 	String dateSeparator;
 	static inline void fillTM( tm &tmStruct );
+
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
 	FRL_EXCEPTION_CLASS( UnknownError );
@@ -41,8 +40,8 @@ public:
 	String getDateMMDDYY();
 
 	String getTimeHHMMSS();
-
 };
+
 } // namespace time
 } // FatRat Library
 

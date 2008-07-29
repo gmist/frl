@@ -12,21 +12,21 @@ class OPCItemProperties
 public:
 	virtual ~OPCItemProperties();
 
-	HRESULT STDMETHODCALLTYPE QueryAvailableProperties( 
+	STDMETHODIMP QueryAvailableProperties( 
 		/* [in] */ LPWSTR szItemID,
 		/* [out] */ DWORD *pdwCount,
 		/* [size_is][size_is][out] */ DWORD **ppPropertyIDs,
 		/* [size_is][size_is][out] */ LPWSTR **ppDescriptions,
 		/* [size_is][size_is][out] */ VARTYPE **ppvtDataTypes);
 
-	HRESULT STDMETHODCALLTYPE GetItemProperties( 
+	STDMETHODIMP GetItemProperties( 
 		/* [in] */ LPWSTR szItemID,
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ DWORD *pdwPropertyIDs,
 		/* [size_is][size_is][out] */ VARIANT **ppvData,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE LookupItemIDs( 
+	STDMETHODIMP LookupItemIDs( 
 		/* [in] */ LPWSTR szItemID,
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ DWORD *pdwPropertyIDs,

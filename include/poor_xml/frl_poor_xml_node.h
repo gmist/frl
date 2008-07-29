@@ -6,10 +6,8 @@
 #include "frl_types.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace poor_xml
-{
+namespace frl{ namespace poor_xml{
+
 class Parser;
 class Node;
 
@@ -36,6 +34,7 @@ public:
 	boost::shared_ptr< Node > getFirstNode( const String &name_ );
 	boost::shared_ptr< Node > getNode( const String &name_, const String &propertyName, const String &propertyValue );
 }; // class Node
+
 } // namespace poor_xml
 } // FatRat Library
 

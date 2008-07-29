@@ -5,12 +5,7 @@
 #include "opc/address_space/frl_opc_tag.h"
 #include "opc/frl_opc_util.h"
 
-namespace frl
-{
-namespace opc
-{
-namespace address_space
-{
+namespace frl{ namespace opc{ namespace address_space{
 
 namespace private_
 {

@@ -15,14 +15,14 @@ public:
 	virtual ~AsyncIO();
 
 	// IOPCAsyncIO3 implementation
-	HRESULT STDMETHODCALLTYPE Read( 
+	STDMETHODIMP Read( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [in] */ DWORD dwTransactionID,
 		/* [out] */ DWORD *pdwCancelID,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE Write( 
+	STDMETHODIMP Write( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ VARIANT *pItemValues,
@@ -30,21 +30,21 @@ public:
 		/* [out] */ DWORD *pdwCancelID,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE Refresh2( 
+	STDMETHODIMP Refresh2( 
 		/* [in] */ OPCDATASOURCE dwSource,
 		/* [in] */ DWORD dwTransactionID,
 		/* [out] */ DWORD *pdwCancelID);
 
-	HRESULT STDMETHODCALLTYPE Cancel2( 
+	STDMETHODIMP Cancel2( 
 		/* [in] */ DWORD dwCancelID);;
 
-	HRESULT STDMETHODCALLTYPE SetEnable( 
+	STDMETHODIMP SetEnable( 
 		/* [in] */ BOOL bEnable);
 
-	HRESULT STDMETHODCALLTYPE GetEnable( 
+	STDMETHODIMP GetEnable( 
 		/* [out] */ BOOL *pbEnable);
 
-	HRESULT STDMETHODCALLTYPE ReadMaxAge( 
+	STDMETHODIMP ReadMaxAge( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ DWORD *pdwMaxAge,
@@ -52,7 +52,7 @@ public:
 		/* [out] */ DWORD *pdwCancelID,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE WriteVQT( 
+	STDMETHODIMP WriteVQT( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ OPCITEMVQT *pItemVQT,
@@ -60,7 +60,7 @@ public:
 		/* [out] */ DWORD *pdwCancelID,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE RefreshMaxAge( 
+	STDMETHODIMP RefreshMaxAge( 
 		/* [in] */ DWORD dwMaxAge,
 		/* [in] */ DWORD dwTransactionID,
 		/* [out] */ DWORD *pdwCancelID);

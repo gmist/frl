@@ -5,10 +5,7 @@
 #include "opc/frl_opc_group.h"
 #include "opc/frl_opc_async_request.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 RequestManager::RequestManager()
 	:	stopIt( false )

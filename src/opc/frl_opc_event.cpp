@@ -2,10 +2,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_event.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 Event::Event() : handle( CreateEvent(NULL, FALSE, FALSE, NULL) )
 {

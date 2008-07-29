@@ -8,7 +8,11 @@ ItemDeadBandMgt::~ItemDeadBandMgt()
 {
 }
 
-HRESULT STDMETHODCALLTYPE ItemDeadBandMgt::SetItemDeadband( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ FLOAT *pPercentDeadband, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemDeadBandMgt::SetItemDeadband(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][in] */ FLOAT *pPercentDeadband,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -60,7 +64,11 @@ HRESULT STDMETHODCALLTYPE ItemDeadBandMgt::SetItemDeadband( /* [in] */ DWORD dwC
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE ItemDeadBandMgt::GetItemDeadband( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][size_is][out] */ FLOAT **ppPercentDeadband, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemDeadBandMgt::GetItemDeadband(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][size_is][out] */ FLOAT **ppPercentDeadband,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {	
 	if( deleted )
 		return E_FAIL;
@@ -122,7 +130,10 @@ HRESULT STDMETHODCALLTYPE ItemDeadBandMgt::GetItemDeadband( /* [in] */ DWORD dwC
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE ItemDeadBandMgt::ClearItemDeadband( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemDeadBandMgt::ClearItemDeadband(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;

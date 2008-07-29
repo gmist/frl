@@ -14,19 +14,19 @@ class ItemDeadBandMgt
 public:
 	virtual ~ItemDeadBandMgt();
 
-	HRESULT STDMETHODCALLTYPE SetItemDeadband( 
+	STDMETHODIMP SetItemDeadband( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ FLOAT *pPercentDeadband,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE GetItemDeadband( 
+	STDMETHODIMP GetItemDeadband( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][size_is][out] */ FLOAT **ppPercentDeadband,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE ClearItemDeadband( 
+	STDMETHODIMP ClearItemDeadband( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);

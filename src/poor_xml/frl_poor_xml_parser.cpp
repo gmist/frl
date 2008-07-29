@@ -1,10 +1,8 @@
 #include "poor_xml/frl_poor_xml_parser.h"
 #include "poor_xml/frl_poor_xml_document.h"
 
-namespace frl
-{
-namespace poor_xml
-{
+namespace frl{ namespace poor_xml{
+
 frl::String Parser::getFirstNodeName( const String & buffer, size_t &startPos, size_t &endPos )
 {			
 	if( buffer.empty() )
@@ -314,5 +312,6 @@ String Parser::getProperty( const String &buffer, const String &propertyName )
 	String ret = buffer.substr( endPos + 1, tmp - endPos - 1 );
 	return ret; // NRVO
 }
+
 } // namespace poor_xml
 } // FatRat Library

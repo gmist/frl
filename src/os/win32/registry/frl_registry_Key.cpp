@@ -1,19 +1,11 @@
 #include "frl_platform.h"
-
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-
 #include "frl_exception.h"
 #include "os/win32/registry/frl_registry_Key.h"
 #include "os/win32/registry/frl_registry_RootKeys.h"
 
-namespace frl
-{
-namespace os
-{
-namespace win32
-{
-namespace registry
-{
+namespace frl{ namespace os{ namespace win32{ namespace registry{
+
 Key::Key( frl::String name_, frl::String path_, RootKey rootKey_ )
 	:	name( name_ ),
 		path( path_ ),

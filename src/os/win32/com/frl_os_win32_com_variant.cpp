@@ -5,14 +5,8 @@
 #include "opc/frl_opc_util.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace os
-{
-namespace win32
-{
-namespace com
-{
+namespace frl{ namespace os{ namespace win32{ namespace com{
+
 using namespace opc;
 	
 Variant::Variant()

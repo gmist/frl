@@ -6,12 +6,8 @@
 #include "frl_types.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace opc
-{
-namespace address_space
-{
+namespace frl{ namespace opc{ namespace address_space{
+
 class Tag;
 struct TagBrowseInfo;
 class AddrSpaceCrawler
@@ -44,6 +40,7 @@ public:
 	void browse( std::vector< TagBrowseInfo > &arr );
 
 }; // class AddrSpaceCrawler
+
 } // namespace address_space
 } // namespace opc
 } // namespace frl

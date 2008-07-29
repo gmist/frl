@@ -4,10 +4,8 @@
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_group.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 using namespace os::win32::com;
 
 AsyncRequest::AsyncRequest(	GroupElem& group_,

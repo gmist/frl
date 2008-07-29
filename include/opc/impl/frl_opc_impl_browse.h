@@ -15,7 +15,7 @@ public:
 	virtual ~BrowseImpl();
 
 	// IOPCBrowse implementation
-	HRESULT STDMETHODCALLTYPE GetProperties( 
+	STDMETHODIMP GetProperties( 
 		/* [in] */ DWORD dwItemCount,
 		/* [size_is][string][in] */ LPWSTR *pszItemIDs,
 		/* [in] */ BOOL bReturnPropertyValues,
@@ -23,7 +23,7 @@ public:
 		/* [size_is][in] */ DWORD *pdwPropertyIDs,
 		/* [size_is][size_is][out] */ OPCITEMPROPERTIES **ppItemProperties );
 
-	HRESULT STDMETHODCALLTYPE Browse( 
+	STDMETHODIMP Browse( 
 		/* [string][in] */ LPWSTR szItemID,
 		/* [string][out][in] */ LPWSTR *pszContinuationPoint,
 		/* [in] */ DWORD dwMaxElementsReturned,

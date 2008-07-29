@@ -160,10 +160,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\src\opc\frl_opc_group_base.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\src\frl_string.cpp"
 				>
 			</File>
@@ -212,6 +208,10 @@
 				</File>
 				<File
 					RelativePath="..\..\..\src\opc\frl_opc_group.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\src\opc\frl_opc_group_base.cpp"
 					>
 				</File>
 				<File

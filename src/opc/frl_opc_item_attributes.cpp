@@ -4,10 +4,7 @@
 #include "opc/address_space/frl_opc_address_space.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 void ItemAttributes::freeStrings()
 {

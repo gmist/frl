@@ -10,14 +10,8 @@
 #define HKEY_PERFORMANCE_TEXT       (( HKEY ) (ULONG_PTR)((LONG)0x80000050) )
 #endif
 
-namespace frl
-{	
-namespace os
-{
-namespace win32
-{
-namespace registry
-{
+namespace frl{ namespace os{ namespace win32{ namespace registry{
+
 RootKey::RootKey()
 	:	name( FRL_STR("HKEY_CURRENT_USER") ),
 		value( HKEY_CURRENT_USER )

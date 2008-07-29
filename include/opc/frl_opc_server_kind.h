@@ -8,10 +8,8 @@
 #include "frl_type_to_type.h"
 #include "opc/frl_opc_server_type.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class ServerKind
 {
 private:

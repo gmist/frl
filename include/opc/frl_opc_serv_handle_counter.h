@@ -4,10 +4,8 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_util.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class ServerHandleCounter
 {
 private:
@@ -16,7 +14,6 @@ public:
 	ServerHandleCounter()
 		: serverHandle( util::getUniqueServerHandle() )
 	{
-	
 	}
 
 	OPCHANDLE getServerHandle() const

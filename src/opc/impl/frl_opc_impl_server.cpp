@@ -25,7 +25,8 @@ OPCSERVERSTATE OPCServer::getServerState()
 	return serverStatus.dwServerState;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName,
+STDMETHODIMP OPCServer::AddGroup(
+	/* [string][in] */ LPCWSTR szName,
 	/* [in] */ BOOL bActive,
 	/* [in] */ DWORD dwRequestedUpdateRate,
 	/* [in] */ OPCHANDLE hClientGroup,
@@ -61,11 +62,11 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 	}
 	else
 	{
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		name = szName;
-#else	
-		name = wstring2string( szName );
-#endif
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			name = szName;
+		#else
+			name = wstring2string( szName );
+		#endif
 	}
 
 	try
@@ -118,7 +119,10 @@ HRESULT STDMETHODCALLTYPE OPCServer::AddGroup(	/* [string][in] */ LPCWSTR szName
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServer::GetErrorString( /* [in] */ HRESULT dwError, /* [in] */ LCID dwLocale, /* [string][out] */ LPWSTR *ppString )
+STDMETHODIMP OPCServer::GetErrorString(
+	/* [in] */ HRESULT dwError,
+	/* [in] */ LCID dwLocale,
+	/* [string][out] */ LPWSTR *ppString )
 {
 	if( ppString == NULL )
 	{
@@ -128,7 +132,10 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetErrorString( /* [in] */ HRESULT dwError,
 	return util::getErrorString( dwError, dwLocale, &ppString );
 }
 
-HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR szName, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+STDMETHODIMP OPCServer::GetGroupByName(
+	/* [string][in] */ LPCWSTR szName,
+	/* [in] */ REFIID riid,
+	/* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	if( ppUnk == NULL )
 		return E_INVALIDARG;
@@ -139,11 +146,11 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR 
 
 	boost::mutex::scoped_lock guard( scopeGuard );
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	String name = szName;
-#else
-	String name = wstring2string( szName );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String name = szName;
+	#else
+		String name = wstring2string( szName );
+	#endif
 
 	GroupElem group;
 	try
@@ -164,7 +171,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetGroupByName( /* [string][in] */ LPCWSTR 
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **ppServerStatus )
+STDMETHODIMP OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **ppServerStatus )
 {
 	if(ppServerStatus == NULL)
 		return E_INVALIDARG;
@@ -181,7 +188,7 @@ HRESULT STDMETHODCALLTYPE OPCServer::GetStatus( /* [out] */ OPCSERVERSTATUS **pp
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
+STDMETHODIMP OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGroup, /* [in] */ BOOL bForce )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
 	try
@@ -199,7 +206,10 @@ HRESULT STDMETHODCALLTYPE OPCServer::RemoveGroup( /* [in] */ OPCHANDLE hServerGr
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServer::CreateGroupEnumerator( /* [in] */ OPCENUMSCOPE dwScope, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+STDMETHODIMP OPCServer::CreateGroupEnumerator(
+	/* [in] */ OPCENUMSCOPE dwScope,
+	/* [in] */ REFIID riid,
+	/* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	boost::mutex::scoped_lock guard( scopeGuard );
 	if( riid == IID_IEnumUnknown )

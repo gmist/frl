@@ -3,12 +3,7 @@
 #include "io/comm_ports/frl_comm_ports_serial_fh.h"
 #include <boost/noncopyable.hpp>
 
-namespace frl
-{
-namespace io
-{
-namespace comm_ports
-{
+namespace frl{ namespace io{ namespace comm_ports{
 
 class Serial : private boost::noncopyable
 {

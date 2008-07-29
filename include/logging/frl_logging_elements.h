@@ -6,10 +6,7 @@
 #include "time/frl_time_sys_time.h"
 #include "frl_lexical_cast.h"
 
-namespace frl
-{
-namespace logging
-{
+namespace frl{ namespace logging{
 
 enum Level
 {

@@ -4,21 +4,16 @@
 #include "frl_platform.h"
 #include "stream_std/frl_sstream.h"
 
-namespace frl
-{
-namespace time
-{
+namespace frl{ namespace time{
 
 SysTime::SysTime()
 	:	timeSeparator( FRL_STR(":") ),
 		dateSeparator( FRL_STR("-") )
 {
-
 }
 
 SysTime::~SysTime()
 {
-
 }
 
 void SysTime::setDateSeparator( const String &separator )
@@ -132,41 +127,41 @@ frl::String SysTime::getDateYYMMDD()
 frl::String SysTime::getDateDDMMYYYY()
 {
 	FRL_EXCEPT_GUARD();
-	return SysTime::getDay() +
-			dateSeparator +
-			SysTime::getMonth() +
+	return	SysTime::getDay() +
 				dateSeparator +
-			SysTime::getYearYYYY();
+				SysTime::getMonth() +
+				dateSeparator +
+				SysTime::getYearYYYY();
 }
 
 frl::String SysTime::getDateDDMMYY()
 {
 	FRL_EXCEPT_GUARD();
-	return SysTime::getDay() +
-			dateSeparator +
-			SysTime::getMonth() +
-			dateSeparator +
-			SysTime::getYearYY();
+	return	SysTime::getDay() +
+				dateSeparator +
+				SysTime::getMonth() +
+				dateSeparator +
+				SysTime::getYearYY();
 }
 
 frl::String SysTime::getDateMMDDYYYY()
 {
 	FRL_EXCEPT_GUARD();
-	return SysTime::getMonth() +
-			dateSeparator +
-			SysTime::getDay() +
-			dateSeparator +
-			SysTime::getYearYYYY();
+	return	SysTime::getMonth() +
+				dateSeparator +
+				SysTime::getDay() +
+				dateSeparator +
+				SysTime::getYearYYYY();
 }
 
 frl::String SysTime::getDateMMDDYY()
 {
 	FRL_EXCEPT_GUARD();
-	return SysTime::getMonth() +
-			dateSeparator +
-			SysTime::getDay() +
-			dateSeparator +
-			SysTime::getYearYY();
+	return	SysTime::getMonth() +
+				dateSeparator +
+				SysTime::getDay() +
+				dateSeparator +
+				SysTime::getYearYY();
 }
 
 frl::String SysTime::getHours()
@@ -214,5 +209,6 @@ frl::String SysTime::getTimeHHMMSS()
 			timeSeparator +
 			SysTime::getSeconds();
 }
+
 } // namespace time
 } // FatRat Library

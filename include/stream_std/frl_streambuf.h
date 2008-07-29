@@ -8,12 +8,11 @@
 #include <streambuf>
 #include "frl_types.h"
 
-namespace frl
-{
-namespace stream_std
-{
-	typedef std::basic_streambuf< frl::Char, std::char_traits< frl::Char > > Buf;
-}// namespace stream_std
-}// FatRat Library
+namespace frl{ namespace stream_std{
+
+typedef std::basic_streambuf< frl::Char, std::char_traits< frl::Char > > Buf;
+
+} // namespace stream_std
+} // FatRat Library
 
 #endif // frl_streambuf_h_stream_std_

@@ -5,10 +5,8 @@
 #include "frl_exception.h"
 #include "poor_xml/frl_poor_xml_node.h"
 
-namespace frl
-{
-namespace poor_xml
-{
+namespace frl{ namespace poor_xml{
+
 class Document : private boost::noncopyable
 {
 private:
@@ -31,6 +29,7 @@ public:
 	const String& getEncoding();
 	boost::shared_ptr< Node > getRoot();
 };
+
 } // namespace poor_xml
 } // FatRat Library
 

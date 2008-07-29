@@ -1,15 +1,11 @@
 #include "opc/frl_opc_item_hvqt.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 ItemHVQT::ItemHVQT()
 	:	qualitySpecified( False ),
 		timeStampSpecified( False )
 {
-
 }
 
 ItemHVQT::ItemHVQT( const ItemHVQT& other )
@@ -20,7 +16,6 @@ ItemHVQT::ItemHVQT( const ItemHVQT& other )
 		qualitySpecified( other.qualitySpecified ),
 		timeStampSpecified( other.timeStampSpecified )
 {
-
 }
 
 ItemHVQT::ItemHVQT(	OPCHANDLE handle_,
@@ -34,12 +29,10 @@ ItemHVQT::ItemHVQT(	OPCHANDLE handle_,
 		qualitySpecified( True ),
 		timeStampSpecified( True )
 {
-
 }
 
 ItemHVQT::~ItemHVQT()
 {
-
 }
 
 ItemHVQT& ItemHVQT::operator=( const ItemHVQT& rhvl )

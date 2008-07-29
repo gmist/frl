@@ -13,7 +13,7 @@ class GroupStateMgt
 {
 public:
 	virtual ~GroupStateMgt();
-	HRESULT STDMETHODCALLTYPE GetState( 
+	STDMETHODIMP GetState( 
 		/* [out] */ DWORD *pUpdateRate,
 		/* [out] */ BOOL *pActive,
 		/* [string][out] */ LPWSTR *ppName,
@@ -23,7 +23,7 @@ public:
 		/* [out] */ OPCHANDLE *phClientGroup,
 		/* [out] */ OPCHANDLE *phServerGroup);
 
-	HRESULT STDMETHODCALLTYPE SetState( 
+	STDMETHODIMP SetState( 
 		/* [in][unique] */ DWORD *pRequestedUpdateRate,
 		/* [out] */ DWORD *pRevisedUpdateRate,
 		/* [in][unique] */ BOOL *pActive,
@@ -32,19 +32,19 @@ public:
 		/* [in][unique] */ DWORD *pLCID,
 		/* [in][unique] */ OPCHANDLE *phClientGroup);
 
-	HRESULT STDMETHODCALLTYPE SetName( 
+	STDMETHODIMP SetName( 
 		/* [string][in] */ LPCWSTR szName);
 
-	HRESULT STDMETHODCALLTYPE CloneGroup( 
+	STDMETHODIMP CloneGroup( 
 		/* [string][in] */ LPCWSTR szName,
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);
 
-	virtual HRESULT STDMETHODCALLTYPE SetKeepAlive( 
+	virtual STDMETHODIMP SetKeepAlive( 
 		/* [in] */ DWORD dwKeepAliveTime,
 		/* [out] */ DWORD *pdwRevisedKeepAliveTime);
 
-	virtual HRESULT STDMETHODCALLTYPE GetKeepAlive( 
+	virtual STDMETHODIMP GetKeepAlive( 
 		/* [out] */ DWORD *pdwKeepAliveTime);
 }; // class GroupStateMgt
 

@@ -3,22 +3,18 @@
 #include "opc/frl_opc_server_factory.h"
 #include "opc/frl_opc_server.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 LONG OPCServerFactory::serverLocks = 0;
 
 OPCServerFactory::OPCServerFactory()
-	:	refCount( 1 ), outProc( False )
+	:	refCount( 1 ),
+		outProc( False )
 {
-
 }
 
 OPCServerFactory::~OPCServerFactory()
 {
-
 }
 
 STDMETHODIMP OPCServerFactory::QueryInterface( REFIID iid, LPVOID* ppInterface )
@@ -37,12 +33,12 @@ STDMETHODIMP OPCServerFactory::QueryInterface( REFIID iid, LPVOID* ppInterface )
 	return E_NOINTERFACE;
 }
 
-ULONG OPCServerFactory::AddRef( void )
+STDMETHODIMP_(ULONG) OPCServerFactory::AddRef( void )
 {
 	return ::InterlockedIncrement( &refCount );
 }
 
-ULONG OPCServerFactory::Release( void )
+STDMETHODIMP_(ULONG) OPCServerFactory::Release( void )
 {
 	LONG tmp = ::InterlockedDecrement( &refCount );
 	if( tmp == 0 )
@@ -50,7 +46,7 @@ ULONG OPCServerFactory::Release( void )
 	return tmp;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerFactory::CreateInstance(
+STDMETHODIMP OPCServerFactory::CreateInstance(
 	/* [unique][in] */ IUnknown *pUnkOuter,
 	/* [in] */ REFIID riid,
 	/* [iid_is][out] */ void **ppvObject )
@@ -72,7 +68,7 @@ HRESULT STDMETHODCALLTYPE OPCServerFactory::CreateInstance(
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE OPCServerFactory::LockServer( /* [in] */ BOOL fLock )
+STDMETHODIMP OPCServerFactory::LockServer( /* [in] */ BOOL fLock )
 {
 	if( fLock )
 	{
@@ -98,6 +94,7 @@ frl::Bool OPCServerFactory::isServerInUse()
 {
 	return OPCServerFactory::serverLocks > 0;
 }
+
 } // namespace opc
 } // namespace frl
 

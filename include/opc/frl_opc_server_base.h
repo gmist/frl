@@ -7,10 +7,7 @@
 #include "opc/frl_opc_group_manager.h"
 #include "opc/frl_opc_request_manager.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class OPCServerBase : private boost::noncopyable
 {

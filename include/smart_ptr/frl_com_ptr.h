@@ -6,6 +6,7 @@
 
 namespace frl
 {
+
 template< class T >
 class ComPtr
 {

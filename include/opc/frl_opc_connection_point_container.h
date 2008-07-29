@@ -8,10 +8,7 @@
 #include "frl_types.h"
 #include "frl_smart_ptr.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class ConnectionPoint;
 typedef ComPtr< ConnectionPoint > ConnectionPointElem;
@@ -36,12 +33,12 @@ public:
 	HRESULT getCallback( const IID& interface_, IUnknown** callBack_ );
 
 	// IConnectionPointContainer implementation
-	virtual HRESULT STDMETHODCALLTYPE EnumConnectionPoints( 
-	/* [out] */ IEnumConnectionPoints **ppEnum);
+	STDMETHODIMP EnumConnectionPoints( 
+		/* [out] */ IEnumConnectionPoints** ppEnum );
 
-	virtual HRESULT STDMETHODCALLTYPE FindConnectionPoint( 
-	/* [in] */ REFIID riid,
-	/* [out] */ IConnectionPoint **ppCP);
+	STDMETHODIMP FindConnectionPoint( 
+		/* [in] */ REFIID riid,
+		/* [out] */ IConnectionPoint** ppCP );
 
 	virtual void OnAdvise(REFIID riid, DWORD dwCookie) {}
 	virtual void OnUnadvise(REFIID riid, DWORD dwCookie) {}

@@ -9,14 +9,8 @@
 #include "os/win32/registry/frl_registry_RootKey.h"
 #include "os/win32/registry/frl_registry_RootKeys.h"
 
-namespace frl
-{
-namespace os
-{
-namespace win32
-{
-namespace registry
-{
+namespace frl{ namespace os{ namespace win32{ namespace registry{
+
 class Key : private boost::noncopyable
 {
 private:
@@ -64,11 +58,11 @@ public:
 	std::vector< unsigned char > getBinaryValue();
 	const RootKey& getRootKey();
 };
-}
-}
-}
-}
 
-#endif // (FRL_PLATFORM == FRL_PLATFORM_WIN32)
+} // namespace registry
+} // namespace win32
+} // namespace os
+} // FatRat Library
 
+#endif // FRL_PLATFORM_WIN32
 #endif // frl_os_win32_registry_key_h_

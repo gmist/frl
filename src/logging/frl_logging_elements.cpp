@@ -1,16 +1,13 @@
 #include "logging/frl_logging_elements.h"
 
-namespace frl
-{
-namespace logging
-{
+namespace frl{ namespace logging{
+
 LexicalElement::LexicalElement( String msg ) :	text( msg )
 {
 }
 
 LexicalElement::~LexicalElement()
 {
-
 }
 
 frl::String LexicalElement::proccess( const LogParameter& )
@@ -20,7 +17,6 @@ frl::String LexicalElement::proccess( const LogParameter& )
 
 DateElement::~DateElement()
 {
-
 }
 
 frl::String DateElement::proccess( const LogParameter& )
@@ -30,7 +26,6 @@ frl::String DateElement::proccess( const LogParameter& )
 
 TimeElement::~TimeElement()
 {
-
 }
 
 frl::String TimeElement::proccess( const LogParameter& )
@@ -40,7 +35,6 @@ frl::String TimeElement::proccess( const LogParameter& )
 
 LevelElement::~LevelElement()
 {
-
 }
 
 frl::String LevelElement::proccess( const LogParameter &param )
@@ -69,8 +63,8 @@ frl::String MsgElement::proccess( const LogParameter &param )
 
 MsgElement::~MsgElement()
 {
-
 }
+
 frl::String EndlElement::proccess( const LogParameter& )
 {
 	return FRL_NEW_LINE;
@@ -78,7 +72,6 @@ frl::String EndlElement::proccess( const LogParameter& )
 
 EndlElement::~EndlElement()
 {
-
 }
 
 frl::String FileElement::proccess( const LogParameter &param )
@@ -88,8 +81,8 @@ frl::String FileElement::proccess( const LogParameter &param )
 
 FileElement::~FileElement()
 {
-
 }
+
 frl::String LineElement::proccess( const LogParameter &param )
 {
 	return lexicalCast< ULong, String >( param.line );
@@ -97,7 +90,6 @@ frl::String LineElement::proccess( const LogParameter &param )
 
 LineElement::~LineElement()
 {
-
 }
 
 frl::String FunctionElement::proccess( const LogParameter &param )
@@ -107,8 +99,8 @@ frl::String FunctionElement::proccess( const LogParameter &param )
 
 FunctionElement::~FunctionElement()
 {
-
 }
+
 frl::String ThreadIDElement::proccess( const LogParameter &param )
 {
 	return lexicalCast< ULong, String >( param.thread_id );
@@ -116,7 +108,7 @@ frl::String ThreadIDElement::proccess( const LogParameter &param )
 
 ThreadIDElement::~ThreadIDElement()
 {
-
 }
+
 } // namespace logging
 } // FatRat Library

@@ -2,10 +2,8 @@
 #include "poor_xml/frl_poor_xml_node.h"
 #include "poor_xml/frl_poor_xml_document.h"
 
-namespace frl
-{
-namespace poor_xml
-{
+namespace frl{ namespace poor_xml{
+
 Node::Node()
 {
 }
@@ -73,5 +71,6 @@ boost::shared_ptr< Node > Node::getNode( const String &name_, const String &prop
 	}
 	FRL_THROW_S_CLASS( Node::NodeNotFound );
 }
+
 } // namespace poor_xml
 } // FatRat Library

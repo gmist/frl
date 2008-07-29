@@ -1,9 +1,6 @@
 #include "logging/frl_logging_writers.h"
 
-namespace frl
-{
-namespace logging
-{
+namespace frl{ namespace logging{
 
 namespace private_
 {
@@ -15,7 +12,7 @@ String getStr( const logging::ListLogElements &elements, const frl::logging::Log
 		tmp += (*it)->proccess( param );
 	return tmp;
 }
-}
+} // namespace private_
 
 boost::mutex ConsoleWriter::guard;
 

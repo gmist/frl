@@ -1,19 +1,26 @@
 #include "opc/frl_opc_enum_connection_points.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include <algorithm>
 #include "opc/frl_opc_connection_point.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 EnumConnectionPoints::EnumConnectionPoints()
-	:	refCount( 0 ), currentIndex( 0 )
+	:	refCount( 0 ),
+		currentIndex( 0 )
 {
 }
 
 EnumConnectionPoints::EnumConnectionPoints( const ConnectionPointList &pointsList )
-	:	refCount( 0 ), currentIndex( 0 ), points( pointsList )
+	:	refCount( 0 ),
+		currentIndex( 0 ),
+		points( pointsList.begin(), pointsList.end() )
+{
+}
+
+EnumConnectionPoints::EnumConnectionPoints( const EnumConnectionPoints& other )
+	:	refCount( 0 ),
+		currentIndex( other.currentIndex ),
+		points( other.points )
 {
 }
 
@@ -57,76 +64,75 @@ ULONG EnumConnectionPoints::Release( void )
 	return tmp;
 }
 
-HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Next( /* [in] */ ULONG cConnections, /* [length_is][size_is][out] */ LPCONNECTIONPOINT *ppCP, /* [out] */ ULONG *pcFetched )
+STDMETHODIMP EnumConnectionPoints::Next( ULONG celt, LPCONNECTIONPOINT* rgelt, ULONG* pceltFetched )
 {
-	if (pcFetched == NULL)
-		return E_INVALIDARG;
+	if( pceltFetched )
+	{
+		*pceltFetched = 0;
+	}
 
-	*pcFetched = 0;
-
-	if (cConnections == 0)
-		return S_OK;
+	if( rgelt == NULL || ( celt != 1 && pceltFetched == NULL) )
+	{
+		return E_POINTER;
+	}
 
 	if( currentIndex >= points.size() )
 		return S_FALSE;
 
-	ULONG i = (ULONG)currentIndex;
-	ConnectionPointList::iterator end = points.end();
-	for( ConnectionPointList::iterator it = points.begin(); i < cConnections; ++i, ++it )
+	size_t i = currentIndex;
+	size_t j = 0;
+	for( ; i < points.size() && j < celt; ++i, ++j )
 	{
-		if( it == end )
-		{
-			*pcFetched = i;
-			currentIndex = points.size();
-			return S_FALSE;
-		}
-		ppCP[i] = (*it).get();
-		ppCP[i]->AddRef();
+		rgelt[j] = points[i].get();
+		rgelt[j]->AddRef();
+		if( pceltFetched )
+			++(*pceltFetched);
 	}
-	*pcFetched = i;
+
+	if( j < celt )
+	{
+		currentIndex = points.size();
+		return S_FALSE;
+	}
 	currentIndex = i;
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Skip( /* [in] */ ULONG cConnections )
+STDMETHODIMP EnumConnectionPoints::Skip( ULONG celt )
 {
-	if ( currentIndex + cConnections > points.size())
+	if ( currentIndex + celt > points.size())
 	{
 		currentIndex = points.size();
 		return S_FALSE;
 	}
 
-	currentIndex += cConnections;
+	currentIndex += celt;
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Reset( void )
+STDMETHODIMP EnumConnectionPoints::Reset()
 {
 	currentIndex = 0;
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE EnumConnectionPoints::Clone( /* [out] */ IEnumConnectionPoints **ppEnum )
+STDMETHODIMP EnumConnectionPoints::Clone( IEnumConnectionPoints** ppEnum )
 {
 	if( ppEnum == NULL )
 		return E_INVALIDARG;
 
-	EnumConnectionPoints *pNewEnum = new EnumConnectionPoints();
+	EnumConnectionPoints *pNewEnum = new EnumConnectionPoints( *this );
 	if (pNewEnum == NULL)
 	{
 		*ppEnum=NULL;
 		return E_OUTOFMEMORY;
 	}
-	ConnectionPointList::iterator end = points.end();
-	for( ConnectionPointList::iterator it = points.begin(); it != end;  ++it )
-	{
-		pNewEnum->points.push_back( *it );
-	}
-	pNewEnum->currentIndex = currentIndex;
-	HRESULT hResult = pNewEnum->QueryInterface( IID_IEnumConnectionPoints, (void**) ppEnum );
-	return hResult;
-}
 
+	HRESULT res = pNewEnum->QueryInterface( IID_IEnumConnectionPoints, (void**) ppEnum );
+	if( FAILED( res ) )
+		delete pNewEnum;
+	return res;
+}
 
 } // namespace opc
 } // FatRat Library

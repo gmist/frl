@@ -7,14 +7,7 @@
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace os
-{
-namespace win32
-{
-namespace com
-{
+namespace frl{ namespace os{ namespace win32{ namespace com{
 
 class Variant : public Allocator
 {

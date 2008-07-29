@@ -3,14 +3,11 @@
 #include "frl_lexical_cast.h"
 #include "os/win32/registry/frl_registry_Key.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 ServerKind::ServerKind( const ServerType& serverType )
 	:	type( serverType )
 {
-
 }
 
 void ServerKind::setProgID( const String &newProgID )

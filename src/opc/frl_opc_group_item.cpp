@@ -6,10 +6,8 @@
 
 using namespace frl::opc::address_space;
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 GroupItem::GroupItem()
 	:	clientHandle( 0 ),
 		actived( False ),
@@ -22,7 +20,6 @@ GroupItem::GroupItem()
 
 GroupItem::~GroupItem()
 {
-
 }
 
 void GroupItem::Init( OPCITEMDEF &itemDef )

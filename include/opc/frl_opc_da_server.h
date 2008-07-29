@@ -5,10 +5,7 @@
 #include "frl_types.h"
 #include "opc/frl_opc_server_kind.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class DAServer
 	:	public ServerKind

@@ -4,17 +4,16 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <OCIdl.h>
 #include <list>
+#include <vector>
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "frl_smart_ptr.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class ConnectionPoint;
 typedef ComPtr< ConnectionPoint > ConnectionPointElem;
 typedef std::list< ConnectionPointElem > ConnectionPointList;
+typedef std::vector< ConnectionPointElem > ConnectionPointVec;
 
 class EnumConnectionPoints : public IEnumConnectionPoints, public os::win32::com::Allocator
 {
@@ -27,31 +26,24 @@ private:
 	#endif
 
 	size_t currentIndex;	//Current element
-	ConnectionPointList points;
+	ConnectionPointVec points;
 public:
 	
 	EnumConnectionPoints();
-	EnumConnectionPoints( const ConnectionPointList &pointsList );
+	EnumConnectionPoints( const EnumConnectionPoints& other );
+	EnumConnectionPoints( const ConnectionPointList& pointsList );
 	virtual ~EnumConnectionPoints();
 
 	// IUnknown implementation
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface);
-	STDMETHODIMP_(ULONG) AddRef( void);
-	STDMETHODIMP_(ULONG) Release( void);
+	STDMETHODIMP_(ULONG) AddRef( void );
+	STDMETHODIMP_(ULONG) Release( void );
 
 	// IEnumConnectionPoints implementation
-	virtual HRESULT STDMETHODCALLTYPE Next( 
-		/* [in] */ ULONG cConnections,
-		/* [length_is][size_is][out] */ LPCONNECTIONPOINT *ppCP,
-		/* [out] */ ULONG *pcFetched);
-
-	virtual HRESULT STDMETHODCALLTYPE Skip( 
-		/* [in] */ ULONG cConnections);
-
-	virtual HRESULT STDMETHODCALLTYPE Reset( void);
-
-	virtual HRESULT STDMETHODCALLTYPE Clone( 
-		/* [out] */ IEnumConnectionPoints **ppEnum);
+	STDMETHODIMP Next( ULONG celt, LPCONNECTIONPOINT* rgelt, ULONG* pceltFetched );
+	STDMETHODIMP Skip( ULONG celt );
+	STDMETHODIMP Reset();
+	STDMETHODIMP Clone( IEnumConnectionPoints** ppEnum );
 };
 
 } // namespace opc

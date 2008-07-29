@@ -3,14 +3,8 @@
 #include <ObjBase.h>
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace os
-{
-namespace win32
-{
-namespace com
-{
+namespace frl{ namespace os{ namespace win32{ namespace com{
+
 void freeMemory( void *ptr )
 {
 	CoTaskMemFree( ptr );

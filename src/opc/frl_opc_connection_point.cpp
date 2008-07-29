@@ -3,10 +3,8 @@
 #include <OleCtl.h>
 #include "opc/frl_opc_connection_point_container.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 ConnectionPoint::ConnectionPoint()
 	:	refCount( 0 ), iid_interface( GUID_NULL), container( NULL ), callBack( NULL ), cookie( 0 )
 {
@@ -57,7 +55,7 @@ const IID& ConnectionPoint::getInterface()
 	return iid_interface;
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPoint::GetConnectionInterface( /* [out] */ IID *pIID )
+STDMETHODIMP ConnectionPoint::GetConnectionInterface( /* [out] */ IID *pIID )
 {
 	if (pIID == NULL)
 		return E_INVALIDARG;
@@ -66,7 +64,8 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::GetConnectionInterface( /* [out] */ I
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPoint::GetConnectionPointContainer( /* [out] */ IConnectionPointContainer **ppCPC )
+STDMETHODIMP ConnectionPoint::GetConnectionPointContainer(
+	/* [out] */ IConnectionPointContainer **ppCPC )
 {
 	if (ppCPC == NULL)
 		return E_INVALIDARG;
@@ -77,7 +76,9 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::GetConnectionPointContainer( /* [out]
 	return E_FAIL;
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPoint::Advise( /* [in] */ IUnknown *pUnkSink, /* [out] */ DWORD *pdwCookie )
+STDMETHODIMP ConnectionPoint::Advise(
+	/* [in] */ IUnknown *pUnkSink,
+	/* [out] */ DWORD *pdwCookie )
 {
 	if( pUnkSink == NULL || pdwCookie == NULL )
 		return E_POINTER;
@@ -108,7 +109,7 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::Advise( /* [in] */ IUnknown *pUnkSink
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPoint::Unadvise( /* [in] */ DWORD dwCookie )
+STDMETHODIMP ConnectionPoint::Unadvise( /* [in] */ DWORD dwCookie )
 {
 	if( cookie != dwCookie || callBack == NULL )
 		return CONNECT_E_NOCONNECTION;
@@ -127,7 +128,7 @@ HRESULT STDMETHODCALLTYPE ConnectionPoint::Unadvise( /* [in] */ DWORD dwCookie )
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPoint::EnumConnections( /* [out] */ IEnumConnections **ppEnum )
+STDMETHODIMP ConnectionPoint::EnumConnections( /* [out] */ IEnumConnections **ppEnum )
 {
 	if( ppEnum == NULL )
 		return E_POINTER;

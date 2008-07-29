@@ -12,10 +12,8 @@
 #include <boost/noncopyable.hpp>
 
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class Group;
 typedef ComPtr< Group > GroupElem;
 

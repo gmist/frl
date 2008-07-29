@@ -6,14 +6,8 @@
 #include "frl_types.h"
 #include "frl_string.h"
 
-namespace frl
-{
-namespace os
-{
-namespace win32
-{
-namespace registry
-{
+namespace frl{ namespace os{ namespace win32{ namespace registry{
+
 class RootKey
 {
 private:
@@ -33,11 +27,11 @@ public:
 	frl::String toString();
 	frl::Bool operator == ( const RootKey &rhs );
 }; // RootKey
+
 } // namespace registry
 } // namespace win32
 } // namespace os
-} // frl
+} // FatRat Library
 
-#endif // #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-
+#endif // FRL_PLATFORM_WIN32
 #endif // frl_os_win32_registry_rootkey_h_

@@ -23,7 +23,7 @@ public:
 	OPCSERVERSTATE getServerState();
 
 	// IOPCServer implementation
-	HRESULT STDMETHODCALLTYPE AddGroup( 
+	STDMETHODIMP AddGroup( 
 		/* [string][in] */ LPCWSTR szName,
 		/* [in] */ BOOL bActive,
 		/* [in] */ DWORD dwRequestedUpdateRate,
@@ -36,24 +36,24 @@ public:
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);
 
-	HRESULT STDMETHODCALLTYPE GetErrorString( 
+	STDMETHODIMP GetErrorString( 
 		/* [in] */ HRESULT dwError,
 		/* [in] */ LCID dwLocale,
 		/* [string][out] */ LPWSTR *ppString);
 
-	HRESULT STDMETHODCALLTYPE GetGroupByName( 
+	STDMETHODIMP GetGroupByName( 
 		/* [string][in] */ LPCWSTR szName,
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);
 
-	HRESULT STDMETHODCALLTYPE GetStatus( 
+	STDMETHODIMP GetStatus( 
 		/* [out] */ OPCSERVERSTATUS **ppServerStatus);
 
-	HRESULT STDMETHODCALLTYPE RemoveGroup( 
+	STDMETHODIMP RemoveGroup( 
 		/* [in] */ OPCHANDLE hServerGroup,
 		/* [in] */ BOOL bForce);
 
-	HRESULT STDMETHODCALLTYPE CreateGroupEnumerator( 
+	STDMETHODIMP CreateGroupEnumerator( 
 		/* [in] */ OPCENUMSCOPE dwScope,
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);

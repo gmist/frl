@@ -12,8 +12,7 @@ AsyncIO::~AsyncIO()
 {
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::Read(
+STDMETHODIMP AsyncIO::Read(
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ OPCHANDLE *phServer,
 	/* [in] */ DWORD dwTransactionID,
@@ -68,8 +67,7 @@ AsyncIO::Read(
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::Write(
+STDMETHODIMP AsyncIO::Write(
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ OPCHANDLE *phServer,
 	/* [size_is][in] */ VARIANT *pItemValues,
@@ -125,8 +123,7 @@ AsyncIO::Write(
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::Refresh2(
+STDMETHODIMP AsyncIO::Refresh2(
 	/* [in] */ OPCDATASOURCE dwSource,
 	/* [in] */ DWORD dwTransactionID,
 	/* [out] */ DWORD *pdwCancelID )
@@ -173,7 +170,7 @@ AsyncIO::Refresh2(
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE
+STDMETHODIMP
 AsyncIO::Cancel2( /* [in] */ DWORD dwCancelID )
 {
 	if( deleted )
@@ -187,8 +184,7 @@ AsyncIO::Cancel2( /* [in] */ DWORD dwCancelID )
 	return E_FAIL;
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::SetEnable( /* [in] */ BOOL bEnable )
+STDMETHODIMP AsyncIO::SetEnable( /* [in] */ BOOL bEnable )
 {
 	if( deleted )
 		return E_FAIL;
@@ -205,8 +201,7 @@ AsyncIO::SetEnable( /* [in] */ BOOL bEnable )
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::GetEnable( /* [out] */ BOOL *pbEnable )
+STDMETHODIMP AsyncIO::GetEnable( /* [out] */ BOOL *pbEnable )
 {
 	if( deleted )
 		return E_FAIL;
@@ -224,8 +219,7 @@ AsyncIO::GetEnable( /* [out] */ BOOL *pbEnable )
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::ReadMaxAge(
+STDMETHODIMP AsyncIO::ReadMaxAge(
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ OPCHANDLE *phServer,
 	/* [size_is][in] */ DWORD *pdwMaxAge,
@@ -237,7 +231,7 @@ AsyncIO::ReadMaxAge(
 	return Read( dwCount, phServer, dwTransactionID, pdwCancelID, ppErrors );
 }
 
-HRESULT STDMETHODCALLTYPE AsyncIO::WriteVQT(
+STDMETHODIMP AsyncIO::WriteVQT(
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ OPCHANDLE *phServer,
 	/* [size_is][in] */ OPCITEMVQT *pItemVQT,
@@ -321,8 +315,7 @@ HRESULT STDMETHODCALLTYPE AsyncIO::WriteVQT(
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE
-AsyncIO::RefreshMaxAge(
+STDMETHODIMP AsyncIO::RefreshMaxAge(
 	/* [in] */ DWORD dwMaxAge,
 	/* [in] */ DWORD dwTransactionID,
 	/* [out] */ DWORD *pdwCancelID )

@@ -13,12 +13,7 @@
 #endif
 
 
-namespace frl
-{
-namespace opc
-{
-namespace util
-{
+namespace frl{ namespace opc{ namespace util{
 
 OPCHANDLE getUniqueServerHandle();
 String getUniqueName();

@@ -4,9 +4,6 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <vector>
 #include "../dependency/vendors/opc_foundation/opcda.h"
-#include "opc/frl_opc_group_item.h"
-#include "opc/address_space/frl_opc_address_space.h"
-#include "opc/frl_opc_util.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "opc/frl_opc_item_attributes.h"
 

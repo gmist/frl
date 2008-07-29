@@ -9,10 +9,8 @@
 #include <boost/noncopyable.hpp>
 #include <conio.h>
 
-namespace frl
-{
-namespace unit_test
-{
+namespace frl{ namespace unit_test{
+
 // Check function prototype
 typedef frl::Bool ( *CHECK_FUNC ) ( void  );
 

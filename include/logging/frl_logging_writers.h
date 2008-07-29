@@ -5,10 +5,7 @@
 #include "console_std/frl_iostream.h"	
 #include "io/fs/frl_fs_fn.h"
 
-namespace frl
-{
-namespace logging
-{
+namespace frl{ namespace logging{
 
 namespace private_
 {

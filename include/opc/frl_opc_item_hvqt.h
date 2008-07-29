@@ -4,10 +4,8 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class ItemHVQT
 {
 private:

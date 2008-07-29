@@ -1,9 +1,6 @@
 #include "console_std/frl_iostream.h"
 
-namespace frl
-{
-namespace console_std
-{
+namespace frl{ namespace console_std{
 
 ColorOut::ColorOut()
 {

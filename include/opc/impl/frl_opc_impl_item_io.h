@@ -15,7 +15,7 @@ public:
 	virtual ~OPCItemIO();
 
 	// IOPCItemIO implementation
-	HRESULT STDMETHODCALLTYPE Read( 
+	STDMETHODIMP Read( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ LPCWSTR *pszItemIDs,
 		/* [size_is][in] */ DWORD *pdwMaxAge,
@@ -24,7 +24,7 @@ public:
 		/* [size_is][size_is][out] */ FILETIME **ppftTimeStamps,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE WriteVQT( 
+	STDMETHODIMP WriteVQT( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ LPCWSTR *pszItemIDs,
 		/* [size_is][in] */ OPCITEMVQT *pItemVQT,

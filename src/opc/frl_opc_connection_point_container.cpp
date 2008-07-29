@@ -5,10 +5,8 @@
 #include "opc/frl_opc_enum_connection_points.h"
 #include "opc/frl_opc_connection_point.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 ConnectionPointContainer::ConnectionPointContainer()
 {
 }
@@ -17,7 +15,8 @@ ConnectionPointContainer::~ConnectionPointContainer()
 {
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPointContainer::EnumConnectionPoints( /* [out] */ IEnumConnectionPoints **ppEnum )
+STDMETHODIMP ConnectionPointContainer::EnumConnectionPoints(
+	/* [out] */ IEnumConnectionPoints **ppEnum )
 {
 	if (ppEnum == NULL)
 		return E_POINTER;
@@ -32,7 +31,9 @@ HRESULT STDMETHODCALLTYPE ConnectionPointContainer::EnumConnectionPoints( /* [ou
 	return hResult;
 }
 
-HRESULT STDMETHODCALLTYPE ConnectionPointContainer::FindConnectionPoint( /* [in] */ REFIID riid, /* [out] */ IConnectionPoint **ppCP )
+STDMETHODIMP ConnectionPointContainer::FindConnectionPoint(
+	/* [in] */ REFIID riid,
+	/* [out] */ IConnectionPoint **ppCP )
 {
 	if( ppCP == NULL )
 		return E_POINTER;
@@ -101,6 +102,7 @@ HRESULT ConnectionPointContainer::getCallback( const IID& interface_, IUnknown**
 	}
 	return E_FAIL;
 }
+
 } // namespace opc
 } // FatRat Library
 

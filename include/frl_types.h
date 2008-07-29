@@ -10,122 +10,122 @@
 	#include <Windows.h>
 #endif // FRL_PLATFORM_WIN32
 
-namespace frl
-{
-	// Redefinitions types of variables
-	typedef unsigned short		UShort;
-	typedef short						Short;
-	typedef unsigned int			UInt;
-	typedef int							Int;
-	typedef float						Float;
-	typedef double					Double;
+namespace frl{
 
-	// Redefinitions variables type of "long"
-	#if( FRL_COMPILER == FRL_COMPILER_MSVC )
-		typedef unsigned __int64		ULong;
-		typedef __int64					Long;
-	#elif( FRL_COMPILER == FRL_COMPILER_MINGW )
-		typedef unsigned long long ULong;
-		typedef long long				Long;
-	#elif ( FRL_COMPILER == FRL_COMPILER_GNUC )
-		typedef unsigned long long	ULong;
-		typedef long long				Long;
-	#else
-		#pragma error "frl::Long and frl::ULong not defined for this compiler or architecture!"
-	#endif
+// Redefinitions types of variables
+typedef unsigned short		UShort;
+typedef short						Short;
+typedef unsigned int			UInt;
+typedef int							Int;
+typedef float						Float;
+typedef double					Double;
 
-	// Redefinitions variables types of *char*
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		typedef wchar_t Char;
-		typedef wchar_t SChar;
-		typedef wchar_t UChar;
-		#define FRL_STR(str) L##str
-	#else // ! UNICODE
-		typedef char Char;
-		typedef signed char SChar;
-		typedef unsigned char UChar;
-		#define FRL_STR(str) str
-	#endif	// UNICODE
+// Redefinitions variables type of "long"
+#if( FRL_COMPILER == FRL_COMPILER_MSVC )
+	typedef unsigned __int64		ULong;
+	typedef __int64					Long;
+#elif( FRL_COMPILER == FRL_COMPILER_MINGW )
+	typedef unsigned long long ULong;
+	typedef long long				Long;
+#elif ( FRL_COMPILER == FRL_COMPILER_GNUC )
+	typedef unsigned long long	ULong;
+	typedef long long				Long;
+#else
+	#pragma error "frl::Long and frl::ULong not defined for this compiler or architecture!"
+#endif
 
-	// Redefinition variables type of string
-	typedef std::basic_string< frl::Char > String;
+// Redefinitions variables types of *char*
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	typedef wchar_t Char;
+	typedef wchar_t SChar;
+	typedef wchar_t UChar;
+	#define FRL_STR(str) L##str
+#else // ! UNICODE
+	typedef char Char;
+	typedef signed char SChar;
+	typedef unsigned char UChar;
+	#define FRL_STR(str) str
+#endif	// UNICODE
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		typedef std::wfstream StdFile;
-		typedef std::wifstream StdInFile;
-		typedef std::wofstream StdOutFile;
-	#else // ! UNICODE
-		typedef std::fstream StdFile;
-		typedef std::ifstream StdInFile;
-		typedef std::ofstream StdOutFile;
-	#endif
+// Redefinition variables type of string
+typedef std::basic_string< frl::Char > String;
 
-	// Redefinitions variables type of bool
-	typedef bool Bool;
-	const frl::Bool True = true;
-	const frl::Bool False = false;
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	typedef std::wfstream StdFile;
+	typedef std::wifstream StdInFile;
+	typedef std::wofstream StdOutFile;
+#else // ! UNICODE
+	typedef std::fstream StdFile;
+	typedef std::ifstream StdInFile;
+	typedef std::ofstream StdOutFile;
+#endif
 
-	#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+// Redefinitions variables type of bool
+typedef bool Bool;
+const frl::Bool True = true;
+const frl::Bool False = false;
+
+#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
 	typedef unsigned long TimeOut;
-	#endif // __linux__
+#endif // __linux__
 
-	#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 	typedef DWORD TimeOut;
-	#endif // WIN32
+#endif // WIN32
 
 
-	namespace thread
-	{
-		#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
-		typedef void* ( *FRL_LPTHREAD_START_ROUTINE ) ( void *thread_param );
+namespace thread{
 
-		// Переопределяем переменную идентификатор нити
-		typedef pthread_t ThreadDescriptor;
+#if( FRL_PLATFORM == FRL_PLATFORM_LINUX )
+	typedef void* ( *FRL_LPTHREAD_START_ROUTINE ) ( void *thread_param );
 
-		// Define invalid thread descriptor
-		const ThreadDescriptor InvalidThreadDescriptor = 0;
-		#endif // FRL_PLATFORM_LINUX
+	// Переопределяем переменную идентификатор нити
+	typedef pthread_t ThreadDescriptor;
 
-		#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-		typedef LPTHREAD_START_ROUTINE FRL_LPTHREAD_START_ROUTINE;
+	// Define invalid thread descriptor
+	const ThreadDescriptor InvalidThreadDescriptor = 0;
+#endif // FRL_PLATFORM_LINUX
 
-		// Переопределяем переменную идентификатор нити
-		typedef HANDLE ThreadDescriptor;
+#if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+	typedef LPTHREAD_START_ROUTINE FRL_LPTHREAD_START_ROUTINE;
 
-		// Define invalid thread descriptor
-		const ThreadDescriptor InvalidThreadDescriptor = INVALID_HANDLE_VALUE;
-		# endif // FRL_PLATFORM_WIN32
-	} // namespace tread
+	// Переопределяем переменную идентификатор нити
+	typedef HANDLE ThreadDescriptor;
 
-	namespace io
-	{
-		// Definitions types variables for works with file system
-		namespace fs
-		{
-			#if( FRL_PLATFORM ==  FRL_PLATFORM_LINUX )
-				typedef frl::Int FileDerscriptor;	// File handle
-				typedef frl::Long FileOffset;		// File offset (position)
-				typedef size_t FileRWCount; // Number read-write simbols in read-write operations
+	// Define invalid thread descriptor
+	const ThreadDescriptor InvalidThreadDescriptor = INVALID_HANDLE_VALUE;
+# endif // FRL_PLATFORM_WIN32
 
-				const Descriptor InvalidFileDescriptor = -1;	// Invalid file handle
-				const Offset InvalidFileOffset = -1;		// Invalid file offset (position)
-			#endif // FRL_PLATFORM_LINUX
+} // namespace tread
 
-			#if( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
-				typedef HANDLE FileDescriptor;	// File handle
-				typedef Long FileOffset;
-				typedef DWORD FileRWCount;
+namespace io{ namespace fs{
 
-				const FileDescriptor InvalidFileDescriptor = INVALID_HANDLE_VALUE;
-				const FileOffset InvalidFileOffset = -1;
-			#endif // FRL_PLATFORM_WIN32
-		}	// namespace fs
-	} // namespace io
+// Definitions types variables for works with file system
+#if( FRL_PLATFORM ==  FRL_PLATFORM_LINUX )
+	typedef frl::Int FileDerscriptor;	// File handle
+	typedef frl::Long FileOffset;		// File offset (position)
+	typedef size_t FileRWCount; // Number read-write simbols in read-write operations
 
-	namespace time
-	{
-		typedef frl::Long Time;
-	} // namespace time
+	const Descriptor InvalidFileDescriptor = -1;	// Invalid file handle
+	const Offset InvalidFileOffset = -1;		// Invalid file offset (position)
+#endif // FRL_PLATFORM_LINUX
+
+#if( FRL_PLATFORM ==  FRL_PLATFORM_WIN32 )
+	typedef HANDLE FileDescriptor;	// File handle
+	typedef Long FileOffset;
+	typedef DWORD FileRWCount;
+
+	const FileDescriptor InvalidFileDescriptor = INVALID_HANDLE_VALUE;
+	const FileOffset InvalidFileOffset = -1;
+#endif // FRL_PLATFORM_WIN32
+
+}	// namespace fs
+} // namespace io
+
+namespace time
+{
+	typedef frl::Long Time;
+} // namespace time
 
 } // FatRat Library
 

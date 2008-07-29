@@ -6,10 +6,7 @@
 #include <boost/noncopyable.hpp>
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class Event : private boost::noncopyable
 {

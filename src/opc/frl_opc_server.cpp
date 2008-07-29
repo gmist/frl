@@ -11,10 +11,7 @@
 #include "opc/frl_opc_group.h"
 #include "opc/address_space/frl_opc_address_space.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 OPCServer::OPCServer()
 	:	refCount( 0 )

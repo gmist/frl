@@ -5,10 +5,8 @@
 #include "../dependency/vendors/opc_foundation/opcda.h"
 #include "opc/frl_opc_server_factory.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 DAServer::DAServer( const ServerType& serverType )
 	:	ServerKind( serverType )
 {

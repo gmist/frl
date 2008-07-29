@@ -18,16 +18,15 @@
 	#include "stream_std\frl_streambuf.h"
 #endif // WIN32
 
-namespace frl
-{
-namespace stream_std
-{
+namespace frl{ namespace stream_std{
+
 #if defined ( UNICODE ) || defined ( _UNICODE )
 	typedef std::wstreampos Pos;
 #else
 	typedef std::streampos Pos;
 #endif
-}// namespace stream_std
-}// FatRat Library
+
+} // namespace stream_std
+} // FatRat Library
 
 #endif // FRL_IOS_H_STREAM_STD_

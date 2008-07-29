@@ -7,18 +7,16 @@
 #include <vector>
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class EnumString : public IEnumString, public os::win32::com::Allocator
 {
 public:
 	EnumString(); // Constructor
+	EnumString( const EnumString& other );
 	virtual ~EnumString(); // Destructor
 
-	void init( const std::vector< String > &items );
+	void init( const std::vector< String >& items );
 
 	// the IUnknown functions implementation
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface );
@@ -26,10 +24,10 @@ public:
 	STDMETHODIMP_(ULONG) Release( void );
 
 	// the IEnumString functions implementation
-	virtual STDMETHODIMP Next ( ULONG celt, LPOLESTR* rgelt, ULONG*    pceltFetched );
-	virtual STDMETHODIMP Skip ( ULONG celt );
-	virtual STDMETHODIMP Reset( void );
-	virtual STDMETHODIMP Clone( IEnumString **ppEnum );
+	STDMETHODIMP Next ( ULONG celt, LPOLESTR* rgelt, ULONG*    pceltFetched );
+	STDMETHODIMP Skip ( ULONG celt );
+	STDMETHODIMP Reset();
+	STDMETHODIMP Clone( IEnumString** ppEnum );
 
 private:
 

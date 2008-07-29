@@ -13,10 +13,8 @@
 #include "frl_smart_ptr.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class Group;
 typedef ComPtr< Group > GroupElem;
 

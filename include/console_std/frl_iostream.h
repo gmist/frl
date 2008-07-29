@@ -16,10 +16,8 @@
 #include <Windows.h>
 #endif
 
-namespace frl
-{
-namespace console_std
-{
+namespace frl{ namespace console_std{
+
 // Переопределяем переменные
 #if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	static std::wostream& Out = std::wcout;

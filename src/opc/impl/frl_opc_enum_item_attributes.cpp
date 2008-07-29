@@ -15,7 +15,6 @@ EnumOPCItemAttributes::EnumOPCItemAttributes( const EnumOPCItemAttributes& other
 		itemList( other.itemList ),
 		curIndex( other.curIndex )
 {
-	
 }
 
 EnumOPCItemAttributes::~EnumOPCItemAttributes()
@@ -126,13 +125,15 @@ STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes** ppEnum )
 
 	EnumOPCItemAttributes* pEnum = new EnumOPCItemAttributes( *this );
 	if( pEnum == NULL )
+	{
+		*ppEnum = NULL;
 		return E_OUTOFMEMORY;
+	}
 
-	HRESULT hResult = pEnum->QueryInterface( IID_IEnumOPCItemAttributes, (void**)ppEnum );
-	if( FAILED( hResult ) )
+	HRESULT res = pEnum->QueryInterface( IID_IEnumOPCItemAttributes, (void**)ppEnum );
+	if( FAILED( res ) )
 		delete pEnum;
-
-	return hResult;
+	return res;
 }
 
 } // namespace impl

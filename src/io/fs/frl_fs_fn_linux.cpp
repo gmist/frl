@@ -6,12 +6,8 @@
 #include "frl_string.h"
 #include <errno.h>
 
-namespace frl
-{
-namespace io
-{
-namespace fs
-{
+namespace frl{ namespace io{ namespace fs{
+
 void close( frl::io::fs::Descriptor file )
 {
 	if( file != InvalidDescriptor )

@@ -10,8 +10,7 @@ BrowseServerAddressSpace::~BrowseServerAddressSpace()
 {
 }
 
-HRESULT STDMETHODCALLTYPE
-	BrowseServerAddressSpace::QueryOrganization(
+STDMETHODIMP BrowseServerAddressSpace::QueryOrganization(
 	/* [out] */ OPCNAMESPACETYPE *pNameSpaceType )
 {
 	if( pNameSpaceType == NULL )
@@ -20,8 +19,7 @@ HRESULT STDMETHODCALLTYPE
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE
-	BrowseServerAddressSpace::ChangeBrowsePosition(
+STDMETHODIMP BrowseServerAddressSpace::ChangeBrowsePosition(
 	/* [in] */ OPCBROWSEDIRECTION dwBrowseDirection,
 	/* [string][in] */ LPCWSTR szString )
 {
@@ -40,11 +38,11 @@ HRESULT STDMETHODCALLTYPE
 			if( szString == NULL || wcslen( szString ) == 0 )
 				return E_INVALIDARG;
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String inString = szString;
-#else
-			String inString = wstring2string( szString );
-#endif
+			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+				String inString = szString;
+			#else
+				String inString = wstring2string( szString );
+			#endif
 
 			try
 			{
@@ -65,11 +63,11 @@ HRESULT STDMETHODCALLTYPE
 				return S_OK;
 			}
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String inString = szString;
-#else
-			String inString = wstring2string( szString );
-#endif
+			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+				String inString = szString;
+			#else
+				String inString = wstring2string( szString );
+			#endif
 
 			try
 			{
@@ -85,8 +83,7 @@ HRESULT STDMETHODCALLTYPE
 	return E_INVALIDARG;
 }
 
-HRESULT STDMETHODCALLTYPE
-	BrowseServerAddressSpace::BrowseOPCItemIDs(
+STDMETHODIMP BrowseServerAddressSpace::BrowseOPCItemIDs(
 	/* [in] */ OPCBROWSETYPE dwBrowseFilterType,
 	/* [string][in] */ LPCWSTR szFilterCriteria,
 	/* [in] */ VARTYPE vtDataTypeFilter,
@@ -158,8 +155,7 @@ HRESULT STDMETHODCALLTYPE
 	return items.size() ? S_OK : S_FALSE;
 }
 
-HRESULT STDMETHODCALLTYPE
-	BrowseServerAddressSpace::GetItemID(
+STDMETHODIMP BrowseServerAddressSpace::GetItemID(
 	/* [in] */ LPWSTR szItemDataID,
 	/* [string][out] */ LPWSTR *szItemID )
 {
@@ -168,11 +164,11 @@ HRESULT STDMETHODCALLTYPE
 
 	*szItemID = NULL;
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	String itemDataID = szItemDataID;
-#else
-	String itemDataID = wstring2string( szItemDataID );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String itemDataID = szItemDataID;
+	#else
+		String itemDataID = wstring2string( szItemDataID );
+	#endif
 
 	boost::mutex::scoped_lock guard( bsaScopeGuard );
 
@@ -185,11 +181,11 @@ HRESULT STDMETHODCALLTYPE
 		}
 		else
 		{
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			*szItemID = util::duplicateString( tmp ); // return current position
-#else
-			*szItemID = util::duplicateString( string2wstring( tmp ) ); // return current position
-#endif
+			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+				*szItemID = util::duplicateString( tmp ); // return current position
+			#else
+				*szItemID = util::duplicateString( string2wstring( tmp ) ); // return current position
+			#endif
 		}
 		return S_OK;
 	}
@@ -209,17 +205,16 @@ HRESULT STDMETHODCALLTYPE
 		tag = opcAddressSpace::getInstance().getTag( itemDataID );
 	}
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	*szItemID = util::duplicateString( tag->getID() );
-#else
-	*szItemID = util::duplicateString( string2wstring(tag->getID()) );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		*szItemID = util::duplicateString( tag->getID() );
+	#else
+		*szItemID = util::duplicateString( string2wstring(tag->getID()) );
+	#endif
 
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE 
-	BrowseServerAddressSpace::BrowseAccessPaths(
+STDMETHODIMP BrowseServerAddressSpace::BrowseAccessPaths(
 	/* [string][in] */ LPCWSTR szItemID,
 	/* [out] */ LPENUMSTRING *ppIEnumString )
 {

@@ -3,8 +3,8 @@
 
 #include "frl_config.h"
 
-namespace frl
-{
+namespace frl{
+
 // Define platform type
 #define FRL_PLATFORM_WIN32	0x1000
 #define FRL_PLATFORM_LINUX	0x2000

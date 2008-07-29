@@ -1,11 +1,7 @@
 #include "sys/frl_sys_util.h"
 
-namespace frl
-{
-namespace sys
-{
-namespace util
-{
+namespace frl{ namespace sys{ namespace util{
+
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )	
 String getLastErrorDescription()
 {
@@ -56,6 +52,7 @@ String getCodeErrorDescription( WORD langID, DWORD error )
 	return out;
 }
 #endif // FRL_PLATFORM_WIN32
+
 } // namespace util
 } // namespace sys
 } // FatRat Library

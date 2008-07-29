@@ -3,12 +3,18 @@
 #include "opc/frl_opc_enum_string.h"
 #include "opc/frl_opc_util.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 EnumString::EnumString()
-	: refCount( 0 ), curIndex( 0 )
+	:	refCount( 0 ),
+		curIndex( 0 )
+{
+}
+
+EnumString::EnumString( const EnumString& other )
+	:	refCount( 0 ),
+		curIndex( other.curIndex ),
+		strings( other.strings )
 {
 }
 
@@ -109,40 +115,36 @@ STDMETHODIMP EnumString::Skip( ULONG celt )
 	return S_OK;
 }
 
-STDMETHODIMP EnumString::Reset( void )
+STDMETHODIMP EnumString::Reset()
 {
 	curIndex = 0;
 	return S_OK;
 }
 
-STDMETHODIMP EnumString::Clone( IEnumString **ppEnum )
+STDMETHODIMP EnumString::Clone( IEnumString** ppEnum )
 {
 	if( ppEnum == NULL )
 		return E_INVALIDARG;
 
-	EnumString* pEnum = new EnumString();
+	EnumString* pEnum = new EnumString( *this );
 	if( pEnum == NULL )
 	{
 		*ppEnum = NULL;
 		return E_OUTOFMEMORY;
 	}
 
-	for( size_t i = 0; i < strings.size(); ++i )
-	{
-		pEnum->strings.push_back( strings[i] );
-	}
-
-	pEnum->curIndex = curIndex;
-
-	HRESULT hResult = pEnum->QueryInterface(IID_IEnumString, (void**)ppEnum);
-	return hResult;
+	HRESULT res = pEnum->QueryInterface( IID_IEnumString, (void**)ppEnum );
+	if( FAILED( res ) )
+		delete pEnum;
+	return res;
 }
 
-void EnumString::init( const std::vector< String > &items )
+void EnumString::init( const std::vector< String >& items )
 {
 	strings = items;
 	Reset();
 }
+
 } // namespace opc
 } // FatRat Library
 

@@ -7,10 +7,8 @@
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 #include "frl_singleton.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class OPCServerFactory : public IClassFactory, public os::win32::com::Allocator
 {
 private:
@@ -34,12 +32,12 @@ public:
 	STDMETHODIMP_(ULONG) Release( void);
 
 	//IClassFactory implementation
-	virtual HRESULT STDMETHODCALLTYPE CreateInstance( 
+	STDMETHODIMP CreateInstance( 
 		/* [unique][in] */ IUnknown *pUnkOuter,
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ void **ppvObject );
 
-	virtual HRESULT STDMETHODCALLTYPE LockServer(  /* [in] */ BOOL fLock );
+	STDMETHODIMP LockServer(  /* [in] */ BOOL fLock );
 
 	// OPCServerFactory methods
 	void isOutProc( Bool isOutProc );

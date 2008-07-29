@@ -3,10 +3,7 @@
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_group.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 OPCServerBase::~OPCServerBase()
 {

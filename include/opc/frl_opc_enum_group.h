@@ -7,10 +7,7 @@
 #include "opc/frl_opc_group_manager.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class EnumGroup : public  IEnumUnknown, public os::win32::com::Allocator
 {
@@ -27,6 +24,7 @@ private:
 
 public:
 	EnumGroup();
+	EnumGroup( const EnumGroup& other );
 	EnumGroup( const std::vector< GroupElem > &groups );
 	virtual ~EnumGroup();
 
@@ -36,23 +34,10 @@ public:
 	STDMETHODIMP_(ULONG) Release( void);
 	
 	// the OPCEnum Functions
-	virtual STDMETHODIMP Next (
-		ULONG Requested,
-		IUnknown** rgelt,
-		ULONG *pActual
-		);
-
-	virtual STDMETHODIMP Skip (
-		ULONG celt
-		);
-
-	virtual STDMETHODIMP Reset(
-		void
-		);
-
-	virtual STDMETHODIMP Clone( 
-		IEnumUnknown **ppEnum
-		);
+	STDMETHODIMP Next ( ULONG celt, IUnknown** rgelt, ULONG* pceltFetched );
+	STDMETHODIMP Skip( ULONG celt );
+	STDMETHODIMP Reset();
+	STDMETHODIMP Clone( IEnumUnknown** ppEnum );
 }; // class EnumGroup
 
 } // namespace opc

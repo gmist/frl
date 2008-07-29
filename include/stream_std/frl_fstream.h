@@ -8,10 +8,7 @@
 #include <fstream>
 #include "frl_types.h"
 
-namespace frl
-{
-namespace stream_std
-{
+namespace frl{ namespace stream_std{
 
 // Переопределяем поток для ввода и вывода
 typedef std::basic_fstream< frl::Char, std::char_traits< frl::Char > > FileStream;
@@ -22,7 +19,7 @@ typedef std::basic_ifstream< frl::Char, std::char_traits< frl::Char > > InFile;
 typedef std::basic_ofstream< frl::Char, std::char_traits< frl::Char > > OutFile;
 typedef std::basic_filebuf< frl::Char, std::char_traits< frl::Char > > FileBuf;
 
-}; // namespace stream_std
-}// FatRat Library
+} // namespace stream_std
+} // FatRat Library
 
 #endif // FRL_STREAM_H_STREAM_STD_

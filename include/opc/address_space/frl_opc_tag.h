@@ -9,12 +9,7 @@
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include <boost/noncopyable.hpp>
 
-namespace frl
-{
-namespace opc
-{
-namespace address_space
-{
+namespace frl{ namespace opc{ namespace address_space{
 
 class Tag;
 struct TagBrowseInfo

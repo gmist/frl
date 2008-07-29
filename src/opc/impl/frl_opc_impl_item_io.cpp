@@ -11,7 +11,7 @@ OPCItemIO::~OPCItemIO()
 {
 }
 
-HRESULT STDMETHODCALLTYPE OPCItemIO::Read(
+STDMETHODIMP OPCItemIO::Read(
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ LPCWSTR *pszItemIDs,
 	/* [size_is][in] */ DWORD *pdwMaxAge,
@@ -87,7 +87,7 @@ HRESULT STDMETHODCALLTYPE OPCItemIO::Read(
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE OPCItemIO::WriteVQT(
+STDMETHODIMP OPCItemIO::WriteVQT(
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ LPCWSTR *pszItemIDs,
 	/* [size_is][in] */ OPCITEMVQT *pItemVQT,

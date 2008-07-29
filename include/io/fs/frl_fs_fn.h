@@ -3,12 +3,8 @@
 
 #include "frl_types.h"
 
-namespace frl
-{
-namespace io
-{
-namespace fs
-{
+namespace frl{ namespace io{ namespace fs{
+
 enum SeekMode
 {
 	seekFromStart,

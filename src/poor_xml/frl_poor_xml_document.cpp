@@ -6,10 +6,7 @@
 
 namespace fs = boost::filesystem;
 
-namespace frl
-{
-namespace poor_xml
-{
+namespace frl{ namespace poor_xml{
 
 namespace private_
 {
@@ -126,8 +123,6 @@ void Document::loadFileToString( const String& file_name_, String &buffer_ )
 	}
 	in.close();
 }
-
-
 
 } // namespace poor_xml
 } // FatRat Library

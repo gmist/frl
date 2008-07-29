@@ -2,17 +2,25 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/frl_opc_group.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 EnumGroup::EnumGroup()
-	: refCount( 0 ), currentIndex( 0 )
+	:	refCount( 0 ),
+		currentIndex( 0 )
 {
 }
 
 EnumGroup::EnumGroup( const std::vector< GroupElem > &groups )
-	: refCount( 0 ), currentIndex( 0 ), groupList( groups )
+	:	refCount( 0 ),
+		currentIndex( 0 ),
+		groupList( groups )
+{
+}
+
+EnumGroup::EnumGroup( const EnumGroup& other )
+	:	refCount( 0 ),
+		currentIndex( other.currentIndex ),
+		groupList( other.groupList )
 {
 }
 
@@ -58,7 +66,7 @@ ULONG EnumGroup::Release( void )
 	return tmp;
 }
 
-STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown** rgelt, ULONG *pceltFetched )
+STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown** rgelt, ULONG* pceltFetched )
 {
 	if( pceltFetched )
 	{
@@ -102,33 +110,32 @@ STDMETHODIMP EnumGroup::Skip( ULONG celt )
 		currentIndex = groupList.size();
 		return S_FALSE;
 	}
-
 	currentIndex += celt;
 	return S_OK;
 }
 
-STDMETHODIMP EnumGroup::Reset( void )
+STDMETHODIMP EnumGroup::Reset()
 {
 	currentIndex = 0;
 	return S_OK;
 }
 
-STDMETHODIMP EnumGroup::Clone( IEnumUnknown **ppEnum )
+STDMETHODIMP EnumGroup::Clone( IEnumUnknown** ppEnum )
 {
 	if (ppEnum == NULL)
 		return E_INVALIDARG;
 
-	EnumGroup *pNewEnum = new EnumGroup();
+	EnumGroup *pNewEnum = new EnumGroup( *this );
 	if (pNewEnum == NULL)
 	{
 		*ppEnum=NULL;
 		return E_OUTOFMEMORY;
 	}
 
-	pNewEnum->groupList = groupList;
-	pNewEnum->currentIndex = currentIndex;
-	HRESULT hResult = pNewEnum->QueryInterface( IID_IEnumUnknown, (void**) ppEnum );
-	return hResult;
+	HRESULT res = pNewEnum->QueryInterface( IID_IEnumUnknown, (void**) ppEnum );
+	if( FAILED( res ) )
+		delete pNewEnum;
+	return res;
 }
 } // namespace opc
 } // FatRat Library

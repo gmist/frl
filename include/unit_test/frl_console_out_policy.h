@@ -6,10 +6,8 @@
 #include "unit_test/frl_unit_test_statistics.h"
 #include "console_std/frl_iostream.h"
 
-namespace frl
-{
-namespace unit_test
-{
+namespace frl{ namespace unit_test{
+
 // class definition out policy for class UnitTest
 class ConsoleOutPolicy
 {
@@ -76,7 +74,8 @@ public:
 		frl::console_std::ColorOut(console_std::foregroundColor::iRed ) << FRL_STR("Force exit form testing !!!") << std::endl;
 	}
 }; // class ConsoleOutPolicy
-}; // namespace unit_test
-}; // FatRat Library
+
+} // namespace unit_test
+} // FatRat Library
 
 #endif // frl_console_out_policy_h_

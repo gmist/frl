@@ -13,43 +13,43 @@ class ItemMgt
 {
 public:
 	virtual ~ItemMgt();
-	HRESULT STDMETHODCALLTYPE AddItems( 
+	STDMETHODIMP AddItems( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCITEMDEF *pItemArray,
 		/* [size_is][size_is][out] */ OPCITEMRESULT **ppAddResults,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE ValidateItems( 
+	STDMETHODIMP ValidateItems( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCITEMDEF *pItemArray,
 		/* [in] */ BOOL bBlobUpdate,
 		/* [size_is][size_is][out] */ OPCITEMRESULT **ppValidationResults,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE RemoveItems( 
+	STDMETHODIMP RemoveItems( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE SetActiveState( 
+	STDMETHODIMP SetActiveState( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [in] */ BOOL bActive,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE SetClientHandles( 
+	STDMETHODIMP SetClientHandles( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ OPCHANDLE *phClient,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE SetDatatypes( 
+	STDMETHODIMP SetDatatypes( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ VARTYPE *pRequestedDatatypes,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE CreateEnumerator( 
+	STDMETHODIMP CreateEnumerator( 
 		/* [in] */ REFIID riid,
 		/* [iid_is][out] */ LPUNKNOWN *ppUnk);
 

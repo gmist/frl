@@ -4,14 +4,8 @@
 #include "frl_lexical_cast.h"
 #include "io/fs/frl_fs_fn.h"
 
-namespace frl
-{
-namespace io
-{
-namespace comm_ports
-{
-namespace serial
-{
+namespace frl{ namespace io{ namespace comm_ports{ namespace serial{
+
 String getPortName( int portNumber )
 {
 	String strName;

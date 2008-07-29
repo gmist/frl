@@ -5,12 +5,8 @@
 #include "frl_string.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace io
-{
-namespace fs
-{
+namespace frl{ namespace io{ namespace fs{
+
 frl::Bool access( const frl::String &fileName, AccessMode mode )
 {
 	FRL_EXCEPT_GUARD();

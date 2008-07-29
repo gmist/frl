@@ -16,7 +16,7 @@ OPCCommon::~OPCCommon()
 {
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
+STDMETHODIMP OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
 {
 	switch( dwLcid )
 	{
@@ -34,7 +34,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::SetLocaleID( /* [in] */ LCID dwLcid )
 	return E_INVALIDARG;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
+STDMETHODIMP OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
 {
 	if( pdwLcid == NULL )
 		return E_INVALIDARG;
@@ -42,7 +42,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::GetLocaleID( /* [out] */ LCID *pdwLcid )
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
+STDMETHODIMP OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD *pdwCount, /* [size_is][size_is][out] */ LCID **pdwLcid )
 {
 	if( pdwCount == NULL || pdwLcid == NULL )
 		return E_INVALIDARG;
@@ -60,7 +60,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::QueryAvailableLocaleIDs( /* [out] */ DWORD 
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
+STDMETHODIMP OPCCommon::GetErrorString( /* [in] */ HRESULT dwError, /* [string][out] */ LPWSTR *ppString )
 {
 	if( ppString == NULL )
 		return E_INVALIDARG;
@@ -69,7 +69,7 @@ HRESULT STDMETHODCALLTYPE OPCCommon::GetErrorString( /* [in] */ HRESULT dwError,
 	return util::getErrorString( dwError, lcid, &ppString );
 }
 
-HRESULT STDMETHODCALLTYPE OPCCommon::SetClientName( /* [string][in] */ LPCWSTR szName )
+STDMETHODIMP OPCCommon::SetClientName( /* [string][in] */ LPCWSTR szName )
 {
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		clientName = szName;

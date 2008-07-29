@@ -6,10 +6,7 @@
 
 using namespace frl::opc::address_space;
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 GroupBase::GroupBase()
 {

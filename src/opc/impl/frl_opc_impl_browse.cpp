@@ -9,7 +9,7 @@ BrowseImpl::~BrowseImpl()
 {
 }
 
-HRESULT STDMETHODCALLTYPE BrowseImpl::GetProperties(
+STDMETHODIMP BrowseImpl::GetProperties(
 	/* [in] */ DWORD dwItemCount,
 	/* [size_is][string][in] */ LPWSTR *pszItemIDs,
 	/* [in] */ BOOL bReturnPropertyValues,
@@ -113,7 +113,7 @@ HRESULT STDMETHODCALLTYPE BrowseImpl::GetProperties(
 	return ret;
 }
 
-HRESULT STDMETHODCALLTYPE BrowseImpl::Browse(
+STDMETHODIMP BrowseImpl::Browse(
 	/* [string][in] */ LPWSTR szItemID,
 	/* [string][out][in] */ LPWSTR *pszContinuationPoint,
 	/* [in] */ DWORD dwMaxElementsReturned,

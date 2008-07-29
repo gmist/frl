@@ -1,11 +1,6 @@
 #include "io/comm_ports/frl_comm_ports_serial.h"
 
-namespace frl
-{
-namespace io
-{
-namespace comm_ports
-{
+namespace frl{ namespace io{ namespace comm_ports{
 
 Serial::Serial()
 	:	handle( fs::InvalidFileDescriptor ),

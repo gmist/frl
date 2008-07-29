@@ -2,12 +2,8 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "opc/address_space/frl_opc_address_space.h"
 
-namespace frl
-{
-namespace opc
-{
-namespace address_space
-{
+namespace frl{ namespace opc{ namespace address_space{
+
 AddressSpace::AddressSpace() : rootTag( NULL ), init( False )
 {
 	rootTag = NULL;
@@ -177,8 +173,8 @@ frl::Bool AddressSpace::isInit() const
 {
 	return init;
 }
-} // namespace address_space
 
+} // namespace address_space
 } // namespace opc
 } // FatRat Library
 

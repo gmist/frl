@@ -5,11 +5,9 @@
 #include "opc/frl_opc_util.h"
 #include "os/win32/com/frl_os_win32_com_uuidof.h"
 
-namespace frl
-{
-namespace opc
-{
-HRESULT STDMETHODCALLTYPE Group::QueryInterface( /* [in] */ REFIID iid, /* [iid_is][out] */ void** ppInterface )
+namespace frl{ namespace opc{
+
+STDMETHODIMP Group::QueryInterface( /* [in] */ REFIID iid, /* [iid_is][out] */ void** ppInterface )
 {
 	if( ppInterface == NULL )
 		return E_POINTER;
@@ -82,12 +80,12 @@ HRESULT STDMETHODCALLTYPE Group::QueryInterface( /* [in] */ REFIID iid, /* [iid_
 	return E_NOINTERFACE;
 }
 
-ULONG STDMETHODCALLTYPE Group::AddRef( void )
+STDMETHODIMP_(ULONG) Group::AddRef( void )
 {
 	return ::InterlockedIncrement( &refCount );
 }
 
-ULONG STDMETHODCALLTYPE Group::Release( void )
+STDMETHODIMP_(ULONG) Group::Release( void )
 {
 	LONG tmp = ::InterlockedDecrement( &refCount );
 	if( tmp == 0 )
@@ -95,7 +93,7 @@ ULONG STDMETHODCALLTYPE Group::Release( void )
 	return tmp;
 }
 
-HRESULT STDMETHODCALLTYPE Group::CreateInstance( IUnknown** ippUnknown, const CLSID* pClsid )
+STDMETHODIMP Group::CreateInstance( IUnknown** ippUnknown, const CLSID* pClsid )
 {
 	if( ippUnknown == NULL)
 		return E_POINTER;

@@ -9,10 +9,7 @@
 #include "opc/frl_opc_async_request.h"
 #include "opc/frl_opc_event.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class RequestManager : private boost::noncopyable
 {

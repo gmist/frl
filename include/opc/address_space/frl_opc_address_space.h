@@ -9,12 +9,8 @@
 #include <boost/noncopyable.hpp>
 #include "frl_singleton.h"
 
-namespace frl
-{
-namespace opc
-{
-namespace address_space
-{
+namespace frl{ namespace opc{ namespace address_space{
+
 class AddressSpace : private boost::noncopyable
 {
 private:

@@ -13,8 +13,8 @@
 #include "frl_exception.h"
 #endif // FRL_PLATFORM_WIN32
 
-namespace frl
-{
+namespace frl{
+
 template
 <	
 	typename From, 
@@ -32,9 +32,9 @@ To lexicalCast( const From &from )
 
 template
 <	
-typename From, 
-typename To,
-class Mutator
+	typename From, 
+	typename To,
+	class Mutator
 >
 To lexicalCast( const From &from, const Mutator& mutator )
 {
@@ -47,8 +47,7 @@ To lexicalCast( const From &from, const Mutator& mutator )
 }
 
 
-namespace lexicalMutators
-{
+namespace lexicalMutators{
 
 struct hex
 {
@@ -122,7 +121,8 @@ struct upper
 		const std::locale& m_Loc;
 	};
 };
-}
+
+} // namespace lexicalMutators
 
 template
 <>

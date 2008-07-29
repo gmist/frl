@@ -125,4 +125,4 @@ namespace frl
 	{
 		--msStackDepth;
 	}
-}
+} // FatRat Library

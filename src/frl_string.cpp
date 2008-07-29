@@ -1,8 +1,8 @@
 #include "frl_string.h"
 #include <algorithm>
 
-namespace frl
-{
+namespace frl{
+
 // Return string length
 #if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 	size_t stringLength(const frl::Char *string )
@@ -140,4 +140,5 @@ size_t getCountsSimbol( const String &string, Char simbol, size_t fromPos_ /*= 0
 	}
 	return counts;
 }
+
 } // FatRat Library

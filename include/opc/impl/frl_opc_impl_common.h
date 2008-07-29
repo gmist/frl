@@ -20,21 +20,21 @@ public:
 	virtual ~OPCCommon();
 
 	// IOPCCommon implementation
-	virtual HRESULT STDMETHODCALLTYPE SetLocaleID( 
+	STDMETHODIMP SetLocaleID( 
 		/* [in] */ LCID dwLcid);
 
-	virtual HRESULT STDMETHODCALLTYPE GetLocaleID( 
+	STDMETHODIMP GetLocaleID( 
 		/* [out] */ LCID *pdwLcid);
 
-	virtual HRESULT STDMETHODCALLTYPE QueryAvailableLocaleIDs( 
+	STDMETHODIMP QueryAvailableLocaleIDs( 
 		/* [out] */ DWORD *pdwCount,
 		/* [size_is][size_is][out] */ LCID **pdwLcid);
 
-	virtual HRESULT STDMETHODCALLTYPE GetErrorString( 
+	STDMETHODIMP GetErrorString( 
 		/* [in] */ HRESULT dwError,
 		/* [string][out] */ LPWSTR *ppString);
 
-	virtual HRESULT STDMETHODCALLTYPE SetClientName( 
+	STDMETHODIMP SetClientName( 
 		/* [string][in] */ LPCWSTR szName);
 }; // OPCCommon
 

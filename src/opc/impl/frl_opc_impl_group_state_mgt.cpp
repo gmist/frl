@@ -10,7 +10,7 @@ GroupStateMgt::~GroupStateMgt()
 {
 }
 
-HRESULT STDMETHODCALLTYPE GroupStateMgt::GetState( /* [out] */ DWORD *pUpdateRate, /* [out] */ BOOL *pActive, /* [string][out] */ LPWSTR *ppName, /* [out] */ LONG *pTimeBias, /* [out] */ FLOAT *pPercentDeadband, /* [out] */ DWORD *pLCID, /* [out] */ OPCHANDLE *phClientGroup, /* [out] */ OPCHANDLE *phServerGroup )
+STDMETHODIMP GroupStateMgt::GetState( /* [out] */ DWORD *pUpdateRate, /* [out] */ BOOL *pActive, /* [string][out] */ LPWSTR *ppName, /* [out] */ LONG *pTimeBias, /* [out] */ FLOAT *pPercentDeadband, /* [out] */ DWORD *pLCID, /* [out] */ OPCHANDLE *phClientGroup, /* [out] */ OPCHANDLE *phServerGroup )
 {
 	if( deleted )
 		return E_FAIL;
@@ -31,7 +31,7 @@ HRESULT STDMETHODCALLTYPE GroupStateMgt::GetState( /* [out] */ DWORD *pUpdateRat
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE GroupStateMgt::SetState( /* [in][unique] */ DWORD *pRequestedUpdateRate, /* [out] */ DWORD *pRevisedUpdateRate, /* [in][unique] */ BOOL *pActive, /* [in][unique] */ LONG *pTimeBias, /* [in][unique] */ FLOAT *pPercentDeadband, /* [in][unique] */ DWORD *pLCID, /* [in][unique] */ OPCHANDLE *phClientGroup )
+STDMETHODIMP GroupStateMgt::SetState( /* [in][unique] */ DWORD *pRequestedUpdateRate, /* [out] */ DWORD *pRevisedUpdateRate, /* [in][unique] */ BOOL *pActive, /* [in][unique] */ LONG *pTimeBias, /* [in][unique] */ FLOAT *pPercentDeadband, /* [in][unique] */ DWORD *pLCID, /* [in][unique] */ OPCHANDLE *phClientGroup )
 {
 	if( deleted )
 		return E_FAIL;
@@ -114,7 +114,7 @@ HRESULT STDMETHODCALLTYPE GroupStateMgt::SetState( /* [in][unique] */ DWORD *pRe
 	return hResult;
 }
 
-HRESULT STDMETHODCALLTYPE GroupStateMgt::SetName( /* [string][in] */ LPCWSTR szName )
+STDMETHODIMP GroupStateMgt::SetName( /* [string][in] */ LPCWSTR szName )
 {
 	if( deleted )
 		return E_FAIL;
@@ -135,7 +135,7 @@ HRESULT STDMETHODCALLTYPE GroupStateMgt::SetName( /* [string][in] */ LPCWSTR szN
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE GroupStateMgt::CloneGroup( /* [string][in] */ LPCWSTR szName, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+STDMETHODIMP GroupStateMgt::CloneGroup( /* [string][in] */ LPCWSTR szName, /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	if( deleted )
 		return E_FAIL;
@@ -172,7 +172,7 @@ HRESULT STDMETHODCALLTYPE GroupStateMgt::CloneGroup( /* [string][in] */ LPCWSTR 
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE GroupStateMgt::SetKeepAlive( /* [in] */ DWORD dwKeepAliveTime, /* [out] */ DWORD *pdwRevisedKeepAliveTime )
+STDMETHODIMP GroupStateMgt::SetKeepAlive( /* [in] */ DWORD dwKeepAliveTime, /* [out] */ DWORD *pdwRevisedKeepAliveTime )
 {
 	if( pdwRevisedKeepAliveTime == NULL )
 		return E_INVALIDARG;
@@ -200,7 +200,7 @@ HRESULT STDMETHODCALLTYPE GroupStateMgt::SetKeepAlive( /* [in] */ DWORD dwKeepAl
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE GroupStateMgt::GetKeepAlive( /* [out] */ DWORD *pdwKeepAliveTime )
+STDMETHODIMP GroupStateMgt::GetKeepAlive( /* [out] */ DWORD *pdwKeepAliveTime )
 {
 	if( pdwKeepAliveTime == NULL )
 		return E_INVALIDARG;

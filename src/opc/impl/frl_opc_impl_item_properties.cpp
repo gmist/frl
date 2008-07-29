@@ -11,8 +11,7 @@ OPCItemProperties::~OPCItemProperties()
 {
 }
 
-HRESULT STDMETHODCALLTYPE
-OPCItemProperties::QueryAvailableProperties(
+STDMETHODIMP OPCItemProperties::QueryAvailableProperties(
 	/* [in] */ LPWSTR szItemID,
 	/* [out] */ DWORD *pdwCount,
 	/* [size_is][size_is][out] */ DWORD **ppPropertyIDs,
@@ -38,11 +37,11 @@ OPCItemProperties::QueryAvailableProperties(
 	if( wcslen( szItemID ) == 0 )
 		return OPC_E_INVALIDITEMID;
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	String itemID = szItemID;
-#else
-	String itemID = wstring2string( szItemID );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String itemID = szItemID;
+	#else
+		String itemID = wstring2string( szItemID );
+	#endif
 
 	if( opcAddressSpace::getInstance().isExistBranch( itemID ) )
 		return S_OK;
@@ -92,8 +91,7 @@ OPCItemProperties::QueryAvailableProperties(
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE
-	OPCItemProperties::GetItemProperties(
+STDMETHODIMP OPCItemProperties::GetItemProperties(
 	/* [in] */ LPWSTR szItemID,
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ DWORD *pdwPropertyIDs,
@@ -112,11 +110,11 @@ HRESULT STDMETHODCALLTYPE
 	if( wcslen( szItemID ) == 0 )
 		return OPC_E_INVALIDITEMID;
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	String itemID = szItemID;
-#else
-	String itemID = wstring2string( szItemID );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String itemID = szItemID;
+	#else
+		String itemID = wstring2string( szItemID );
+	#endif
 
 	address_space::Tag *item = NULL;
 	try
@@ -131,11 +129,13 @@ HRESULT STDMETHODCALLTYPE
 	*ppvData = os::win32::com::allocMemory< VARIANT >( dwCount );
 	if( *ppvData == NULL )
 		return E_OUTOFMEMORY;
+
 	os::win32::com::zeroMemory< VARIANT >( *ppvData, dwCount );
 
 	*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 	if( *ppErrors == NULL )
 		return E_OUTOFMEMORY;
+
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
@@ -148,8 +148,7 @@ HRESULT STDMETHODCALLTYPE
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE
-	OPCItemProperties::LookupItemIDs(
+STDMETHODIMP OPCItemProperties::LookupItemIDs(
 	/* [in] */ LPWSTR szItemID,
 	/* [in] */ DWORD dwCount,
 	/* [size_is][in] */ DWORD *pdwPropertyIDs,
@@ -168,11 +167,11 @@ HRESULT STDMETHODCALLTYPE
 	if( wcslen( szItemID ) == 0 )
 		return OPC_E_INVALIDITEMID;
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	String itemID = szItemID;
-#else
-	String itemID = wstring2string( szItemID );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		String itemID = szItemID;
+	#else
+		String itemID = wstring2string( szItemID );
+	#endif
 
 	address_space::Tag *item = NULL;
 	try
@@ -187,11 +186,13 @@ HRESULT STDMETHODCALLTYPE
 	*ppszNewItemIDs = os::win32::com::allocMemory< LPWSTR >( dwCount );
 	if( ppszNewItemIDs == NULL )
 		return E_OUTOFMEMORY;
+
 	os::win32::com::zeroMemory< LPWSTR>( *ppszNewItemIDs, dwCount );
 
 	*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 	if( ppErrors == NULL )
 		return E_OUTOFMEMORY;
+
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT ret = S_OK;

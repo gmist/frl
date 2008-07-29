@@ -3,12 +3,7 @@
 #include "opc/address_space/frl_opc_addr_space_crawler.h"
 #include "opc/address_space/frl_opc_address_space.h"
 
-namespace frl
-{
-namespace opc
-{
-namespace address_space
-{
+namespace frl{ namespace opc{ namespace address_space{
 
 AddrSpaceCrawler::AddrSpaceCrawler()
 {

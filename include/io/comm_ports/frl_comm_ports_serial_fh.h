@@ -3,14 +3,8 @@
 #include "io/fs/frl_fs_fn.h"
 #include "frl_exception.h"
 
-namespace frl
-{
-namespace io
-{
-namespace comm_ports
-{
-namespace serial
-{
+namespace frl{ namespace io{ namespace comm_ports{ namespace serial{
+
 typedef fs::FileDescriptor SerialPortDescriptor;
 typedef fs::FileRWCount SerialRWCount;
 

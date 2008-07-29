@@ -10,7 +10,12 @@ SyncIO::~SyncIO()
 {
 }
 
-HRESULT STDMETHODCALLTYPE SyncIO::Read( /* [in] */ OPCDATASOURCE dwSource, /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][size_is][out] */ OPCITEMSTATE **ppItemValues, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP SyncIO::Read(
+	/* [in] */ OPCDATASOURCE dwSource,
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][size_is][out] */ OPCITEMSTATE **ppItemValues,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -91,7 +96,11 @@ HRESULT STDMETHODCALLTYPE SyncIO::Read( /* [in] */ OPCDATASOURCE dwSource, /* [i
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE SyncIO::Write( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ VARIANT *pItemValues, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP SyncIO::Write(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][in] */ VARIANT *pItemValues,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -145,7 +154,14 @@ HRESULT STDMETHODCALLTYPE SyncIO::Write( /* [in] */ DWORD dwCount, /* [size_is][
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE SyncIO::ReadMaxAge( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ DWORD *pdwMaxAge, /* [size_is][size_is][out] */ VARIANT **ppvValues, /* [size_is][size_is][out] */ WORD **ppwQualities, /* [size_is][size_is][out] */ FILETIME **ppftTimeStamps, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP SyncIO::ReadMaxAge(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][in] */ DWORD *pdwMaxAge,
+	/* [size_is][size_is][out] */ VARIANT **ppvValues,
+	/* [size_is][size_is][out] */ WORD **ppwQualities,
+	/* [size_is][size_is][out] */ FILETIME **ppftTimeStamps,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -220,7 +236,11 @@ HRESULT STDMETHODCALLTYPE SyncIO::ReadMaxAge( /* [in] */ DWORD dwCount, /* [size
 	return result;
 }
 
-HRESULT STDMETHODCALLTYPE SyncIO::WriteVQT( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ OPCITEMVQT *pItemVQT, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP SyncIO::WriteVQT(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][in] */ OPCITEMVQT *pItemVQT,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;

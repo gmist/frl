@@ -5,8 +5,7 @@
 #include "stream_std/frl_sstream.h"
 #include <stdlib.h>
 
-namespace frl
-{
+namespace frl{
 
 // Return string length
 size_t stringLength(const frl::Char *str );

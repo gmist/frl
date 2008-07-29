@@ -13,7 +13,11 @@ ItemMgt::~ItemMgt()
 {
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::AddItems( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCITEMDEF *pItemArray, /* [size_is][size_is][out] */ OPCITEMRESULT **ppAddResults, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemMgt::AddItems(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCITEMDEF *pItemArray,
+	/* [size_is][size_is][out] */ OPCITEMRESULT **ppAddResults,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -85,7 +89,12 @@ HRESULT STDMETHODCALLTYPE ItemMgt::AddItems( /* [in] */ DWORD dwCount, /* [size_
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::ValidateItems( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCITEMDEF *pItemArray, /* [in] */ BOOL bBlobUpdate, /* [size_is][size_is][out] */ OPCITEMRESULT **ppValidationResults, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemMgt::ValidateItems(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCITEMDEF *pItemArray,
+	/* [in] */ BOOL bBlobUpdate,
+	/* [size_is][size_is][out] */ OPCITEMRESULT **ppValidationResults,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -151,7 +160,10 @@ HRESULT STDMETHODCALLTYPE ItemMgt::ValidateItems( /* [in] */ DWORD dwCount, /* [
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::RemoveItems( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemMgt::RemoveItems(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -188,7 +200,11 @@ HRESULT STDMETHODCALLTYPE ItemMgt::RemoveItems( /* [in] */ DWORD dwCount, /* [si
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::SetActiveState( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [in] */ BOOL bActive, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemMgt::SetActiveState(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [in] */ BOOL bActive,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -223,19 +239,27 @@ HRESULT STDMETHODCALLTYPE ItemMgt::SetActiveState( /* [in] */ DWORD dwCount, /* 
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::SetClientHandles( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ OPCHANDLE *phClient, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemMgt::SetClientHandles(
+	/* [in] */ DWORD dwCount,
+	/* [size_is][in] */ OPCHANDLE *phServer,
+	/* [size_is][in] */ OPCHANDLE *phClient,
+	/* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
+
 	if ( phServer == NULL || phClient == NULL || ppErrors == NULL )
 		return E_INVALIDARG;
+
 	*ppErrors = NULL;
 
 	if( dwCount == 0 )
 		return E_INVALIDARG;
+
 	*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 	if( *ppErrors == NULL )
 		return E_OUTOFMEMORY;
+
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
@@ -256,7 +280,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::SetClientHandles( /* [in] */ DWORD dwCount, /
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ VARTYPE *pRequestedDatatypes, /* [size_is][size_is][out] */ HRESULT **ppErrors )
+STDMETHODIMP ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [size_is][in] */ OPCHANDLE *phServer, /* [size_is][in] */ VARTYPE *pRequestedDatatypes, /* [size_is][size_is][out] */ HRESULT **ppErrors )
 {
 	if( deleted )
 		return E_FAIL;
@@ -271,6 +295,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [s
 	*ppErrors = os::win32::com::allocMemory< HRESULT >( dwCount );
 	if( *ppErrors == NULL )
 		return E_OUTOFMEMORY;
+
 	os::win32::com::zeroMemory< HRESULT >( *ppErrors, dwCount );
 
 	HRESULT res = S_OK;
@@ -297,7 +322,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [s
 	return res;
 }
 
-HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
+STDMETHODIMP ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* [iid_is][out] */ LPUNKNOWN *ppUnk )
 {
 	if( deleted )
 		return E_FAIL;
@@ -314,6 +339,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* 
 		EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 		if (temp == NULL)
 			return E_OUTOFMEMORY;
+
 		std::for_each( itemList.begin(), itemList.end(), boost::bind( &EnumOPCItemAttributes::addItem, temp, _1 ) );
 		return temp->QueryInterface(riid,(void**)ppUnk);
 	}

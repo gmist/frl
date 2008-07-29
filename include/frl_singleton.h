@@ -1,8 +1,8 @@
 #ifndef frl_singleton_h_
 #define frl_singleton_h_
 
-namespace frl
-{
+namespace frl{
+
 template< class T >
 class SingletonMeyers
 {

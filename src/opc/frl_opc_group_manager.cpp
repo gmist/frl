@@ -4,10 +4,7 @@
 #include "opc/frl_opc_group_manager.h"
 #include "opc/frl_opc_group.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 GroupManager::GroupManager()
 {

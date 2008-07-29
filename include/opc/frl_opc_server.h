@@ -11,10 +11,7 @@
 #include "opc/frl_opc_connection_point_container.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class OPCServer
 	:	public impl::OPCCommon,
@@ -42,6 +39,7 @@ public:
 	STDMETHODIMP_(ULONG) AddRef( void);
 	STDMETHODIMP_(ULONG) Release( void);
 }; // OPCServer
+
 } // namespace opc
 } // FatRat Library
 

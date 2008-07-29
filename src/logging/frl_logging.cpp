@@ -1,9 +1,6 @@
 #include "logging/frl_logging.h"
 
-namespace frl
-{
-namespace logging
-{
+namespace frl{ namespace logging{
 
 namespace private_
 {

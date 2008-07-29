@@ -8,10 +8,8 @@
 #include "opc/frl_opc_group_item.h"
 #include "opc/frl_opc_async_request.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
+
 class OPCServer;
 class GroupBase
 	:	virtual public ServerHandleCounter,

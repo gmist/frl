@@ -14,20 +14,20 @@ class SyncIO
 public:
 	virtual ~SyncIO();
 
-	HRESULT STDMETHODCALLTYPE Read( 
+	STDMETHODIMP Read( 
 		/* [in] */ OPCDATASOURCE dwSource,
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][size_is][out] */ OPCITEMSTATE **ppItemValues,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);;
 
-	HRESULT STDMETHODCALLTYPE Write( 
+	STDMETHODIMP Write( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ VARIANT *pItemValues,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE ReadMaxAge( 
+	STDMETHODIMP ReadMaxAge( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ DWORD *pdwMaxAge,
@@ -36,7 +36,7 @@ public:
 		/* [size_is][size_is][out] */ FILETIME **ppftTimeStamps,
 		/* [size_is][size_is][out] */ HRESULT **ppErrors);
 
-	HRESULT STDMETHODCALLTYPE WriteVQT( 
+	STDMETHODIMP WriteVQT( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCHANDLE *phServer,
 		/* [size_is][in] */ OPCITEMVQT *pItemVQT,

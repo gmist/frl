@@ -6,10 +6,7 @@
 #include "frl_types.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{
 
 class ConnectionPointContainer;
 class ConnectionPoint : public IConnectionPoint, public os::win32::com::Allocator
@@ -42,21 +39,11 @@ public:
 	STDMETHODIMP_(ULONG) Release( void);
 
 	// IConnectionPoint implementation
-	virtual HRESULT STDMETHODCALLTYPE GetConnectionInterface( 
-	/* [out] */ IID *pIID);
-
-	virtual HRESULT STDMETHODCALLTYPE GetConnectionPointContainer( 
-	/* [out] */ IConnectionPointContainer **ppCPC);
-
-	virtual HRESULT STDMETHODCALLTYPE Advise( 
-	/* [in] */ IUnknown *pUnkSink,
-	/* [out] */ DWORD *pdwCookie);
-
-	virtual HRESULT STDMETHODCALLTYPE Unadvise( 
-	/* [in] */ DWORD dwCookie);
-
-	virtual HRESULT STDMETHODCALLTYPE EnumConnections( 
-	/* [out] */ IEnumConnections **ppEnum);
+	STDMETHODIMP GetConnectionInterface( /* [out] */ IID *pIID );
+	STDMETHODIMP GetConnectionPointContainer( /* [out] */ IConnectionPointContainer **ppCPC );
+	STDMETHODIMP Advise( /* [in] */ IUnknown *pUnkSink, /* [out] */ DWORD *pdwCookie );
+	STDMETHODIMP Unadvise( /* [in] */ DWORD dwCookie );
+	STDMETHODIMP EnumConnections( /* [out] */ IEnumConnections **ppEnum );
 };
 
 } // namespace opc
