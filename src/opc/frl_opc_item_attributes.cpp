@@ -12,15 +12,23 @@ namespace opc
 void ItemAttributes::freeStrings()
 {
 	if( attributes->szAccessPath )
+	{
 		os::win32::com::freeMemory( attributes->szAccessPath );
+		attributes->szAccessPath = NULL;
+	}
 	if( attributes->szItemID )
+	{
 		os::win32::com::freeMemory( attributes->szItemID );
+		attributes->szItemID = NULL;
+	}
 }
 
 ItemAttributes::ItemAttributes()
 {
 	attributes = os::win32::com::allocMemory< OPCITEMATTRIBUTES >();
 	os::win32::com::zeroMemory( attributes );
+	attributes->szAccessPath = NULL;
+	attributes->szItemID = NULL;
 }
 
 ItemAttributes::ItemAttributes( const ItemAttributes& other )
@@ -80,17 +88,17 @@ ItemAttributes& ItemAttributes::operator=( const std::pair< OPCHANDLE, GroupItem
 	attributes->bActive = newItem.second->isActived();
 	attributes->hClient = newItem.second->getClientHandle();
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	attributes->szItemID = util::duplicateString( newItem.second->getItemID() );
-#else
-	attributes->szItemID = util::duplicateString( string2wstring( newItem.second->getItemID() ) );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		attributes->szItemID = util::duplicateString( newItem.second->getItemID() );
+	#else
+		attributes->szItemID = util::duplicateString( string2wstring( newItem.second->getItemID() ) );
+	#endif
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	attributes->szAccessPath = util::duplicateString( newItem.second->getAccessPath() );
-#else
-	attributes->szAccessPath = util::duplicateString( string2wstring( newItem.second->getAccessPath() ) );
-#endif
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+		attributes->szAccessPath = util::duplicateString( newItem.second->getAccessPath() );
+	#else
+		attributes->szAccessPath = util::duplicateString( string2wstring( newItem.second->getAccessPath() ) );
+	#endif
 
 	address_space::Tag *item = opcAddressSpace::getInstance().getTag( newItem.second->getItemID() );
 	attributes->dwAccessRights = item->getAccessRights();
@@ -124,6 +132,6 @@ void ItemAttributes::copyTo( OPCITEMATTRIBUTES& dst )
 }
 
 } // namespace opc
-} // FatRat Libray
+} // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32
