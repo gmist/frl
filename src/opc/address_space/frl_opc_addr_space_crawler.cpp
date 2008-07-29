@@ -78,13 +78,10 @@ void AddrSpaceCrawler::browse( std::vector< TagBrowseInfo >& arr )
 {
 	std::vector< TagBrowseInfo > tmp;
 	curPos->browseLeafs( tmp );
-	size_t leafs_size = tmp.size();
-	arr.resize( leafs_size );
-	std::copy( tmp.begin(), tmp.end(), arr.begin() );
+	arr.assign( tmp.begin(), tmp.end() );
 	tmp.clear();
 	curPos->browseBranches( tmp );
-	arr.resize( leafs_size + tmp.size() );
-	std::copy( tmp.begin(), tmp.end(), arr.begin() + leafs_size );
+	arr.insert( arr.end(), tmp.begin(), tmp.end() );
 }
 
 } // namespace address_space

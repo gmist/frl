@@ -238,7 +238,7 @@ HRESULT STDMETHODCALLTYPE BrowseImpl::Browse(
 		#endif
 
 		std::vector< address_space::TagBrowseInfo > tmp( dwMaxElementsReturned );
-		std::copy( itemsList.begin(), itemsList.begin() + dwMaxElementsReturned, tmp.begin() );
+		tmp.assign( itemsList.begin(), itemsList.begin() + dwMaxElementsReturned );
 		itemsList.swap( tmp );			
 	}
 	else
