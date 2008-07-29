@@ -9,11 +9,6 @@
 
 namespace frl { namespace opc { namespace impl {
 
-namespace private_
-{
-	
-}
-
 ItemMgt::~ItemMgt()
 {
 }
@@ -55,11 +50,11 @@ HRESULT STDMETHODCALLTYPE ItemMgt::AddItems( /* [in] */ DWORD dwCount, /* [size_
 			continue;
 		}
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String itemID = pItemArray[i].szItemID;
-#else
-		String itemID = wstring2string( pItemArray[i].szItemID );
-#endif
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			String itemID = pItemArray[i].szItemID;
+		#else
+			String itemID = wstring2string( pItemArray[i].szItemID );
+		#endif
 
 		if( ! opcAddressSpace::getInstance().isExistLeaf( itemID ) )
 		{
@@ -319,12 +314,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* 
 		EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 		if (temp == NULL)
 			return E_OUTOFMEMORY;
-		GroupItemElemList::iterator it;
-		GroupItemElemList::iterator end = itemList.end();
-		for( it = itemList.begin(); it != end; ++it )
-		{
-			temp->addItem( (*it) );
-		}
+		std::for_each( itemList.begin(), itemList.end(), boost::bind( &EnumOPCItemAttributes::addItem, temp, _1 ) );
 		return temp->QueryInterface(riid,(void**)ppUnk);
 	}
 	return E_INVALIDARG;
