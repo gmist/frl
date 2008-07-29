@@ -100,9 +100,9 @@ void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 	#endif
 	
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		attributes->szItemID = util::duplicateString( i->getAccessPath() );
+		attributes->szAccessPath = util::duplicateString( i->getAccessPath() );
 	#else
-			attributes->szItemID = util::duplicateString( string2wstring( i->getAccessPath() ) );
+			attributes->szAccessPath = util::duplicateString( string2wstring( i->getAccessPath() ) );
 	#endif
 
 	address_space::Tag *item = opcAddressSpace::getInstance().getTag( i->getItemID() );
