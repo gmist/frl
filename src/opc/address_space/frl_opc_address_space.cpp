@@ -25,7 +25,7 @@ const String& AddressSpace::getDelimiter() const
 
 void AddressSpace::finalConstruct( const String &delimiter_ )
 {
-	if( delimiter_.empty() || delimiter.size()>1 )
+	if( delimiter_.empty() || delimiter.size() > 1 )
 		delimiter = FRL_STR('.');
 	else
 		delimiter = delimiter_;
@@ -157,8 +157,7 @@ Tag* AddressSpace::getRootBranch()
 
 void AddressSpace::getAllLeafs( std::vector< String > &namesList, DWORD accessFilter ) const
 {
-	if ( namesList.size() )
-		namesList.clear();
+	namesList.clear();
 	namesList.reserve( nameLeafCache.size() );
 	std::map< String, Tag* >::const_iterator end = nameLeafCache.end();
 	for(	std::map< String, Tag* >::const_iterator it = nameLeafCache.begin();

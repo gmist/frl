@@ -150,7 +150,7 @@ AsyncIO::Refresh2(
 	if( ! actived )
 		return E_FAIL;
 
-	if( itemList.size() == 0 )
+	if( itemList.empty() )
 		return E_FAIL;
 
 	std::list< OPCHANDLE > handles;
@@ -161,7 +161,7 @@ AsyncIO::Refresh2(
 			handles.push_back( (*it).first );
 	}
 
-	if( handles.size() == 0 )
+	if( handles.empty() )
 		return E_FAIL;
 
 	GroupElem tmp = GroupElem( dynamic_cast< Group* >( this ) );

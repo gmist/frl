@@ -30,7 +30,7 @@ frl::Bool AddrSpaceCrawler::goUp()
 
 void AddrSpaceCrawler::goDown( const String &path )
 {
-	if( getCurPosPath().size() )
+	if( ! getCurPosPath().empty() )
 		curPos = curPos->getBranch( getCurPosPath() + opcAddressSpace::getInstance().getDelimiter() + path );
 	else
 		curPos = curPos->getBranch( path );
@@ -48,29 +48,25 @@ void AddrSpaceCrawler::goTo( const String &fullPath )
 
 void AddrSpaceCrawler::browseBranches( std::vector< String > &branches )
 {
-	if( branches.size() )
-		branches.clear();
+	branches.clear();
 	curPos->browseBranches( branches );
 }
 
 void AddrSpaceCrawler::browseBranches( std::vector< TagBrowseInfo > &branchesArr )
 {
-	if( branchesArr.size() )
-		branchesArr.clear();
+	branchesArr.clear();
 	curPos->browseBranches( branchesArr );
 }
 
 void AddrSpaceCrawler::browseLeafs( std::vector< String > &leafs, DWORD accessFilter /*= 0 */ )
 {
-	if( leafs.size() )
-		leafs.clear();
+	leafs.clear();
 	curPos->browseLeafs( leafs, accessFilter );
 }
 
 void AddrSpaceCrawler::browseLeafs( std::vector< TagBrowseInfo > &leafsArr )
 {
-	if( leafsArr.size() )
-		leafsArr.clear();
+	leafsArr.clear();
 	curPos->browseLeafs( leafsArr );
 }
 
