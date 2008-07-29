@@ -323,7 +323,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* 
 		GroupItemElemList::iterator end = itemList.end();
 		for( it = itemList.begin(); it != end; ++it )
 		{
-			temp->addItem( it->first, it->second );
+			temp->addItem( (*it) );
 		}
 		return temp->QueryInterface(riid,(void**)ppUnk);
 	}

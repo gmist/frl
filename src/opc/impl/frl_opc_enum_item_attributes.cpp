@@ -10,21 +10,16 @@ EnumOPCItemAttributes::EnumOPCItemAttributes()
 {
 }
 
+EnumOPCItemAttributes::EnumOPCItemAttributes( const EnumOPCItemAttributes& other )
+	:	refCount( 0 ),
+		itemList( other.itemList ),
+		curIndex( other.curIndex )
+{
+	
+}
+
 EnumOPCItemAttributes::~EnumOPCItemAttributes()
 {
-	for( size_t i=0; i< itemList.size(); ++i )
-	{
-		if( itemList[i] != NULL )
-		{
-			if( itemList[i]->szItemID != NULL )
-				os::win32::com::freeMemory( itemList[i]->szItemID );
-
-			if( itemList[i]->szAccessPath != NULL )
-				os::win32::com::freeMemory( itemList[i]->szAccessPath );
-
-			os::win32::com::freeMemory( itemList[i] );
-		}
-	}
 }
 
 STDMETHODIMP EnumOPCItemAttributes::QueryInterface( REFIID iid, LPVOID* ppInterface )
@@ -65,50 +60,11 @@ STDMETHODIMP_(ULONG) EnumOPCItemAttributes::Release( void )
 	return ret;
 }
 
-void EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES& dst, OPCITEMATTRIBUTES& src )
+void EnumOPCItemAttributes::addItem( const std::pair< OPCHANDLE, GroupItemElem >& newItem )
 {
-	os::win32::com::zeroMemory( &dst );
-	dst.bActive = src.bActive;
-	dst.dwAccessRights = src.dwAccessRights;
-	dst.dwBlobSize = src.dwBlobSize;
-	dst.dwEUType = src.dwEUType;
-	dst.hClient = src.hClient;
-	dst.hServer = src.hServer;
-	dst.pBlob = src.pBlob;
-	dst.szAccessPath = util::duplicateString( src.szAccessPath );
-	dst.szItemID = util::duplicateString( src.szItemID );
-	VariantCopy(&dst.vEUInfo , &src.vEUInfo );
-	dst.vtCanonicalDataType = src.vtCanonicalDataType;
-	dst.vtRequestedDataType = src.vtRequestedDataType;
-}
-
-void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem& i )
-{
-	OPCITEMATTRIBUTES *attributes = os::win32::com::allocMemory<OPCITEMATTRIBUTES>();
-	os::win32::com::zeroMemory( attributes );
-	attributes->bActive = i->isActived();
-	attributes->hClient = i->getClientHandle();
-	attributes->hServer = first;
-
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	attributes->szItemID = util::duplicateString( i->getItemID() );
-#else
-	attributes->szItemID = util::duplicateString( string2wstring( i->getItemID() ) );
-#endif
-
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	attributes->szAccessPath = util::duplicateString( i->getAccessPath() );
-#else
-	attributes->szAccessPath = util::duplicateString( string2wstring( i->getAccessPath() ) );
-#endif
-
-	address_space::Tag *item = opcAddressSpace::getInstance().getTag( i->getItemID() );
-	attributes->dwAccessRights = item->getAccessRights();
-	attributes->dwBlobSize = 0;
-	attributes->pBlob = NULL;
-	attributes->vtCanonicalDataType = item->getCanonicalDataType();
-	attributes->vtRequestedDataType = i->getReguestDataType();
-	itemList.push_back( attributes );
+	ItemAttributes attrib;
+	attrib = newItem;
+	itemList.push_back( attrib );
 }
 
 STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched )
@@ -130,7 +86,7 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** ppItem
 	size_t i = curIndex;
 	for( ; i < itemList.size() && *pceltFetched < celt; ++i )
 	{
-		copy( (*ppItemArray)[*pceltFetched], *itemList[i] );
+		itemList[i].copyTo( (*ppItemArray)[*pceltFetched] );
 		++(*pceltFetched);
 	}
 
@@ -166,20 +122,10 @@ STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes** ppEnum )
 	if (ppEnum == NULL)
 		return E_INVALIDARG;
 
-	EnumOPCItemAttributes* pEnum = new EnumOPCItemAttributes();
+	EnumOPCItemAttributes* pEnum = new EnumOPCItemAttributes( *this );
 	if( pEnum == NULL )
 		return E_OUTOFMEMORY;
 
-	pEnum->itemList.reserve( itemList.size() );
-	OPCITEMATTRIBUTES *pItem;
-	for( size_t i = 0; i < itemList.size(); ++i )
-	{
-		pItem = itemList[i];
-		OPCITEMATTRIBUTES *newItem = os::win32::com::allocMemory< OPCITEMATTRIBUTES >();
-		copy( *newItem, *pItem );
-		pEnum->itemList.push_back( newItem );
-	}
-	pEnum->curIndex = curIndex;
 	HRESULT hResult = pEnum->QueryInterface( IID_IEnumOPCItemAttributes, (void**)ppEnum );
 	if( FAILED( hResult ) )
 		delete pEnum;

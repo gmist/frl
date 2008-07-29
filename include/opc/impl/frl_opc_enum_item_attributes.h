@@ -8,6 +8,7 @@
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_util.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
+#include "opc/frl_opc_item_attributes.h"
 
 namespace frl{ namespace opc{ namespace impl{
 
@@ -23,14 +24,14 @@ private:
 		LONG refCount;
 	#endif
 
-	std::vector<OPCITEMATTRIBUTES*> itemList; // attributes array
+	std::vector< opc::ItemAttributes > itemList; // attributes array
 	size_t curIndex; // current element
 
-	void copy( OPCITEMATTRIBUTES& dst, OPCITEMATTRIBUTES& src );
 public:
 	EnumOPCItemAttributes();
+	EnumOPCItemAttributes( const EnumOPCItemAttributes& other );
 	virtual ~EnumOPCItemAttributes();
-	void addItem( OPCHANDLE first,  const GroupItemElem& i );
+	void addItem( const std::pair< OPCHANDLE, GroupItemElem >& newItem );
 
 	// the IUnknown functions
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface );
