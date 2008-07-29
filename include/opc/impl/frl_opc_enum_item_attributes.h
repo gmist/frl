@@ -9,12 +9,11 @@
 #include "opc/frl_opc_util.h"
 #include "os/win32/com/frl_os_win32_com_allocator.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{ namespace impl{
 
-class EnumOPCItemAttributes : public IEnumOPCItemAttributes, public os::win32::com::Allocator
+class EnumOPCItemAttributes
+	:	public IEnumOPCItemAttributes,
+		public os::win32::com::Allocator
 {
 private:
 	// reference counter
@@ -24,27 +23,28 @@ private:
 		LONG refCount;
 	#endif
 
-	std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array
-	size_t curIndex; // Current element
+	std::vector<OPCITEMATTRIBUTES*> itemList; // attributes array
+	size_t curIndex; // current element
 
-	void copy( OPCITEMATTRIBUTES &dst, OPCITEMATTRIBUTES &src );
+	void copy( OPCITEMATTRIBUTES& dst, OPCITEMATTRIBUTES& src );
 public:
 	EnumOPCItemAttributes();
 	virtual ~EnumOPCItemAttributes();
-	void addItem( OPCHANDLE first,  const GroupItemElem &i );
+	void addItem( OPCHANDLE first,  const GroupItemElem& i );
 
-	// the IUnknown Functions
+	// the IUnknown functions
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface );
 	STDMETHODIMP_(ULONG) AddRef( void);
 	STDMETHODIMP_(ULONG) Release( void);
 
-	// the IEnum Functions
-	virtual STDMETHODIMP Next( ULONG celt, OPCITEMATTRIBUTES **ppItemArray, ULONG *pceltFetched );
-	virtual STDMETHODIMP Skip ( ULONG celt );
-	virtual STDMETHODIMP Reset( void );
-	virtual STDMETHODIMP Clone( IEnumOPCItemAttributes **ppEnum );
+	// the IEnum functions
+	STDMETHODIMP Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched );
+	STDMETHODIMP Skip ( ULONG celt );
+	STDMETHODIMP Reset( void );
+	STDMETHODIMP Clone( IEnumOPCItemAttributes** ppEnum );
 }; // class EnumOPCItemAttributes
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 

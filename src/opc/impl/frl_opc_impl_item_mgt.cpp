@@ -1,7 +1,7 @@
 #include "opc/impl/frl_opc_impl_item_mgt.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include "../dependency/vendors/opc_foundation/opcerror.h"
-#include "opc/frl_opc_enum_item_attributes.h"
+#include "opc/impl/frl_opc_enum_item_attributes.h"
 #include "opc/address_space/frl_opc_address_space.h"
 #include "opc/frl_opc_async_request.h"
 #include "opc/frl_opc_group_base.h"

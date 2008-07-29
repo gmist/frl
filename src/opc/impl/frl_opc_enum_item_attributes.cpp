@@ -1,11 +1,8 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
-#include "opc/frl_opc_enum_item_attributes.h"
+#include "opc/impl/frl_opc_enum_item_attributes.h"
 
-namespace frl
-{
-namespace opc
-{
+namespace frl{ namespace opc{ namespace impl{
 
 EnumOPCItemAttributes::EnumOPCItemAttributes()
 	:	refCount( 0 ),
@@ -68,7 +65,7 @@ STDMETHODIMP_(ULONG) EnumOPCItemAttributes::Release( void )
 	return ret;
 }
 
-void EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES &dst, OPCITEMATTRIBUTES &src )
+void EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES& dst, OPCITEMATTRIBUTES& src )
 {
 	os::win32::com::zeroMemory( &dst );
 	dst.bActive = src.bActive;
@@ -85,7 +82,7 @@ void EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES &dst, OPCITEMATTRIBUTES &src
 	dst.vtRequestedDataType = src.vtRequestedDataType;
 }
 
-void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
+void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem& i )
 {
 	OPCITEMATTRIBUTES *attributes = os::win32::com::allocMemory<OPCITEMATTRIBUTES>();
 	os::win32::com::zeroMemory( attributes );
@@ -93,17 +90,17 @@ void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 	attributes->hClient = i->getClientHandle();
 	attributes->hServer = first;
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		attributes->szItemID = util::duplicateString( i->getItemID() );
-	#else
-		attributes->szItemID = util::duplicateString( string2wstring( i->getItemID() ) );
-	#endif
-	
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		attributes->szAccessPath = util::duplicateString( i->getAccessPath() );
-	#else
-			attributes->szAccessPath = util::duplicateString( string2wstring( i->getAccessPath() ) );
-	#endif
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	attributes->szItemID = util::duplicateString( i->getItemID() );
+#else
+	attributes->szItemID = util::duplicateString( string2wstring( i->getItemID() ) );
+#endif
+
+#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	attributes->szAccessPath = util::duplicateString( i->getAccessPath() );
+#else
+	attributes->szAccessPath = util::duplicateString( string2wstring( i->getAccessPath() ) );
+#endif
 
 	address_space::Tag *item = opcAddressSpace::getInstance().getTag( i->getItemID() );
 	attributes->dwAccessRights = item->getAccessRights();
@@ -114,23 +111,18 @@ void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 	itemList.push_back( attributes );
 }
 
-STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES **ppItemArray, ULONG *pceltFetched )
+STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched )
 {
 	if( pceltFetched )
 	{
 		*pceltFetched = 0;
 	}
 
-	if( ppItemArray == NULL )
-	{
-		return E_INVALIDARG;
-	}
-
 	if( ppItemArray == NULL || ( celt != 1 && pceltFetched == NULL) )
 	{
 		return E_POINTER;
 	}
-	
+
 	if( curIndex >= itemList.size() )
 		return S_FALSE;
 
@@ -138,7 +130,7 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES **ppItem
 	size_t i = curIndex;
 	for( ; i < itemList.size() && *pceltFetched < celt; ++i )
 	{
-		 copy( (*ppItemArray)[*pceltFetched], *itemList[i] );
+		copy( (*ppItemArray)[*pceltFetched], *itemList[i] );
 		++(*pceltFetched);
 	}
 
@@ -169,7 +161,7 @@ STDMETHODIMP EnumOPCItemAttributes::Reset( void )
 	return S_OK;
 }
 
-STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes **ppEnum )
+STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes** ppEnum )
 {
 	if (ppEnum == NULL)
 		return E_INVALIDARG;
@@ -195,6 +187,7 @@ STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes **ppEnum )
 	return hResult;
 }
 
+} // namespace impl
 } // namespace opc
 } // FatRat Library
 
