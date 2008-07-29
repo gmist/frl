@@ -74,15 +74,17 @@ void AddrSpaceCrawler::browseLeafs( std::vector< TagBrowseInfo > &leafsArr )
 	curPos->browseLeafs( leafsArr );
 }
 
-void AddrSpaceCrawler::browse( std::vector< TagBrowseInfo > &arr )
+void AddrSpaceCrawler::browse( std::vector< TagBrowseInfo >& arr )
 {
-	std::vector< TagBrowseInfo > tmpLeafs;
-	curPos->browseLeafs( tmpLeafs );
-	std::vector< TagBrowseInfo > tmpBranch;
-	curPos->browseBranches( tmpBranch );
-	for( size_t i = 0; i < tmpLeafs.size(); ++i ) // TODO: replace to std::copy
-		tmpBranch.push_back( tmpLeafs[i] );
-	arr.swap( tmpBranch );
+	std::vector< TagBrowseInfo > tmp;
+	curPos->browseLeafs( tmp );
+	size_t leafs_size = tmp.size();
+	arr.resize( leafs_size );
+	std::copy( tmp.begin(), tmp.end(), arr.begin() );
+	tmp.clear();
+	curPos->browseBranches( tmp );
+	arr.resize( leafs_size + tmp.size() );
+	std::copy( tmp.begin(), tmp.end(), arr.begin() + leafs_size );
 }
 
 } // namespace address_space
