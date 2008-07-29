@@ -223,6 +223,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\src\opc\frl_opc_item_attributes.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\src\opc\frl_opc_item_hvqt.cpp"
 					>
 				</File>
