@@ -6,10 +6,10 @@ namespace private_
 {
 	struct LogWrite
 	{
-		ListLogElements formaters;
+		LogElementList formaters;
 		LogParameter param;
 
-		LogWrite( const ListLogElements& formaters_, const LogParameter& param_ )
+		LogWrite( const LogElementList& formaters_, const LogParameter& param_ )
 			:	formaters( formaters_ ), param( param_ )
 		{
 		}
@@ -47,7 +47,7 @@ void Logger::clearWriters()
 	destionations.clear();
 }
 
-void Logger::setFormat( const ListLogElements &list_ )
+void Logger::setFormat( const LogElementList &list_ )
 {
 	clearOutFormat();
 	formaters = list_;

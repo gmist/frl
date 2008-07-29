@@ -9,14 +9,14 @@ namespace frl{ namespace logging{
 
 namespace private_
 {
-String getStr( const logging::ListLogElements &elements, const frl::logging::LogParameter &param );
+String getStr( const logging::LogElementList &elements, const frl::logging::LogParameter &param );
 }
 
 class ILogWriter
 {
 public:
 	virtual ~ILogWriter(){};
-	virtual void write( const ListLogElements &elements, const LogParameter &param ) = 0;
+	virtual void write( const LogElementList &elements, const LogParameter &param ) = 0;
 };
 
 typedef std::list< boost::shared_ptr< frl::logging::ILogWriter > > ListLogWriters;
@@ -26,7 +26,7 @@ class ConsoleWriter : public ILogWriter
 static boost::mutex guard;
 public:
 	virtual ~ConsoleWriter();
-	virtual void write( const ListLogElements &elements, const LogParameter &param );
+	virtual void write( const LogElementList &elements, const LogParameter &param );
 };
 
 class FileWriter : public ILogWriter
@@ -42,7 +42,7 @@ public:
 	FileWriter( const String &fileName_ );
 	FileWriter( const FileWriter &other );
 	virtual ~FileWriter();
-	virtual void write( const ListLogElements&elements, const LogParameter &param );
+	virtual void write( const LogElementList&elements, const LogParameter &param );
 
 };
 
@@ -50,7 +50,7 @@ class DebugWindowWriter	:	public ILogWriter
 {
 public:
 	virtual ~DebugWindowWriter();
-	virtual void write( const ListLogElements &elements, const LogParameter &param );
+	virtual void write( const LogElementList &elements, const LogParameter &param );
 };
 
 } // namespace logging

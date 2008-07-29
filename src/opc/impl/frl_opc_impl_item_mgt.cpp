@@ -121,7 +121,7 @@ STDMETHODIMP ItemMgt::ValidateItems(
 
 	HRESULT res = S_OK;
 	boost::mutex::scoped_lock guard( groupGuard );
-	for( DWORD i=0; i < dwCount; ++i )
+	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0 )
 		{
@@ -184,7 +184,7 @@ STDMETHODIMP ItemMgt::RemoveItems(
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( groupGuard );
 	GroupItemElemList::iterator end = itemList.end();
-	for( DWORD i=0; i < dwCount; ++i )
+	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		it = itemList.find( phServer[i] );
 		if( it == end ) 
@@ -266,7 +266,7 @@ STDMETHODIMP ItemMgt::SetClientHandles(
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( groupGuard );
 	GroupItemElemList::iterator end = itemList.end();
-	for( DWORD i=0; i < dwCount; ++i )
+	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		it = itemList.find( phServer[i] );
 		if( it == end )
@@ -302,7 +302,7 @@ STDMETHODIMP ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [size_is][in] *
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( groupGuard );
 	GroupItemElemList::iterator end = itemList.end();
-	for( DWORD i=0; i < dwCount; ++i )
+	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		it = itemList.find( phServer[i] );
 		if( it == end )

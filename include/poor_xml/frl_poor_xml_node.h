@@ -11,7 +11,8 @@ namespace frl{ namespace poor_xml{
 class Parser;
 class Node;
 
-typedef std::list< boost::shared_ptr< Node > > NodesList;
+typedef boost::shared_ptr< Node > NodeListEl;
+typedef std::list< NodeListEl > NodesList;
 
 class Node
 {

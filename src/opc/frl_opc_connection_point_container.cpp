@@ -2,6 +2,7 @@
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <algorithm>
 #include <OleCtl.h>
+#include <boost/foreach.hpp>
 #include "opc/frl_opc_enum_connection_points.h"
 #include "opc/frl_opc_connection_point.h"
 
@@ -39,24 +40,21 @@ STDMETHODIMP ConnectionPointContainer::FindConnectionPoint(
 		return E_POINTER;
 
 	boost::mutex::scoped_lock guard( cpGuard );
-	ConnectionPointList::iterator end = points.end();
-	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
+	BOOST_FOREACH( ConnectionPointElem& el, points )
 	{
-		if( (*it)->getInterface() == riid )
-			return (*it)->QueryInterface( IID_IConnectionPoint, (void**)ppCP );
+		if( el->getInterface() == riid )
+			return el->QueryInterface( IID_IConnectionPoint, (void**)ppCP );
 	}
-
 	return CONNECT_E_NOCONNECTION;
 }
 
 frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	ConnectionPointList::iterator end = points.end();
-	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
+	BOOST_FOREACH( ConnectionPointElem& el, points )
 	{
-		if( (*it)->getInterface() == interface_ )
-			return (*it)->isConnected();
+		if( el->getInterface() == interface_ )
+			return el->isConnected();
 	}
 	return False;
 }
@@ -64,10 +62,9 @@ frl::Bool ConnectionPointContainer::isConnected( const IID &interface_ )
 void ConnectionPointContainer::registerInterface( const IID& interface_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	ConnectionPointList::iterator end = points.end();
-	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
+	BOOST_FOREACH( ConnectionPointElem& el, points )
 	{
-		if( (*it)->getInterface() == interface_ )
+		if( el->getInterface() == interface_ )
 			return; // already registration
 	}
 	points.push_back( ConnectionPointElem( new ConnectionPoint( interface_, this ) ) );
@@ -90,12 +87,11 @@ void ConnectionPointContainer::unregisterInterface( const IID& interface_ )
 HRESULT ConnectionPointContainer::getCallback( const IID& interface_, IUnknown** callBack_ )
 {
 	boost::mutex::scoped_lock guard( cpGuard );
-	ConnectionPointList::iterator end = points.end();
-	for( ConnectionPointList::iterator it = points.begin(); it != end; ++it )
+	BOOST_FOREACH( ConnectionPointElem&el, points )
 	{
-		if( (*it)->getInterface() == interface_ )
+		if( el->getInterface() == interface_ )
 		{
-			IUnknown *unkn = (*it)->getCallBack();
+			IUnknown *unkn = el->getCallBack();
 			if( unkn != NULL )
 				return unkn->QueryInterface( interface_, (void**)callBack_ );
 		}

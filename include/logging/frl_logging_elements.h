@@ -34,7 +34,9 @@ public:
 	virtual String proccess(  const LogParameter &param ) = 0;
 };
 
-typedef std::list< boost::shared_ptr< frl::logging::ILogElement > > ListLogElements;
+
+typedef boost::shared_ptr< frl::logging::ILogElement > LogElement;
+typedef std::list< LogElement > LogElementList;
 
 class LexicalElement : public ILogElement
 {
@@ -115,9 +117,9 @@ public:
 
 template < class LHV, class RHV >
 inline
-ListLogElements operator << ( const LHV &lhv, const RHV &rhv )
+LogElementList operator << ( const LHV &lhv, const RHV &rhv )
 {
-	ListLogElements tmp;
+	LogElementList tmp;
 	boost::shared_ptr< LHV > lhvTmp( new LHV() );
 	boost::shared_ptr< RHV > rhvTmp( new RHV() );
 	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
@@ -127,9 +129,9 @@ ListLogElements operator << ( const LHV &lhv, const RHV &rhv )
 
 // Разбираемся со строками
 inline
-ListLogElements operator << ( const String &lhv, const String &rhv )
+LogElementList operator << ( const String &lhv, const String &rhv )
 {
-	ListLogElements tmp;
+	LogElementList tmp;
 	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
 	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
 	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
@@ -138,7 +140,7 @@ ListLogElements operator << ( const String &lhv, const String &rhv )
 }
 
 inline
-ListLogElements operator << ( const String &lhv, ListLogElements rhv )
+LogElementList operator << ( const String &lhv, LogElementList rhv )
 {
 	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
 	rhv.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
@@ -146,7 +148,7 @@ ListLogElements operator << ( const String &lhv, ListLogElements rhv )
 }
 
 inline
-ListLogElements operator << ( ListLogElements lhv, const String &rhv )
+LogElementList operator << ( LogElementList lhv, const String &rhv )
 {
 	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
 	lhv.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
@@ -155,9 +157,9 @@ ListLogElements operator << ( ListLogElements lhv, const String &rhv )
 
 template< class RHV >
 inline
-ListLogElements operator << ( const String &lhv, const RHV &rhv )
+LogElementList operator << ( const String &lhv, const RHV &rhv )
 {
-	ListLogElements tmp;
+	LogElementList tmp;
 	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
 	boost::shared_ptr< RHV > rhvTmp( new RHV() );
 	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
@@ -167,9 +169,9 @@ ListLogElements operator << ( const String &lhv, const RHV &rhv )
 
 template< class LHV >
 inline
-ListLogElements operator << ( const LHV &lhv, const String &rhv )
+LogElementList operator << ( const LHV &lhv, const String &rhv )
 {
-	ListLogElements tmp;
+	LogElementList tmp;
 	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
 	boost::shared_ptr< LHV > lhvTmp( new LHV() );
 	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
@@ -180,7 +182,7 @@ ListLogElements operator << ( const LHV &lhv, const String &rhv )
 // Разбираемся с остальными типами
 template< class LHV >
 inline
-ListLogElements operator << ( const LHV &lhv, ListLogElements rhv )
+LogElementList operator << ( const LHV &lhv, LogElementList rhv )
 {
 	boost::shared_ptr< LHV > lhvTmp( new LHV() );
 	rhv.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
@@ -189,7 +191,7 @@ ListLogElements operator << ( const LHV &lhv, ListLogElements rhv )
 
 template< class RHV >
 inline
-ListLogElements operator << ( ListLogElements lhv, const RHV &rhv )
+LogElementList operator << ( LogElementList lhv, const RHV &rhv )
 {
 	boost::shared_ptr< RHV > rhvTmp( new RHV() );
 	lhv.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );

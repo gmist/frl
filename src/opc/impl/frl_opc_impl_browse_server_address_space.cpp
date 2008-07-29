@@ -1,5 +1,6 @@
 #include "opc/impl/frl_opc_impl_browse_server_address_space.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/foreach.hpp>
 #include "frl_string.h"
 #include "opc/frl_opc_enum_string.h"
 #include "opc/address_space/frl_opc_address_space.h"
@@ -134,11 +135,10 @@ STDMETHODIMP BrowseServerAddressSpace::BrowseOPCItemIDs(
 		#endif
 		std::vector< String > filtredItems;
 		filtredItems.reserve( items.size() );
-		std::vector< String >::iterator end = items.end();
-		for( std::vector< String >::iterator it = items.begin(); it != end; ++it )
+		BOOST_FOREACH( String& el, items )
 		{
-			if( util::matchStringPattern( (*it), filter ) )
-				filtredItems.push_back( (*it) );
+			if( util::matchStringPattern( el, filter ) )
+				filtredItems.push_back( el );
 		}
 		items.swap( filtredItems );
 	}

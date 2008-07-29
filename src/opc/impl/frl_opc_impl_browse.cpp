@@ -1,5 +1,6 @@
 #include "opc/impl/frl_opc_impl_browse.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/foreach.hpp>
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_address_space.h"
 
@@ -195,12 +196,13 @@ STDMETHODIMP BrowseImpl::Browse(
 	{
 		Bool flag = False;
 		std::vector< address_space::TagBrowseInfo > tmp;
-		for( size_t i = 0; i < itemsList.size(); ++i )
+		BOOST_FOREACH( address_space::TagBrowseInfo& el, itemsList )
 		{
-			if( itemsList[i].fullID == cp )
+			if( el.fullID == cp )
+			{
 				flag = True;
-			if( flag )
-				tmp.push_back( itemsList[i] );
+				tmp.push_back( el );
+			}
 		}
 		if( ! flag )
 			return OPC_E_INVALIDCONTINUATIONPOINT;
@@ -216,11 +218,10 @@ STDMETHODIMP BrowseImpl::Browse(
 		#else
 			String filter = wstring2string( szElementNameFilter );
 		#endif
-		std::vector< address_space::TagBrowseInfo >::iterator end = itemsList.end();
-		for( std::vector< address_space::TagBrowseInfo >::iterator it = itemsList.begin(); it != end; ++it )
+		BOOST_FOREACH( address_space::TagBrowseInfo& el, itemsList )
 		{
-			if( util::matchStringPattern( (*it).shortID, filter ) )
-				filtredItems.push_back( (*it) );
+			if( util::matchStringPattern( el.shortID, filter ) )
+				filtredItems.push_back( el );
 		}
 		itemsList.swap( filtredItems );
 	}

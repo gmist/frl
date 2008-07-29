@@ -1,6 +1,7 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <algorithm>
+#include <boost/foreach.hpp>
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_tag.h"
 #include "opc/frl_opc_util.h"
@@ -177,27 +178,25 @@ void Tag::setParent( Tag* parent_ )
 void Tag::browseBranches( std::vector< String > &branches )
 {
 	branches.reserve( tagsNameCache.size() );
-	std::map< String, Tag* >::iterator end = tagsNameCache.end();
-	for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != end; ++it )
+	BOOST_FOREACH( map_element el, tagsNameCache )
 	{
-		if( (*it).second->isBranch() )
-			branches.push_back( (*it).second->getShortID() );
+		if( el.second->isBranch() )
+			branches.push_back( el.second->getShortID() );
 	}
 }
 
 void Tag::browseBranches( std::vector< TagBrowseInfo > &branchesArr )
 {
 	branchesArr.reserve( tagsNameCache.size() );
-	std::map< String, Tag* >::iterator end = tagsNameCache.end();
 	TagBrowseInfo tmp;
-	for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != end; ++it )
+	BOOST_FOREACH( map_element el, tagsNameCache )
 	{
-		if( (*it).second->isBranch() )
+		if( el.second->isBranch() )
 		{
-			tmp.fullID = (*it).second->getID();
-			tmp.shortID = (*it).second->getShortID();
+			tmp.fullID = el.second->getID();
+			tmp.shortID = el.second->getShortID();
 			tmp.isLeaf = False;
-			tmp.tagPtr = (*it).second;
+			tmp.tagPtr = el.second;
 			branchesArr.push_back( tmp );
 		}
 	}
@@ -206,17 +205,16 @@ void Tag::browseBranches( std::vector< TagBrowseInfo > &branchesArr )
 void Tag::browseLeafs( std::vector< String > &leafs, DWORD accessFilter )
 {
 	leafs.reserve( tagsNameCache.size() );
-	std::map< String, Tag* >::iterator end = tagsNameCache.end();
-	for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != end; ++it )
+	BOOST_FOREACH( map_element el, tagsNameCache )
 	{
-		if( (*it).second->isLeaf() )
+		if( el.second->isLeaf() )
 		{
 			if( accessFilter != 0 )
 			{
-				if( ! (*it).second->checkAccessRight( accessFilter ) )
+				if( ! el.second->checkAccessRight( accessFilter ) )
 					continue;
 			}
-			leafs.push_back( (*it).second->getShortID() );
+			leafs.push_back( el.second->getShortID() );
 		}
 	}
 }
@@ -224,16 +222,15 @@ void Tag::browseLeafs( std::vector< String > &leafs, DWORD accessFilter )
 void Tag::browseLeafs( std::vector< TagBrowseInfo > &leafsArr )
 {
 	leafsArr.reserve( tagsNameCache.size() );
-	std::map< String, Tag* >::iterator end = tagsNameCache.end();
 	TagBrowseInfo tmp;
-	for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != end; ++it )
+	BOOST_FOREACH( map_element el, tagsNameCache )
 	{
-		if( (*it).second->isLeaf() )
+		if( el.second->isLeaf() )
 		{
-			tmp.fullID = (*it).second->getID();
-			tmp.shortID = (*it).second->getShortID();
+			tmp.fullID = el.second->getID();
+			tmp.shortID = el.second->getShortID();
 			tmp.isLeaf = True;
-			tmp.tagPtr = (*it).second;
+			tmp.tagPtr = el.second;
 			leafsArr.push_back( tmp );
 		}
 	}
@@ -344,17 +341,20 @@ HRESULT Tag::getPropertyValue( DWORD propID, VARIANT &toValue )
 void Tag::browse( std::vector< TagBrowseInfo > &arr )
 {
 	arr.reserve( tagsNameCache.size() );
-	std::map< String, Tag* >::iterator end = tagsNameCache.end();
 	TagBrowseInfo tmp;
-	for( std::map< String, Tag* >::iterator it = tagsNameCache.begin(); it != end; ++it )
+	BOOST_FOREACH( map_element el, tagsNameCache )
 	{
-		tmp.fullID = (*it).second->getID();
-		tmp.shortID = (*it).second->getShortID();
-		if( (*it).second->isLeaf() )
+		tmp.fullID = el.second->getID();
+		tmp.shortID = el.second->getShortID();
+		if( el.second->isLeaf() )
+		{
 			tmp.isLeaf = True;
+		}
 		else
+		{
 			tmp.isLeaf = False;
-		tmp.tagPtr = (*it).second;
+		}	
+		tmp.tagPtr = el.second;
 		arr.push_back( tmp );
 	}
 }

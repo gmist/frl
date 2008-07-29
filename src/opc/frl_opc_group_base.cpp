@@ -1,5 +1,6 @@
 #include "opc/frl_opc_group_base.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/foreach.hpp>
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/address_space/frl_opc_tag.h"
 #include "opc/frl_opc_group.h"
@@ -143,15 +144,15 @@ void GroupBase::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListE
 		return;
 	}
 
-	HRESULT masterError = S_OK;
-	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
-	size_t i = 0;
-	std::list< ItemHVQT >::const_iterator end = handles->end();
+	HRESULT masterError = S_OK;	
 	GroupItemElemList::iterator iter;
 	GroupItemElemList::iterator groupIterEnd = itemList.end();
-	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
+
+	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
+	size_t i = 0;
+	BOOST_FOREACH( const ItemHVQT& el, *handles )
 	{
-		iter = itemList.find( (*it).getHandle() );
+		iter = itemList.find( el.getHandle() );
 		if( iter == groupIterEnd )
 		{
 			masterError = S_FALSE;
@@ -159,11 +160,11 @@ void GroupBase::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListE
 			continue;
 		}
 
-		pHandles[i] = (*iter).second->getClientHandle();
+		pHandles[i] = iter->second->getClientHandle();
 
 		try
 		{
-			pErrors[i] = ((*iter).second->readValue()).copyTo( pValue[i] );
+			pErrors[i] = ( iter->second->readValue() ).copyTo( pValue[i] );
 		}
 		catch( Tag::NotExistTag& )
 		{
@@ -176,8 +177,9 @@ void GroupBase::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListE
 			continue;
 		}
 
-		pQuality[i] = (*iter).second->getQuality();
-		pTimeStamp[i] = (*iter).second->getTimeStamp();
+		pQuality[i] = iter->second->getQuality();
+		pTimeStamp[i] = iter->second->getTimeStamp();
+		++i;
 	}
 
 	callBack->OnReadComplete(	request->getTransactionID(),
@@ -276,26 +278,26 @@ void GroupBase::doAsyncRefresh( const AsyncRequestListElem &request )
 		return;
 	}
 
-	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
-	size_t i = 0;
-	std::list< ItemHVQT >::const_iterator end = handles->end();
 	GroupItemElemList::iterator iter;
 	GroupItemElemList::iterator groupIterEnd = itemList.end();
-	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
+	
+	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
+	size_t i = 0;	
+	BOOST_FOREACH( const ItemHVQT& el, *handles )
 	{
-		iter = itemList.find( (*it).getHandle() );
+		iter = itemList.find( el.getHandle() );
 		if( iter == groupIterEnd )
 		{
 			pErrors[i] = OPC_E_INVALIDHANDLE;
 			continue;
 		}
-		pHandles[i] = (*iter).second->getClientHandle();
+		pHandles[i] = iter->second->getClientHandle();
 		try
 		{
 			if( request->getSource() == OPC_DS_CACHE )
-				pErrors[i] = ((*iter).second->getCachedValue()).copyTo( pValue[i] );
+				pErrors[i] = iter->second->getCachedValue().copyTo( pValue[i] );
 			else
-				pErrors[i] = ((*iter).second->readValue()).copyTo( pValue[i] );
+				pErrors[i] = iter->second->readValue().copyTo( pValue[i] );
 		}
 		catch( Tag::NotExistTag& )
 		{
@@ -305,8 +307,9 @@ void GroupBase::doAsyncRefresh( const AsyncRequestListElem &request )
 		if( FAILED( pErrors[i] ) )
 			continue;
 
-		pQuality[i] = (*iter).second->getQuality();
-		pTimeStamp[i] = (*iter).second->getTimeStamp();
+		pQuality[i] = iter->second->getQuality();
+		pTimeStamp[i] = iter->second->getTimeStamp();
+		++i;
 	}
 
 	callBack->OnDataChange(	request->getTransactionID(),
@@ -347,38 +350,37 @@ void GroupBase::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestList
 	}
 
 	HRESULT masterError = S_OK;
-
-	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
-	size_t i = 0;
-	std::list< ItemHVQT >::const_iterator end = handles->end();
 	GroupItemElemList::iterator iter;
 	GroupItemElemList::iterator groupIterEnd = itemList.end();
-	for( std::list< ItemHVQT >::const_iterator it = handles->begin(); it != end; ++it, ++i )
+	
+	const std::list< ItemHVQT >  *handles = &request->getItemHVQTList();
+	size_t i = 0;
+	BOOST_FOREACH( const ItemHVQT& el, *handles )
 	{
-		iter = itemList.find( (*it).getHandle() );
+		iter = itemList.find( el.getHandle() );
 		if( iter == groupIterEnd )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_INVALIDHANDLE;
 			continue;
 		}
-		pHandles[i] = (*iter).second->getClientHandle();
+		pHandles[i] = iter->second->getClientHandle();
 
-		if( !(*iter).second->isWritable() )
+		if( ! iter->second->isWritable() )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADRIGHTS;
 			continue;
 		}
 
-		if( (*it).getValue().getType() == VT_EMPTY )
+		if( el.getValue().getType() == VT_EMPTY )
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADTYPE;
 			continue;
 		}
 
-		pErrors[i] = (*iter).second->writeValue( (*it).getValue() );
+		pErrors[i] = iter->second->writeValue( el.getValue() );
 
 		if( FAILED( pErrors[i] ) )
 		{
@@ -386,15 +388,16 @@ void GroupBase::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestList
 			continue;
 		}
 
-		if( (*it).isQualitySpecified() )
+		if( el.isQualitySpecified() )
 		{
-			(*iter).second->setQuality( (*it).getQuality() );
+			iter->second->setQuality( el.getQuality() );
 		}
 
-		if( (*it).isTimeStampSpecified() )
+		if( el.isTimeStampSpecified() )
 		{
-			(*iter).second->setTimeStamp( (*it).getTimeStamp() );
+			iter->second->setTimeStamp( el.getTimeStamp() );
 		}
+		++i;
 	}
 
 	callBack->OnWriteComplete(	request->getTransactionID(),

@@ -8,7 +8,7 @@ namespace frl { namespace logging {
 class Logger : private boost::noncopyable
 {
 private:
-	ListLogElements formaters;
+	LogElementList formaters;
 	ListLogWriters destionations;
 	String name;
 	Level level;
@@ -28,7 +28,7 @@ public:
 
 	void clearOutFormat();
 	void clearWriters();
-	void setFormat( const ListLogElements &list_ );
+	void setFormat( const LogElementList &list_ );
 	void log( const LogParameter &param);
 	void setName( const String& newName );
 	void setLevel( frl::logging::Level newLevel );

@@ -490,6 +490,6 @@ const frl::os::win32::registry::RootKey& Key::getRootKey()
 } // namespace registry
 } // namespace win32
 } // namespace os
-} // frl
+} // FatRat Library
 
 #endif // FRL_PLATFORM_WIN32

@@ -1,3 +1,4 @@
+#include <boost/foreach.hpp>
 #include <algorithm>
 #include "poor_xml/frl_poor_xml_node.h"
 #include "poor_xml/frl_poor_xml_document.h"
@@ -30,24 +31,22 @@ const String& Node::getName()
 NodesList Node::getSubNodes( const String &name_ )
 {
 	NodesList nodesList;
-	NodesList::iterator end = nodes.end();
-	for( NodesList::iterator it = nodes.begin(); it != end; ++it )
-	{ 
-		if( (*it)->getName() == name_ )
-			nodesList.push_back( (*it) );
+	BOOST_FOREACH( NodeListEl &el, nodes )
+	{
+		if( el->getName() == name_ )
+			nodesList.push_back( el );
 	}
 	if( nodesList.empty() )
 		FRL_THROW_S_CLASS( Node::NodeNotFound );
 	return nodesList;
 }
 
-boost::shared_ptr< Node > Node::getFirstNode( const String& name_ )
+NodeListEl Node::getFirstNode( const String& name_ )
 {
-	NodesList::iterator end = nodes.end();
-	for( NodesList::iterator it = nodes.begin(); it != end; ++it )
+	BOOST_FOREACH( NodeListEl &el, nodes )
 	{
-		if( (*it)->getName() == name_ )
-			return (*it);
+		if( el->getName() == name_ )
+			return el;
 	}
 	FRL_THROW_S_CLASS( Node::NodeNotFound );
 }
@@ -63,11 +62,10 @@ String Node::getProprtyVal( const String &propertyName )
 boost::shared_ptr< Node > Node::getNode( const String &name_, const String &propertyName, const String &propertyValue )
 {
 	NodesList nodesList = getSubNodes( name_ );
-	NodesList::iterator end = nodesList.end();
-	for( NodesList::iterator it = nodesList.begin(); it != end; ++it )
+	BOOST_FOREACH( NodeListEl &el, nodes )
 	{
-		if( (*it)->getProprtyVal( propertyName ) == propertyValue )
-			return (*it );
+		if( el->getProprtyVal( propertyName ) == propertyValue )
+			return el;
 	}
 	FRL_THROW_S_CLASS( Node::NodeNotFound );
 }

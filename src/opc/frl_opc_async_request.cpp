@@ -1,5 +1,6 @@
 #include "frl_platform.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/foreach.hpp>
 #include "opc/frl_opc_async_request.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include "opc/frl_opc_group.h"
@@ -29,11 +30,10 @@ AsyncRequest::AsyncRequest(	GroupElem& group_,
 		group( group_ ),
 		type( type_ )
 {
-	std::list< OPCHANDLE >::const_iterator end = handles_.end();
-	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it )
+	BOOST_FOREACH( const OPCHANDLE& el, handles_ )
 	{
 		ItemHVQT tmp;
-		tmp.setHandle( (*it) );
+		tmp.setHandle( el );
 		itemHVQTList.push_back( tmp );
 	}
 }
@@ -90,13 +90,13 @@ void AsyncRequest::init( const std::list< OPCHANDLE > &handles_, const VARIANT *
 		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
 
 	size_t i = 0;
-	std::list< OPCHANDLE >::const_iterator end = handles_.end();
-	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it, ++i )
+	BOOST_FOREACH( const OPCHANDLE& el, handles_ )
 	{
 		ItemHVQT tmp;
-		tmp.setHandle( (*it) );
+		tmp.setHandle( el );
 		tmp.setValue( values_[i] );
 		itemHVQTList.push_back( tmp );
+		++i;
 	}
 }
 
@@ -108,11 +108,10 @@ void AsyncRequest::init( const std::list< OPCHANDLE > &handles_ )
 	if( handles_.empty() )
 		FRL_THROW_S_CLASS( AsyncRequest::InvalidParameter );
 	
-	std::list< OPCHANDLE >::const_iterator end = handles_.end();
-	for( std::list< OPCHANDLE >::const_iterator it = handles_.begin(); it != end; ++it )
+	BOOST_FOREACH( const OPCHANDLE& el, handles_ )
 	{
 		ItemHVQT tmp;
-		tmp.setHandle( (*it) );
+		tmp.setHandle( el );
 		itemHVQTList.push_back( tmp );
 	}
 }

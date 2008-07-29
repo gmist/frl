@@ -38,7 +38,8 @@ private:
 	Tag* addTag( const String &name, Bool is_Branch_ );
 	Tag* getTag( const String &name );
 
-public:
+	typedef std::map< String, Tag* >::value_type& map_element;
+public:	
 
 	FRL_EXCEPTION_CLASS( IsExistTag );
 	FRL_EXCEPTION_CLASS( NotExistTag );

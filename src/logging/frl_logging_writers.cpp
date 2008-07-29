@@ -1,15 +1,17 @@
+#include <boost/foreach.hpp>
 #include "logging/frl_logging_writers.h"
 
 namespace frl{ namespace logging{
 
 namespace private_
 {
-String getStr( const logging::ListLogElements &elements, const frl::logging::LogParameter &param )
+String getStr( const logging::LogElementList &elements, const frl::logging::LogParameter &param )
 {
 	String tmp;
-	logging::ListLogElements::const_iterator end = elements.end();
-	for( logging::ListLogElements::const_iterator it = elements.begin(); it != end; ++it )
-		tmp += (*it)->proccess( param );
+	BOOST_FOREACH( const LogElement& el, elements )
+	{
+		tmp += el->proccess( param );
+	}
 	return tmp;
 }
 } // namespace private_
@@ -20,7 +22,7 @@ ConsoleWriter::~ConsoleWriter()
 {
 }
 
-void ConsoleWriter::write( const ListLogElements &elements, const LogParameter &param )
+void ConsoleWriter::write( const LogElementList &elements, const LogParameter &param )
 {
 	boost::mutex::scoped_lock scopeGuard( guard );
 	console_std::Out << private_::getStr( elements, param );
@@ -87,7 +89,7 @@ FileWriter::~FileWriter()
 	closeFile();
 }
 
-void FileWriter::write( const ListLogElements &elements, const LogParameter &param )
+void FileWriter::write( const LogElementList &elements, const LogParameter &param )
 {
 	if( desc != io::fs::InvalidFileDescriptor )
 	{
@@ -102,7 +104,7 @@ DebugWindowWriter::~DebugWindowWriter()
 {
 }
 
-void DebugWindowWriter::write( const ListLogElements &elements, const LogParameter &param )
+void DebugWindowWriter::write( const LogElementList &elements, const LogParameter &param )
 {
 	String tmp = private_::getStr( elements, param );
 	if( tmp.length() )
