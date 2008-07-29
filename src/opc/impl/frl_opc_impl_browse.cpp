@@ -237,10 +237,8 @@ HRESULT STDMETHODCALLTYPE BrowseImpl::Browse(
 			*pszContinuationPoint = util::duplicateString( string2wstring( itemsList[dwMaxElementsReturned].fullID ) );
 		#endif
 
-		std::vector< address_space::TagBrowseInfo > tmp;
-		tmp.reserve( dwMaxElementsReturned );
-		for( size_t i = 0; i < dwMaxElementsReturned; ++i ) // TODO: replace to std::copy
-			tmp.push_back( itemsList[i] );
+		std::vector< address_space::TagBrowseInfo > tmp( dwMaxElementsReturned );
+		std::copy( itemsList.begin(), itemsList.begin() + dwMaxElementsReturned, tmp.begin() );
 		itemsList.swap( tmp );			
 	}
 	else
