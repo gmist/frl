@@ -39,7 +39,7 @@ public:
 	STDMETHODIMP_(ULONG) Release( void);
 
 	// the IEnum functions
-	STDMETHODIMP Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched );
+	STDMETHODIMP Next( ULONG celt, OPCITEMATTRIBUTES** rgelt, ULONG* pceltFetched );
 	STDMETHODIMP Skip ( ULONG celt );
 	STDMETHODIMP Reset( void );
 	STDMETHODIMP Clone( IEnumOPCItemAttributes** ppEnum );

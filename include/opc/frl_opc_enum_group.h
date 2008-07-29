@@ -38,7 +38,7 @@ public:
 	// the OPCEnum Functions
 	virtual STDMETHODIMP Next (
 		ULONG Requested,
-		IUnknown **ppGrp,
+		IUnknown** rgelt,
 		ULONG *pActual
 		);
 

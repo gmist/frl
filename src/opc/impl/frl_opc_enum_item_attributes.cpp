@@ -67,14 +67,14 @@ void EnumOPCItemAttributes::addItem( const std::pair< OPCHANDLE, GroupItemElem >
 	itemList.push_back( attrib );
 }
 
-STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched )
+STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** rgelt, ULONG* pceltFetched )
 {
 	if( pceltFetched )
 	{
 		*pceltFetched = 0;
 	}
 
-	if( ppItemArray == NULL || ( celt != 1 && pceltFetched == NULL) )
+	if( rgelt == NULL || ( celt != 1 && pceltFetched == NULL) )
 	{
 		return E_POINTER;
 	}
@@ -82,15 +82,17 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** ppItem
 	if( curIndex >= itemList.size() )
 		return S_FALSE;
 
-	*ppItemArray = os::win32::com::allocMemory< OPCITEMATTRIBUTES >( celt );
+	*rgelt = os::win32::com::allocMemory< OPCITEMATTRIBUTES >( celt );
 	size_t i = curIndex;
-	for( ; i < itemList.size() && *pceltFetched < celt; ++i )
+	size_t j = 0;
+	for( ; i < itemList.size() && j < celt; ++i, ++j )
 	{
-		itemList[i].copyTo( (*ppItemArray)[*pceltFetched] );
-		++(*pceltFetched);
+		itemList[i].copyTo( (*rgelt)[j] );
+		if( pceltFetched )
+			++(*pceltFetched);
 	}
 
-	if (*pceltFetched < celt)
+	if( j < celt )
 	{
 		curIndex = itemList.size();
 		return S_FALSE;

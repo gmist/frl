@@ -58,32 +58,35 @@ ULONG EnumGroup::Release( void )
 	return tmp;
 }
 
-STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown **rgelt, ULONG *pceltFetched )
+STDMETHODIMP EnumGroup::Next( ULONG celt, IUnknown** rgelt, ULONG *pceltFetched )
 {
-	if ( rgelt == NULL || pceltFetched == NULL || celt == 0 )
-		return E_INVALIDARG;
+	if( pceltFetched )
+	{
+		*pceltFetched = 0;
+	}
 
-	if( pceltFetched == NULL && celt != 1 )
+	if( rgelt == NULL || ( celt != 1 && pceltFetched == NULL) )
+	{
 		return E_POINTER;
-
-	*pceltFetched = 0;
+	}
 
 	if( currentIndex >= groupList.size() )
 		return S_FALSE;
 
 	Group *pGroup;
 	size_t i = currentIndex;
-	for( ; ( i < groupList.size() ) && ( *pceltFetched < celt ); ++i )
+	size_t j = 0;
+	for( ; i < groupList.size() && j < celt; ++i, ++j )
 	{
 		pGroup = groupList[i].get();
-		rgelt[*pceltFetched] = reinterpret_cast< IUnknown*>( pGroup );
+		rgelt[j] = reinterpret_cast< IUnknown*>( pGroup );
 		if( pGroup != NULL  )
 			pGroup->AddRef();
-
-		++(*pceltFetched);
+		if( pceltFetched )
+			++(*pceltFetched);
 	}
 
-	if( *pceltFetched < celt )
+	if( j < celt )
 	{
 		currentIndex = groupList.size();
 		return S_FALSE;

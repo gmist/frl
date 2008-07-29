@@ -29,6 +29,7 @@ ItemAttributes::ItemAttributes()
 	os::win32::com::zeroMemory( attributes );
 	attributes->szAccessPath = NULL;
 	attributes->szItemID = NULL;
+	VariantInit( &attributes->vEUInfo );
 }
 
 ItemAttributes::ItemAttributes( const ItemAttributes& other )
@@ -43,6 +44,7 @@ ItemAttributes::ItemAttributes( const ItemAttributes& other )
 	attributes->pBlob = other.attributes->pBlob;
 	attributes->szAccessPath = util::duplicateString( other.attributes->szAccessPath );
 	attributes->szItemID = util::duplicateString( other.attributes->szItemID );
+	VariantInit( &attributes->vEUInfo );
 	VariantCopy( &attributes->vEUInfo , &other.attributes->vEUInfo );
 	attributes->vtCanonicalDataType = other.attributes->vtCanonicalDataType;
 	attributes->vtRequestedDataType = other.attributes->vtRequestedDataType;
@@ -51,6 +53,7 @@ ItemAttributes::ItemAttributes( const ItemAttributes& other )
 ItemAttributes::~ItemAttributes()
 {
 	freeStrings();
+	VariantClear( &attributes->vEUInfo );
 	os::win32::com::freeMemory( attributes );
 }
 

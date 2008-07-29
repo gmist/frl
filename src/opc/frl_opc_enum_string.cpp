@@ -54,33 +54,40 @@ ULONG EnumString::Release( void )
 
 STDMETHODIMP EnumString::Next( ULONG celt, LPOLESTR* rgelt, ULONG* pceltFetched )
 {
-	if( rgelt == NULL || pceltFetched == NULL )
-		return E_INVALIDARG;
+	if( pceltFetched )
+	{
+		*pceltFetched = 0;
+	}
 
-	*pceltFetched = 0;
+	if( rgelt == NULL || ( celt != 1 && pceltFetched == NULL) )
+	{
+		return E_POINTER;
+	}
 
 	if( curIndex >= strings.size() )
 		return S_FALSE;
 
 	size_t i = curIndex;
-	for( ; i < strings.size() && *pceltFetched < celt; ++i )
+	size_t j = 0;
+	for( ; i < strings.size() && j < celt; ++i, ++j )
 	{
 		if ( strings[i].empty() )
 		{
-			rgelt[*pceltFetched] = NULL;
+			rgelt[j] = NULL;
 		}
 		else
 		{
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				rgelt[*pceltFetched] = util::duplicateString( strings[i] );
+				rgelt[j] = util::duplicateString( strings[i] );
 			#else
-				rgelt[*pceltFetched] = util::duplicateString( string2wstring( strings[i] ) );
+				rgelt[j] = util::duplicateString( string2wstring( strings[i] ) );
 			#endif
 		}
-		++(*pceltFetched);
+		if( pceltFetched )
+			++(*pceltFetched);
 	}
 
-	if (*pceltFetched < celt)
+	if( j < celt )
 	{
 		curIndex = strings.size();
 		return S_FALSE;
