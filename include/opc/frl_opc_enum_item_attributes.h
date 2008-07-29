@@ -27,7 +27,7 @@ private:
 	std::vector<OPCITEMATTRIBUTES*> itemList; // Attributes array
 	size_t curIndex; // Current element
 
-	OPCITEMATTRIBUTES* copy( OPCITEMATTRIBUTES *i );
+	void copy( OPCITEMATTRIBUTES &dst, OPCITEMATTRIBUTES &src );
 public:
 	EnumOPCItemAttributes();
 	virtual ~EnumOPCItemAttributes();

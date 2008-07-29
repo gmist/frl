@@ -68,26 +68,21 @@ STDMETHODIMP_(ULONG) EnumOPCItemAttributes::Release( void )
 	return ret;
 }
 
-OPCITEMATTRIBUTES* EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES *i )
+void EnumOPCItemAttributes::copy( OPCITEMATTRIBUTES &dst, OPCITEMATTRIBUTES &src )
 {
-	if( i == NULL )
-		return NULL;
-
-	OPCITEMATTRIBUTES *c = os::win32::com::allocMemory< OPCITEMATTRIBUTES >();
-	os::win32::com::zeroMemory( c );
-	c->bActive = i->bActive;
-	c->dwAccessRights = i->dwAccessRights;
-	c->dwBlobSize = i->dwBlobSize;
-	c->dwEUType = i->dwEUType;
-	c->hClient = i->hClient;
-	c->hServer = i->hServer;
-	c->pBlob = i->pBlob;
-	c->szAccessPath = util::duplicateString( i->szAccessPath );
-	c->szItemID = util::duplicateString( i->szItemID );
-	VariantCopy(&c->vEUInfo , &i->vEUInfo );
-	c->vtCanonicalDataType = i->vtCanonicalDataType;
-	c->vtRequestedDataType = i->vtRequestedDataType;
-	return c;
+	os::win32::com::zeroMemory( &dst );
+	dst.bActive = src.bActive;
+	dst.dwAccessRights = src.dwAccessRights;
+	dst.dwBlobSize = src.dwBlobSize;
+	dst.dwEUType = src.dwEUType;
+	dst.hClient = src.hClient;
+	dst.hServer = src.hServer;
+	dst.pBlob = src.pBlob;
+	dst.szAccessPath = util::duplicateString( src.szAccessPath );
+	dst.szItemID = util::duplicateString( src.szItemID );
+	VariantCopy(&dst.vEUInfo , &src.vEUInfo );
+	dst.vtCanonicalDataType = src.vtCanonicalDataType;
+	dst.vtRequestedDataType = src.vtRequestedDataType;
 }
 
 void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
@@ -98,39 +93,17 @@ void EnumOPCItemAttributes::addItem( OPCHANDLE first, const GroupItemElem &i )
 	attributes->hClient = i->getClientHandle();
 	attributes->hServer = first;
 
-	if( i->getItemID().empty() )
-	{
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		attributes->szItemID = util::duplicateString( FRL_STR("") );
-		#else
-		attributes->szItemID = util::duplicateString( string2wstring( FRL_STR("") ) );
-		#endif
-	}
-	else
-	{
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		attributes->szItemID = util::duplicateString( i->getItemID() );
-		#else
+	#else
 		attributes->szItemID = util::duplicateString( string2wstring( i->getItemID() ) );
-		#endif
-	}
-
-	if( i->getAccessPath().empty() )
-	{
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		attributes->szAccessPath = util::duplicateString( FRL_STR(""));
-		#else
-		attributes->szAccessPath = util::duplicateString( string2wstring( FRL_STR("") ) );
-		#endif
-	}
-	else
-	{
-		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+	#endif
+	
+	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		attributes->szItemID = util::duplicateString( i->getAccessPath() );
-		#else
-		attributes->szItemID = util::duplicateString( string2wstring( i->getAccessPath() ) );
-		#endif
-	}
+	#else
+			attributes->szItemID = util::duplicateString( string2wstring( i->getAccessPath() ) );
+	#endif
 
 	address_space::Tag *item = opcAddressSpace::getInstance().getTag( i->getItemID() );
 	attributes->dwAccessRights = item->getAccessRights();
@@ -157,32 +130,36 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES **ppItem
 	{
 		return E_POINTER;
 	}
+	
+	if( curIndex >= itemList.size() )
+		return S_FALSE;
 
-	size_t i;
-	for( i = 0; i < celt; ++i )
+	*ppItemArray = os::win32::com::allocMemory< OPCITEMATTRIBUTES >( celt );
+	size_t i = curIndex;
+	for( ; i < itemList.size() && *pceltFetched < celt; ++i )
 	{
-		if( curIndex >= itemList.size() ) break;
-		ppItemArray[i] = copy( itemList[curIndex] );
-		if( pceltFetched != NULL )
-			++(*pceltFetched);
-		++curIndex;
+		 copy( (*ppItemArray)[*pceltFetched], *itemList[i] );
+		++(*pceltFetched);
 	}
 
-	if( i == celt )
+	if (*pceltFetched < celt)
 	{
-		return S_OK;
-	}
-	else
-	{
+		curIndex = itemList.size();
 		return S_FALSE;
 	}
+
+	curIndex = i;
+	return S_OK;
 }
 
 STDMETHODIMP EnumOPCItemAttributes::Skip( ULONG celt )
 {
-	curIndex += celt;
-	if( itemList.size() <= curIndex )
+	if (curIndex + celt > itemList.size())
+	{
+		curIndex = itemList.size();
 		return S_FALSE;
+	}
+	curIndex += celt;
 	return S_OK;
 }
 
@@ -194,30 +171,30 @@ STDMETHODIMP EnumOPCItemAttributes::Reset( void )
 
 STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes **ppEnum )
 {
-	// check for invalid arguments.
 	if (ppEnum == NULL)
 		return E_INVALIDARG;
 
-	// allocate enumerator.
 	EnumOPCItemAttributes* pEnum = new EnumOPCItemAttributes();
 	if( pEnum == NULL )
 		return E_OUTOFMEMORY;
 
 	pEnum->itemList.reserve( itemList.size() );
+	OPCITEMATTRIBUTES *pItem;
 	for( size_t i = 0; i < itemList.size(); ++i )
 	{
-		OPCITEMATTRIBUTES *pItem = itemList[i];
-		OPCITEMATTRIBUTES *newItem = new OPCITEMATTRIBUTES();
-		if( newItem != NULL )
-		{
-			newItem = copy( pItem );
-			pEnum->itemList.push_back( newItem );
-		}
+		pItem = itemList[i];
+		OPCITEMATTRIBUTES *newItem = os::win32::com::allocMemory< OPCITEMATTRIBUTES >();
+		copy( *newItem, *pItem );
+		pEnum->itemList.push_back( newItem );
 	}
 	pEnum->curIndex = curIndex;
-	*ppEnum = pEnum;
-	return S_OK;
+	HRESULT hResult = pEnum->QueryInterface( IID_IEnumOPCItemAttributes, (void**)ppEnum );
+	if( FAILED( hResult ) )
+		delete pEnum;
+
+	return hResult;
 }
+
 } // namespace opc
 } // FatRat Library
 
