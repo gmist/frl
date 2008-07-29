@@ -231,15 +231,15 @@ HRESULT STDMETHODCALLTYPE BrowseImpl::Browse(
 	if( dwMaxElementsReturned != 0
 		&& ( dwMaxElementsReturned < (DWORD)itemsList.size() ) )
 	{
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		*pszContinuationPoint = util::duplicateString( itemsList[dwMaxElementsReturned].fullID );
-#else
-		*pszContinuationPoint = util::duplicateString( string2wstring( itemsList[dwMaxElementsReturned].fullID ) );
-#endif
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			*pszContinuationPoint = util::duplicateString( itemsList[dwMaxElementsReturned].fullID );
+		#else
+			*pszContinuationPoint = util::duplicateString( string2wstring( itemsList[dwMaxElementsReturned].fullID ) );
+		#endif
 
 		std::vector< address_space::TagBrowseInfo > tmp;
 		tmp.reserve( dwMaxElementsReturned );
-		for( size_t i = 0; i < dwMaxElementsReturned; ++i )
+		for( size_t i = 0; i < dwMaxElementsReturned; ++i ) // TODO: replace to std::copy
 			tmp.push_back( itemsList[i] );
 		itemsList.swap( tmp );			
 	}

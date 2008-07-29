@@ -5,6 +5,25 @@ namespace frl
 namespace logging
 {
 
+namespace private_
+{
+	struct LogWrite
+	{
+		ListLogElements formaters;
+		LogParameter param;
+
+		LogWrite( const ListLogElements& formaters_, const LogParameter& param_ )
+			:	formaters( formaters_ ), param( param_ )
+		{
+		}
+
+		void operator()( boost::shared_ptr< frl::logging::ILogWriter > &el )
+		{
+			el->write( formaters, param );
+		}
+	};
+}
+
 Logger::Logger()
 	:	level( frl::logging::LEVEL_TRACE )
 {
@@ -41,9 +60,8 @@ void Logger::log( const LogParameter &param )
 {
 	if( level <= param.level )
 	{
-		ListLogWriters::iterator end = destionations.end();
-		for( ListLogWriters::iterator it = destionations.begin(); it != end; ++it )
-			(*it)->write( formaters, param );
+		private_::LogWrite writer( formaters, param );
+		std::for_each( destionations.begin(), destionations.end(), writer );
 	}
 }
 

@@ -130,11 +130,11 @@ HRESULT STDMETHODCALLTYPE
 	// filtration by name
 	if( szFilterCriteria != NULL && wcslen( szFilterCriteria ) != 0 )
 	{			
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String filter = szFilterCriteria;
-#else
-		String filter = wstring2string( szFilterCriteria );
-#endif
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			String filter = szFilterCriteria;
+		#else
+			String filter = wstring2string( szFilterCriteria );
+		#endif
 		std::vector< String > filtredItems;
 		filtredItems.reserve( items.size() );
 		std::vector< String >::iterator end = items.end();

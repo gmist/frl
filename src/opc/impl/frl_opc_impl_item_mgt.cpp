@@ -9,6 +9,11 @@
 
 namespace frl { namespace opc { namespace impl {
 
+namespace private_
+{
+	
+}
+
 ItemMgt::~ItemMgt()
 {
 }
@@ -112,7 +117,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::ValidateItems( /* [in] */ DWORD dwCount, /* [
 
 	HRESULT res = S_OK;
 	boost::mutex::scoped_lock guard( groupGuard );
-	for( DWORD i=0; i<dwCount; ++i )
+	for( DWORD i=0; i < dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0 )
 		{
@@ -121,11 +126,11 @@ HRESULT STDMETHODCALLTYPE ItemMgt::ValidateItems( /* [in] */ DWORD dwCount, /* [
 			continue;
 		}
 
-#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String itemID = pItemArray[i].szItemID;
-#else
-		String itemID = wstring2string( pItemArray[i].szItemID );
-#endif
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			String itemID = pItemArray[i].szItemID;
+		#else
+			String itemID = wstring2string( pItemArray[i].szItemID );
+		#endif
 
 		if( ! opcAddressSpace::getInstance().isExistLeaf( itemID ) )
 		{
@@ -172,7 +177,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::RemoveItems( /* [in] */ DWORD dwCount, /* [si
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( groupGuard );
 	GroupItemElemList::iterator end = itemList.end();
-	for( DWORD i=0; i<dwCount; ++i )
+	for( DWORD i=0; i < dwCount; ++i )
 	{
 		it = itemList.find( phServer[i] );
 		if( it == end ) 
@@ -242,7 +247,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::SetClientHandles( /* [in] */ DWORD dwCount, /
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( groupGuard );
 	GroupItemElemList::iterator end = itemList.end();
-	for( DWORD i=0; i<dwCount; ++i )
+	for( DWORD i=0; i < dwCount; ++i )
 	{
 		it = itemList.find( phServer[i] );
 		if( it == end )
@@ -277,7 +282,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::SetDatatypes( /* [in] */ DWORD dwCount, /* [s
 	GroupItemElemList::iterator it;
 	boost::mutex::scoped_lock guard( groupGuard );
 	GroupItemElemList::iterator end = itemList.end();
-	for( DWORD i=0; i<dwCount; ++i )
+	for( DWORD i=0; i < dwCount; ++i )
 	{
 		it = itemList.find( phServer[i] );
 		if( it == end )
@@ -301,6 +306,7 @@ HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* 
 {
 	if( deleted )
 		return E_FAIL;
+
 	boost::mutex::scoped_lock guard( groupGuard );
 	if (ppUnk == NULL)
 		return E_INVALIDARG;
@@ -312,13 +318,12 @@ HRESULT STDMETHODCALLTYPE ItemMgt::CreateEnumerator( /* [in] */ REFIID riid, /* 
 
 		EnumOPCItemAttributes *temp = new EnumOPCItemAttributes();
 		if (temp == NULL)
-			return (E_OUTOFMEMORY);
+			return E_OUTOFMEMORY;
 		GroupItemElemList::iterator it;
 		GroupItemElemList::iterator end = itemList.end();
 		for( it = itemList.begin(); it != end; ++it )
 		{
-			OPCHANDLE h = it->first;
-			temp->addItem ( h, (*it).second );
+			temp->addItem( it->first, it->second );
 		}
 		return temp->QueryInterface(riid,(void**)ppUnk);
 	}

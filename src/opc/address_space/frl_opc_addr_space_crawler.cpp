@@ -80,7 +80,7 @@ void AddrSpaceCrawler::browse( std::vector< TagBrowseInfo > &arr )
 	curPos->browseLeafs( tmpLeafs );
 	std::vector< TagBrowseInfo > tmpBranch;
 	curPos->browseBranches( tmpBranch );
-	for( size_t i = 0; i < tmpLeafs.size(); ++i )
+	for( size_t i = 0; i < tmpLeafs.size(); ++i ) // TODO: replace to std::copy
 		tmpBranch.push_back( tmpLeafs[i] );
 	arr.swap( tmpBranch );
 }
