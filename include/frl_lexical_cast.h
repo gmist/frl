@@ -9,7 +9,6 @@
 
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
 #include <Windows.h>
-#include <stdio.h>
 #include "frl_exception.h"
 #endif // FRL_PLATFORM_WIN32
 

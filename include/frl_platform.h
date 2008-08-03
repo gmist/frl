@@ -89,8 +89,10 @@ namespace frl{
 	#if( FRL_COMPILER == FRL_COMPILER_MINGW )
 		#define EXT_HASH
 	#else
-		#define snprintf _snprintf
-		#define vsnprintf _vsnprintf
+		#if( _MSC_VER < 1500 )
+			#define snprintf _snprintf
+			#define vsnprintf _vsnprintf
+		#endif
 	#endif
 
 	#if FRL_DEBUG_MODE

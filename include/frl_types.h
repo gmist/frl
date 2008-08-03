@@ -3,7 +3,6 @@
 
 #include "frl_platform.h"
 #include <string>
-#include <stdio.h>
 #include <fstream>
 
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )

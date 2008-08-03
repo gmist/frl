@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="9,00"
 	Name="dependency_opc_foundation"
 	ProjectGUID="{9B04246C-95F5-45C4-B1BA-A47DECAFE102}"
 	RootNamespace="opc_foundation"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform

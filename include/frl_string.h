@@ -3,7 +3,6 @@
 
 #include "frl_types.h"
 #include "stream_std/frl_sstream.h"
-#include <stdlib.h>
 
 namespace frl{
 
