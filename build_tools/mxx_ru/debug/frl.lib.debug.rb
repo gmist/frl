@@ -20,8 +20,8 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 	global_include_path("../../../include")
 
 	# set path to boost library (please modify to you local copy ot boost)
-	global_include_path( "../../../../../../../../src/lib/boost/trunk" )
-	lib_path( "../../../../../../../../src/lib/boost/trunk/stage/lib" )
+	global_include_path( "#{ENV['BOOST_HOME']}" )
+	lib_path( "#{ENV['BOOST_HOME']}" + "/stage/lib" )
 
 	# if you using version MinGW != 3.4.5, you maybe need correct libs name
 	if "vc" != toolset.name

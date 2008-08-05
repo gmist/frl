@@ -1,1 +1,1 @@
-You mast have local copy of boost library (see www.boost.org) and set correct path to the boost library in "debug/frl.lib.debug.rb" and in "release/frl.lib.release.rb".
+You mast have local copy of boost library (see www.boost.org) and add the path of the boost directory to the BOOST_HOME environment variable.
