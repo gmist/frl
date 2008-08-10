@@ -79,7 +79,7 @@ void DeviceManager::initializeAddressSpace()
 	frl::opc::address_space::Tag* info = frl::opc::opcAddressSpace::getInstance().addLeaf( FRL_STR("information"));
 	info->isWritable( False );
 	info->setCanonicalDataType( VT_BSTR );
-	info->write( String( FRL_STR("OPC server for PSOI2 (оянх-02) devices. If you to find error - please lem me know (serg.baburin@gmail.com).") ) );
+	info->write( String( FRL_STR("OPC server for PSOI2 (оянх-02) devices. If you to find error - please let me know (serg.baburin@gmail.com).") ) );
 }
 
 void DeviceManager::initializeDAServer()
