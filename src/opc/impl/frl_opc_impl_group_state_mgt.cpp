@@ -1,5 +1,6 @@
 #include "opc/impl/frl_opc_impl_group_state_mgt.h"
 #if( FRL_PLATFORM == FRL_PLATFORM_WIN32 )
+#include <boost/make_shared.hpp>
 #include "../dependency/vendors/opc_foundation/opcerror.h"
 #include "opc/frl_opc_server.h"
 #include "opc/frl_opc_group.h"
@@ -98,8 +99,8 @@ STDMETHODIMP GroupStateMgt::SetState( /* [in][unique] */ DWORD *pRequestedUpdate
 						if( handles.size() )
 						{
 							GroupElem tmp = GroupElem( dynamic_cast< Group* >( this ) );
-							AsyncRequestListElem request( new AsyncRequest( tmp, async_request::UPDATE, handles) );
-							doAsyncRefresh( request );
+							//AsyncRequestListElem request( new AsyncRequest( tmp, async_request::UPDATE, handles) );
+							doAsyncRefresh( boost::make_shared< AsyncRequest >( tmp, async_request::UPDATE, handles ) );
 						}
 					}
 				}

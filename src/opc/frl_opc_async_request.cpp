@@ -9,25 +9,25 @@ namespace frl{ namespace opc{
 
 using namespace os::win32::com;
 
-AsyncRequest::AsyncRequest(	GroupElem& group_,
+AsyncRequest::AsyncRequest(	const GroupElem& group_,
 											async_request::RequestType type_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		source( OPC_DS_DEVICE ),
-		group( group_ ),
+		group( const_cast< GroupElem& >( group_ ) ),
 		type( type_ )
 {
 }
 
-AsyncRequest::AsyncRequest(	GroupElem& group_, 
+AsyncRequest::AsyncRequest(	const GroupElem& group_, 
 											async_request::RequestType type_,
 											const std::list< OPCHANDLE > &handles_ )
 	:	id( 0 ),
 		cancelID( getUniqueCancelID() ),
 		cancelled( False ),
 		source( 0 ),
-		group( group_ ),
+		group( const_cast< GroupElem& >( group_ ) ),
 		type( type_ )
 {
 	BOOST_FOREACH( const OPCHANDLE& el, handles_ )
@@ -38,7 +38,7 @@ AsyncRequest::AsyncRequest(	GroupElem& group_,
 	}
 }
 
-AsyncRequest::AsyncRequest(	GroupElem& group_,
+AsyncRequest::AsyncRequest(	const GroupElem& group_,
 											async_request::RequestType type_,
 											const std::list< ItemHVQT >& itemsList )
 	:	id( 0 ),
@@ -46,7 +46,7 @@ AsyncRequest::AsyncRequest(	GroupElem& group_,
 		cancelled( False ),
 		itemHVQTList( itemsList ),
 		source( 0 ),
-		group( group_ ),
+		group( const_cast< GroupElem& >( group_ ) ),
 		type( type_ )
 {
 

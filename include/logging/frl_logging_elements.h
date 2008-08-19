@@ -2,6 +2,7 @@
 #define frl_logging_elements_h_
 #include <list>
 #include <boost/shared_ptr.hpp>
+#include <boost/make_shared.hpp>
 #include "frl_types.h"
 #include "time/frl_time_sys_time.h"
 #include "frl_lexical_cast.h"
@@ -120,10 +121,8 @@ inline
 LogElementList operator << ( const LHV &lhv, const RHV &rhv )
 {
 	LogElementList tmp;
-	boost::shared_ptr< LHV > lhvTmp( new LHV() );
-	boost::shared_ptr< RHV > rhvTmp( new RHV() );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
+	tmp.push_back( boost::make_shared< LHV >()	 );
+	tmp.push_back( boost::make_shared< RHV >() );
 	return tmp;
 }
 
@@ -132,26 +131,22 @@ inline
 LogElementList operator << ( const String &lhv, const String &rhv )
 {
 	LogElementList tmp;
-	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
-	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
+	tmp.push_back( boost::make_shared< LexicalElement >( lhv ) );
+	tmp.push_back( boost::make_shared< LexicalElement >( rhv ) );
 	return tmp;
 }
 
 inline
 LogElementList operator << ( const String &lhv, LogElementList rhv )
 {
-	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
-	rhv.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
+	rhv.push_back( boost::make_shared< LexicalElement>( lhv ) );
 	return rhv;
 }
 
 inline
 LogElementList operator << ( LogElementList lhv, const String &rhv )
 {
-	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
-	lhv.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
+	lhv.push_back( boost::make_shared< LexicalElement >( rhv ) );
 	return lhv;
 }
 
@@ -160,10 +155,8 @@ inline
 LogElementList operator << ( const String &lhv, const RHV &rhv )
 {
 	LogElementList tmp;
-	boost::shared_ptr< LexicalElement > lhvTmp( new LexicalElement( lhv ) );
-	boost::shared_ptr< RHV > rhvTmp( new RHV() );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
+	tmp.push_back( boost::make_shared< LexicalElement >( lhv ) );
+	tmp.push_back( boost::make_shared< RHV >() );
 	return tmp;
 }
 
@@ -172,10 +165,8 @@ inline
 LogElementList operator << ( const LHV &lhv, const String &rhv )
 {
 	LogElementList tmp;
-	boost::shared_ptr< LexicalElement > rhvTmp( new LexicalElement( rhv ) );
-	boost::shared_ptr< LHV > lhvTmp( new LHV() );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
-	tmp.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
+	tmp.push_back( boost::make_shared< LHV >() );
+	tmp.push_back( boost::make_shared< LexicalElement >( rhv ) );
 	return tmp;
 }
 
@@ -184,8 +175,7 @@ template< class LHV >
 inline
 LogElementList operator << ( const LHV &lhv, LogElementList rhv )
 {
-	boost::shared_ptr< LHV > lhvTmp( new LHV() );
-	rhv.push_back( (const boost::shared_ptr< ILogElement >&) lhvTmp );
+	rhv.push_back( boost::make_shared< LHV >() );
 	return rhv;
 }
 
@@ -193,8 +183,7 @@ template< class RHV >
 inline
 LogElementList operator << ( LogElementList lhv, const RHV &rhv )
 {
-	boost::shared_ptr< RHV > rhvTmp( new RHV() );
-	lhv.push_back( (const boost::shared_ptr< ILogElement >&) rhvTmp );
+	lhv.push_back( boost::make_shared< RHV >() );
 	return lhv;
 }
 

@@ -2,6 +2,7 @@
 #define frl_logging_h_
 #include "logging/frl_logging_writers.h"
 #include <boost/noncopyable.hpp>
+#include <boost/make_shared.hpp>
 
 namespace frl { namespace logging {
 
@@ -20,8 +21,7 @@ public:
 	template< typename T >
 	void addDestination( const T& )
 	{
-		boost::shared_ptr< T > tmp( new T );
-		destionations.push_back(  *( ( boost::shared_ptr< ILogWriter >* )( &tmp ) ) );
+		destionations.push_back( boost::make_shared<T>() );
 	}
 
 	void addDestination( const FileWriter& );

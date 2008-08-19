@@ -41,11 +41,11 @@ private:
 	static DWORD getUniqueCancelID();
 public:
 	FRL_EXCEPTION_CLASS( InvalidParameter );
-	AsyncRequest( GroupElem& group_, async_request::RequestType type_ );
-	AsyncRequest(	GroupElem& group_,
+	AsyncRequest( const GroupElem& group_, async_request::RequestType type_ );
+	AsyncRequest(	const GroupElem& group_,
 							async_request::RequestType type_,
 							const std::list< OPCHANDLE > &handles_ );
-	AsyncRequest(	GroupElem& group_,
+	AsyncRequest(	const GroupElem& group_,
 							async_request::RequestType type_,
 							const std::list< ItemHVQT >& itemsList );
 	~AsyncRequest();
