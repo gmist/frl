@@ -33,6 +33,7 @@ STDMETHODIMP BrowseImpl::GetProperties(
 
 	HRESULT ret = S_OK;
 	address_space::Tag *item = NULL;
+	String itemID;
 	for( DWORD i = 0; i < dwItemCount; ++i )
 	{
 		if( pszItemIDs[i] == NULL || wcslen( pszItemIDs[i] ) == 0 )
@@ -43,9 +44,9 @@ STDMETHODIMP BrowseImpl::GetProperties(
 		}
 
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String itemID = pszItemIDs[i];
+			itemID = pszItemIDs[i];
 		#else
-			String itemID = wstring2string( pszItemIDs[i] );
+			itemID = wstring2string( pszItemIDs[i] );
 		#endif
 
 		try

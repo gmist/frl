@@ -144,11 +144,20 @@ STDMETHODIMP GroupStateMgt::CloneGroup( /* [string][in] */ LPCWSTR szName, /* [i
 	if( ppUnk == NULL )
 		return E_INVALIDARG;
 
-	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		String new_name = szName;
-	#else
-		String new_name = wstring2string( szName );
-	#endif
+	String new_name;
+	if( szName == NULL || wcslen( szName ) == 0 )
+	{
+		name = util::getUniqueName();
+	}
+	else
+	{
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			new_name = szName;
+		#else
+			new_name = wstring2string( szName );
+		#endif
+	}
+
 	GroupElem group;
 	try
 	{

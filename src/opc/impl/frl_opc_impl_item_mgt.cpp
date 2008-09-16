@@ -121,6 +121,7 @@ STDMETHODIMP ItemMgt::ValidateItems(
 
 	HRESULT res = S_OK;
 	boost::mutex::scoped_lock guard( groupGuard );
+	String itemID;
 	for( DWORD i = 0; i < dwCount; ++i )
 	{
 		if( pItemArray[i].szItemID == NULL || wcslen(pItemArray[i].szItemID) == 0 )
@@ -131,9 +132,9 @@ STDMETHODIMP ItemMgt::ValidateItems(
 		}
 
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			String itemID = pItemArray[i].szItemID;
+			itemID = pItemArray[i].szItemID;
 		#else
-			String itemID = wstring2string( pItemArray[i].szItemID );
+			itemID = wstring2string( pItemArray[i].szItemID );
 		#endif
 
 		if( ! opcAddressSpace::getInstance().isExistLeaf( itemID ) )

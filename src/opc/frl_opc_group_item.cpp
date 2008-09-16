@@ -26,11 +26,15 @@ void GroupItem::Init( OPCITEMDEF &itemDef )
 {
 	clientHandle = itemDef.hClient;
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-		itemID = itemDef.szItemID;
-		accessPath = itemDef.szAccessPath;
+		if( itemDef.szItemID )
+			itemID = itemDef.szItemID;
+		if( itemDef.szAccessPath )
+			accessPath = itemDef.szAccessPath;
 	#else
-		itemID = wstring2string( itemDef.szItemID );
-		accessPath = wstring2string( itemDef.szAccessPath );
+		if( itemDef.szItemID )
+			itemID = wstring2string( itemDef.szItemID );
+		if( itemDef.szAccessPath )
+			accessPath = wstring2string( itemDef.szAccessPath );
 	#endif
 	
 	actived = ( itemDef.bActive == TRUE || itemDef.bActive == VARIANT_TRUE );

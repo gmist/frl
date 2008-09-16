@@ -55,9 +55,11 @@ STDMETHODIMP OPCItemIO::Read(
 		try
 		{
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				itemID = pszItemIDs[i];
+				if( pszItemIDs[i] )
+					itemID = pszItemIDs[i];
 			#else
-				itemID = wstring2string( pszItemIDs[i] );
+				if( pszItemIDs[i] )
+					itemID = wstring2string( pszItemIDs[i] );
 			#endif
 			item = opcAddressSpace::getInstance().getLeaf( itemID );
 		}
@@ -114,9 +116,11 @@ STDMETHODIMP OPCItemIO::WriteVQT(
 		try
 		{
 			#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-				itemID = pszItemIDs[i];
+				if( pszItemIDs[i] )
+					itemID = pszItemIDs[i];
 			#else
-				itemID = wstring2string( pszItemIDs[i] );
+				if( pszItemIDs[i] )
+					itemID = wstring2string( pszItemIDs[i] );
 			#endif
 			item = opcAddressSpace::getInstance().getLeaf( itemID );
 		}

@@ -467,9 +467,9 @@ Variant::operator String() const
 	if( value.vt != VT_BSTR )
 		FRL_THROW_S();
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-	return value.bstrVal;
+		return value.bstrVal;
 	#else
-	return wstring2string( value.bstrVal );
+		return wstring2string( value.bstrVal );
 	#endif
 }
 
