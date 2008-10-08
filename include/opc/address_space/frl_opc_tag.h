@@ -8,6 +8,7 @@
 #include "frl_exception.h"
 #include "os/win32/com/frl_os_win32_com_variant.h"
 #include <boost/noncopyable.hpp>
+#include <boost/function.hpp>
 
 namespace frl{ namespace opc{ namespace address_space{
 
@@ -35,6 +36,10 @@ private:
 	WORD quality;
 	FILETIME timeStamp;
 	DWORD scanRate;
+
+	Bool is_opc_change_subscr;
+	boost::function< void() > opc_change;
+
 	Tag* addTag( const String &name, Bool is_Branch_ );
 	Tag* getTag( const String &name );
 
@@ -45,6 +50,7 @@ public:
 	FRL_EXCEPTION_CLASS( NotExistTag );
 	FRL_EXCEPTION_CLASS( IsNotBranch );
 	FRL_EXCEPTION_CLASS ( IsNotLeaf );
+	FRL_EXCEPTION_CLASS ( AlreadySubscribe );
 
 	Tag( Bool is_Branch_, const String &delimiter_ );
 
@@ -98,6 +104,8 @@ public:
 
 	const os::win32::com::Variant& read();
 
+	void writeFromOPC( const os::win32::com::Variant &newVal );
+
 	void write( const os::win32::com::Variant &newVal );
 
 	void setQuality( WORD quality_ );
@@ -125,6 +133,8 @@ public:
 	void browseBranches( std::vector< TagBrowseInfo > &branchesArr );
 
 	void browse( std::vector< TagBrowseInfo > &arr );
+
+	void subscribeToOpcChange( boost::function< void() > function_ );
 };
 
 } // namespace address_space

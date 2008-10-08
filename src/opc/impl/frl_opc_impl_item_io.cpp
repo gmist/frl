@@ -154,7 +154,7 @@ STDMETHODIMP OPCItemIO::WriteVQT(
 			res = S_FALSE;
 			continue;
 		}
-		item->write( tmp );
+		item->writeFromOPC( tmp );
 
 		if( pItemVQT[i].bQualitySpecified )
 		{

@@ -18,7 +18,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_lexical_cast", "test\t
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_opc_server", "test\test_opc_server\test_opc_server.vcproj", "{7AA93D62-A9E9-4741-9813-CBBB48BEEB38}"
 	ProjectSection(ProjectDependencies) = postProject
-		{9B04246C-95F5-45C4-B1BA-A47DECAFE102} = {9B04246C-95F5-45C4-B1BA-A47DECAFE102}
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection
 EndProject
@@ -30,7 +29,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "opc_psoi2", "projects\opc\psoi2\psoi2.vcproj", "{367533F8-FA54-4BD8-B018-089BA7CC6FFB}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
-		{9B04246C-95F5-45C4-B1BA-A47DECAFE102} = {9B04246C-95F5-45C4-B1BA-A47DECAFE102}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_fs_fn", "test\test_fs_fn\test_fs_fn.vcproj", "{A10406EF-B1C8-422C-9C44-802C230D4ADB}"
@@ -56,6 +54,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dependency_opc_foundation", "dependency\vendors\opc_foundation.vcproj", "{9B04246C-95F5-45C4-B1BA-A47DECAFE102}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_psoi2_sender", "test\tes_psoi2_sender\test_psoi2_sender.vcproj", "{99B9F16F-A45B-47AE-A10E-8DDB4CF9AEDF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_opc_write_event_subscribe", "test\test_opc_write_event_subscribe\test_opc_write_event_subscribe.vcproj", "{18798ED2-FA5F-4EEF-BA96-2CADCA666E97}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection
@@ -114,6 +117,10 @@ Global
 		{99B9F16F-A45B-47AE-A10E-8DDB4CF9AEDF}.Debug|Win32.Build.0 = Debug|Win32
 		{99B9F16F-A45B-47AE-A10E-8DDB4CF9AEDF}.Release|Win32.ActiveCfg = Release|Win32
 		{99B9F16F-A45B-47AE-A10E-8DDB4CF9AEDF}.Release|Win32.Build.0 = Release|Win32
+		{18798ED2-FA5F-4EEF-BA96-2CADCA666E97}.Debug|Win32.ActiveCfg = Debug|Win32
+		{18798ED2-FA5F-4EEF-BA96-2CADCA666E97}.Debug|Win32.Build.0 = Debug|Win32
+		{18798ED2-FA5F-4EEF-BA96-2CADCA666E97}.Release|Win32.ActiveCfg = Release|Win32
+		{18798ED2-FA5F-4EEF-BA96-2CADCA666E97}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

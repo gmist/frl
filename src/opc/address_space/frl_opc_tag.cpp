@@ -25,7 +25,8 @@ Tag::Tag( Bool is_Branch_, const String &delimiter_ )
 		accessRights( OPC_READABLE ),
 		parent( NULL ),
 		quality( OPC_QUALITY_GOOD ),
-		scanRate( 0 )
+		scanRate( 0 ),
+		is_opc_change_subscr( False )
 {
 	if( delimiter_.empty() )
 		delimiter = FRL_STR('.');
@@ -241,6 +242,16 @@ const os::win32::com::Variant& Tag::read()
 	return value;
 }
 
+void Tag::writeFromOPC( const os::win32::com::Variant &newVal )
+{
+	if( os::win32::com::Variant::isEqual( value, newVal ) )
+		return;
+	value = newVal;
+	::GetSystemTimeAsFileTime( &timeStamp );
+	if( is_opc_change_subscr )
+		opc_change();
+}
+
 void Tag::write( const os::win32::com::Variant &newVal )
 {
 	if( os::win32::com::Variant::isEqual( value, newVal ) )
@@ -375,6 +386,15 @@ Tag* Tag::getTag( const String &name )
 frl::Bool Tag::isReadable()
 {
 	return ( accessRights & OPC_READABLE ) == OPC_READABLE;	
+}
+
+void Tag::subscribeToOpcChange( boost::function< void() > function_ )
+{
+	FRL_EXCEPT_GUARD();
+	if( is_opc_change_subscr )
+		FRL_THROW_S_CLASS( AlreadySubscribe );
+	opc_change = function_;
+	is_opc_change_subscr = True;
 }
 
 } // namespace address_space

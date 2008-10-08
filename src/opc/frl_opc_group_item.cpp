@@ -108,7 +108,7 @@ HRESULT GroupItem::writeValue( const VARIANT &newValue )
 	HRESULT result = ::VariantChangeType( &tmp, &tmp, 0, tagRef->getCanonicalDataType() );
 	if( FAILED( result) )
 		return result;
-	tagRef->write( tmp );
+	tagRef->writeFromOPC( tmp );
 	return S_OK;
 }
 

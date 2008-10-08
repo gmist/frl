@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="test_opc_server"
-	ProjectGUID="{7AA93D62-A9E9-4741-9813-CBBB48BEEB38}"
-	RootNamespace="test_opc_server"
+	Name="test_opc_write_event_subscribe"
+	ProjectGUID="{18798ED2-FA5F-4EEF-BA96-2CADCA666E97}"
+	RootNamespace="test_opc_write_event_subscribe"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)..\..\output\test\opc_server"
+			OutputDirectory="$(SolutionDir)..\..\output\test\opc_write_event_subscribe"
 			IntermediateDirectory="$(OutDir)\obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfATL="1"
@@ -64,7 +64,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="ole32.lib"
 				OutputFile="$(OutDir)\$(ProjectName)_d.exe"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
@@ -97,7 +96,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)..\..\output\test\opc_server"
+			OutputDirectory="$(SolutionDir)..\..\output\test\opc_write_event_subscribe"
 			IntermediateDirectory="$(OutDir)\obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			UseOfMFC="0"
@@ -182,7 +181,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\test\opc_server\main.cpp"
+				RelativePath="..\..\..\..\test\opc_write_event_subscribe\main.cpp"
 				>
 			</File>
 		</Filter>

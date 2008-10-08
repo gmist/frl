@@ -6,6 +6,7 @@ ruby frl.test.io_win32_registry.debug.rb
 ruby frl.test.lexical_cast.debug.rb
 ruby frl.test.logging.debug.rb
 ruby frl.test.opc_address_space.debug.rb
+ruby frl.test.opc_write_event_subscribe.debug.rb
 ruby frl.test.opc_test.debug.rb
 ruby frl.test.poor_xml.debug.rb
 ruby frl.test.smart_ptr.debug.rb
