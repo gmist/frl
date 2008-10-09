@@ -26,7 +26,8 @@ Tag::Tag( Bool is_Branch_, const String &delimiter_ )
 		parent( NULL ),
 		quality( OPC_QUALITY_GOOD ),
 		scanRate( 0 ),
-		is_opc_change_subscr( False )
+		is_opc_change_subscr( False ),
+		is_opc_change_subscr_cb( False )
 {
 	if( delimiter_.empty() )
 		delimiter = FRL_STR('.');
@@ -55,22 +56,22 @@ void Tag::setID( const String& newID )
 		shortID = newID.substr( pos+1, newID.length() - 1 );
 }
 
-const String& Tag::getID()
+const String& Tag::getID() const
 {
 	return id;
 }
 
-const String& Tag::getShortID()
+const String& Tag::getShortID() const
 {
 	return shortID;
 }
 
-frl::Bool Tag::isBranch()
+frl::Bool Tag::isBranch() const
 {
 	return is_Branch;
 }
 
-frl::Bool Tag::isLeaf()
+frl::Bool Tag::isLeaf() const
 {
 	return ! is_Branch;
 }
@@ -90,7 +91,7 @@ void Tag::setCanonicalDataType( VARTYPE newType )
 	value.setType( newType );
 }
 
-VARTYPE Tag::getCanonicalDataType()
+VARTYPE Tag::getCanonicalDataType() const
 {
 	return value.getType();
 }
@@ -113,7 +114,7 @@ void Tag::isWritable( Bool writeable )
 		accessRights = OPC_READABLE;
 }
 
-frl::Bool Tag::isWritable()
+frl::Bool Tag::isWritable() const
 {
 	return ( accessRights & OPC_WRITEABLE ) == OPC_WRITEABLE;
 }
@@ -237,7 +238,7 @@ void Tag::browseLeafs( std::vector< TagBrowseInfo > &leafsArr )
 	}
 }
 
-const os::win32::com::Variant& Tag::read()
+const os::win32::com::Variant& Tag::read() const
 {
 	return value;
 }
@@ -250,6 +251,8 @@ void Tag::writeFromOPC( const os::win32::com::Variant &newVal )
 	::GetSystemTimeAsFileTime( &timeStamp );
 	if( is_opc_change_subscr )
 		opc_change();
+	if( is_opc_change_subscr_cb )
+		opc_change_cb( this );
 }
 
 void Tag::write( const os::win32::com::Variant &newVal )
@@ -260,7 +263,7 @@ void Tag::write( const os::win32::com::Variant &newVal )
 	::GetSystemTimeAsFileTime( &timeStamp );
 }
 
-const FILETIME& Tag::getTimeStamp()
+const FILETIME& Tag::getTimeStamp() const
 {
 	return timeStamp;
 }
@@ -270,7 +273,7 @@ void Tag::setQuality( WORD quality_ )
 	quality = quality_;
 }
 
-WORD Tag::getQuality()
+WORD Tag::getQuality() const
 {
 	return quality;
 }
@@ -310,7 +313,7 @@ Bool Tag::checkAccessRight( DWORD checkingAccessRight )
 	return ( accessRights & checkingAccessRight ) == checkingAccessRight;
 }
 
-std::vector< DWORD > Tag::getAvailableProperties()
+std::vector< DWORD > Tag::getAvailableProperties() const
 {
 	std::vector< DWORD > ret;
 	ret.reserve( 6 );	
@@ -383,18 +386,27 @@ Tag* Tag::getTag( const String &name )
 	return (*it).second;
 }
 
-frl::Bool Tag::isReadable()
+frl::Bool Tag::isReadable() const
 {
 	return ( accessRights & OPC_READABLE ) == OPC_READABLE;	
 }
 
-void Tag::subscribeToOpcChange( boost::function< void() > function_ )
+void Tag::subscribeToOpcChange( const boost::function< void() > &function_ )
 {
 	FRL_EXCEPT_GUARD();
 	if( is_opc_change_subscr )
 		FRL_THROW_S_CLASS( AlreadySubscribe );
 	opc_change = function_;
 	is_opc_change_subscr = True;
+}
+
+void Tag::subscribeToOpcChange( const boost::function< void( const address_space::Tag* const ) > &function_ )
+{
+	FRL_EXCEPT_GUARD();
+	if( is_opc_change_subscr_cb )
+		FRL_THROW_S_CLASS( AlreadySubscribe );
+	opc_change_cb = function_;
+	is_opc_change_subscr_cb = True;
 }
 
 } // namespace address_space

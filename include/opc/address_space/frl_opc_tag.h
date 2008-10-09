@@ -40,6 +40,9 @@ private:
 	Bool is_opc_change_subscr;
 	boost::function< void() > opc_change;
 
+	Bool is_opc_change_subscr_cb;
+	boost::function< void( const address_space::Tag* const ) > opc_change_cb;
+
 	Tag* addTag( const String &name, Bool is_Branch_ );
 	Tag* getTag( const String &name );
 
@@ -58,13 +61,13 @@ public:
 
 	void setID( const String& newID );
 
-	const String& getID();
+	const String& getID() const;
 
-	const String& getShortID();
+	const String& getShortID() const;
 
-	Bool isBranch();
+	Bool isBranch() const;
 
-	Bool isLeaf();
+	Bool isLeaf() const;
 
 	void setRequestedDataType( VARTYPE newType );
 
@@ -72,7 +75,7 @@ public:
 
 	void setCanonicalDataType( VARTYPE newType );
 
-	VARTYPE getCanonicalDataType();
+	VARTYPE getCanonicalDataType() const;
 
 	void setAccessRights( DWORD newAccessRights );
 
@@ -80,9 +83,9 @@ public:
 
 	void isWritable( Bool writeable );
 
-	Bool isWritable();
+	Bool isWritable() const;
 	
-	Bool isReadable();
+	Bool isReadable() const;
 
 	Tag* addLeaf( const String &name );
 
@@ -102,7 +105,7 @@ public:
 
 	void browseLeafs( std::vector< String > &leaf, DWORD accessFilter = 0 );
 
-	const os::win32::com::Variant& read();
+	const os::win32::com::Variant& read() const;
 
 	void writeFromOPC( const os::win32::com::Variant &newVal );
 
@@ -110,9 +113,9 @@ public:
 
 	void setQuality( WORD quality_ );
 
-	WORD getQuality();
+	WORD getQuality() const;
 
-	const FILETIME& getTimeStamp();
+	const FILETIME& getTimeStamp() const;
 
 	void setTimeStamp( const FILETIME& ts );
 
@@ -124,7 +127,7 @@ public:
 
 	Bool checkAccessRight( DWORD checkingAccessRight );
 
-	std::vector< DWORD > getAvailableProperties();
+	std::vector< DWORD > getAvailableProperties() const;
 
 	HRESULT getPropertyValue( DWORD propID, VARIANT &toValue );
 
@@ -134,7 +137,9 @@ public:
 
 	void browse( std::vector< TagBrowseInfo > &arr );
 
-	void subscribeToOpcChange( boost::function< void() > function_ );
+	void subscribeToOpcChange( const boost::function< void() > &function_ );
+
+	void subscribeToOpcChange( const boost::function< void( const address_space::Tag* const ) > &function_ );
 };
 
 } // namespace address_space
