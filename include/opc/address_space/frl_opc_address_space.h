@@ -61,6 +61,11 @@ public:
 
 typedef SingletonMeyers< address_space::AddressSpace > opcAddressSpace;
 
+namespace private_
+{
+	static opcAddressSpace::ForceInit forceInitAddresSpace;
+}
+
 } // namespace opc
 } // FatRat Library
 

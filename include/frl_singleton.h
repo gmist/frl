@@ -11,12 +11,22 @@ private:
 	SingletonMeyers( const SingletonMeyers& );
 	SingletonMeyers& operator = ( const SingletonMeyers& );
 	~SingletonMeyers(){};
+
 public:
+
 	static T& getInstance()
 	{
 		static T tmp;
 		return tmp;
 	}
+
+	struct ForceInit
+	{ 
+		ForceInit()
+		{
+			getInstance();
+		} 
+	};
 }; // class SingletonMeyers
 
 } // FatRat Library
