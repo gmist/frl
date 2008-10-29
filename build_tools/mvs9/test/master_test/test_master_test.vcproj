@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="test_fs_fn"
-	ProjectGUID="{A10406EF-B1C8-422C-9C44-802C230D4ADB}"
-	RootNamespace="test_fs_fn"
+	Name="test_master_test"
+	ProjectGUID="{A11B4EB6-A247-4AEA-B598-E35D573873C7}"
+	RootNamespace="test_master_test"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -18,7 +18,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)..\..\output\test\fs_fn"
+			OutputDirectory="$(SolutionDir)..\..\output\test\master_test"
 			IntermediateDirectory="$(OutDir)\obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
@@ -95,7 +95,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)..\..\output\test\fs_fn"
+			OutputDirectory="$(SolutionDir)..\..\output\test\master_test"
 			IntermediateDirectory="$(OutDir)\obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
@@ -178,15 +178,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\test\fs_fn\main.cpp"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="include"
-			>
-			<File
-				RelativePath="..\..\..\..\test\fs_fn\test_suite.hpp"
+				RelativePath="..\..\..\..\test\master_test\main.cpp"
 				>
 			</File>
 		</Filter>
