@@ -1,3 +1,6 @@
+#define BOOST_TEST_MAIN
+#include "test_suite.hpp"
+/*
 #include "opc/address_space/frl_opc_address_space.h"
 #include "frl_unit_test.h"
 #include <conio.h>
@@ -268,3 +271,4 @@ int main( int argc, char *argv[] )
 	test.Add( createDoubleLeaf );
 	return 0;
 }
+*/
