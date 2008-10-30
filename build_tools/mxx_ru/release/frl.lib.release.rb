@@ -25,11 +25,12 @@ MxxRu::Cpp::lib_target("frl.lib.release.rb")\
 
 	# if you using version MinGW != 3.4.5, you maybe need correct libs name
 	if "vc" != toolset.name
-	lib("libboost_thread-mgw34-mt-s")
-	lib("libboost_filesystem-mgw34-mt-s")
-	lib("libboost_system-mgw34-mt-s")
+		lib("libboost_thread-mgw34-mt-s")
+		lib("libboost_filesystem-mgw34-mt-s")
+		lib("libboost_system-mgw34-mt-s")
+		lib("libboost_unit_test_framework-mgw34-mt-s") 
 	else
-	# Visual C++ compiler supports auto-linking
+		# Visual C++ compiler supports auto-linking
 	end
 
 	lib( "shell32" )

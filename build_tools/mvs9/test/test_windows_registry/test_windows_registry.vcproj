@@ -182,6 +182,14 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="include"
+			>
+			<File
+				RelativePath="..\..\..\..\test\io_win32_registry\test_suite.hpp"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

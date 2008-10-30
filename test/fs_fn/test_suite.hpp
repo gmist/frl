@@ -60,7 +60,7 @@ BOOST_AUTO_TEST_CASE( read_operation )
 	BOOST_CHECK_EQUAL( count, sizeof( data ) );
 
 	BOOST_CHECK_NO_THROW( open( file, fileName, openReadOnly ) );
-	frl::Char *buffer = new frl::Char[  ( sizeof( data ) ) / 2];		
+	frl::Char *buffer = new frl::Char[  ( sizeof( data ) ) / 2];
 	BOOST_CHECK_NO_THROW( count = read( file, buffer,  sizeof( data ) ) );
 	BOOST_CHECK_NO_THROW( close( file ) );
 	BOOST_CHECK_NO_THROW( removal( fileName ) );
