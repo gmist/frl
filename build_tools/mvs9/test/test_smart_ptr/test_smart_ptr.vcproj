@@ -182,6 +182,18 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="include"
+			>
+			<File
+				RelativePath="..\..\..\..\test\smart_ptr\test_suite.hpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\test\smart_ptr\x_com.hpp"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>
