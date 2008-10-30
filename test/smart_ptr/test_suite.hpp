@@ -4,7 +4,7 @@
 #include "frl_smart_ptr.h"
 #include "x_com.hpp"
 
-BOOST_AUTO_TEST_SUITE( test_smart_ptr )
+BOOST_AUTO_TEST_SUITE( smart_ptr )
 
 BOOST_AUTO_TEST_CASE( simply_owner_com )
 {

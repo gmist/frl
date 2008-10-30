@@ -91,6 +91,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(SolutionDir)..\..\test\poor_xml\xml_data\*.xml $(OutDir)"
 			/>
 		</Configuration>
 		<Configuration
@@ -166,6 +167,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy $(SolutionDir)..\..\test\poor_xml\xml_data\*.xml $(OutDir)"
 			/>
 		</Configuration>
 	</Configurations>

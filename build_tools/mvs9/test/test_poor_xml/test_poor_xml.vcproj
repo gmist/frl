@@ -197,6 +197,14 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="include"
+			>
+			<File
+				RelativePath="..\..\..\..\test\poor_xml\test_suite.hpp"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

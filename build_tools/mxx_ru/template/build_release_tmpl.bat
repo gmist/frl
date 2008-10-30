@@ -11,5 +11,6 @@ ruby frl.test.opc_test.release.rb
 ruby frl.test.poor_xml.release.rb
 ruby frl.test.smart_ptr.release.rb
 ruby frl.test.psoi2_sender.debug.rb
+ruby frl.test.master_test.release.rb
 ruby frl.projects.psoi2.release.rb
 cd ..
