@@ -6,7 +6,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "frl_lib", "frl_lib\frl_lib.
 		{9B04246C-95F5-45C4-B1BA-A47DECAFE102} = {9B04246C-95F5-45C4-B1BA-A47DECAFE102}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_io_win32_registry", "test\test_windows_registry\test_windows_registry.vcproj", "{D0C3A557-2818-43EF-A8B2-5A19CA6923CE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_os_win32_registry", "test\test_os_win32_registry\test_os_win32_registry.vcproj", "{D0C3A557-2818-43EF-A8B2-5A19CA6923CE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{1AEA2503-165B-4E84-A456-D56E64B22B35} = {1AEA2503-165B-4E84-A456-D56E64B22B35}
 	EndProjectSection

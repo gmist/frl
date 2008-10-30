@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="test_io_win32_registry"
+	Name="test_os_win32_registry"
 	ProjectGUID="{D0C3A557-2818-43EF-A8B2-5A19CA6923CE}"
-	RootNamespace="test_windows_registry"
+	RootNamespace="test_os_win32_registry"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="131072"
 	>
@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)..\..\output\test\io_win32_registry"
-			IntermediateDirectory="$(SolutionDir)..\..\output\test\io_win32_registry\obj\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\output\test\os_win32_registry"
+			IntermediateDirectory="$(SolutionDir)..\..\output\test\os_win32_registry\obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			>
@@ -95,8 +95,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)..\..\output\test\io_win32_registry"
-			IntermediateDirectory="$(SolutionDir)..\..\output\test\io_win32_registry\obj\$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)..\..\output\test\os_win32_registry"
+			IntermediateDirectory="$(SolutionDir)..\..\output\test\os_win32_registry\obj\$(ConfigurationName)"
 			ConfigurationType="1"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -178,7 +178,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\..\..\test\io_win32_registry\test_io_win32_registry.cpp"
+				RelativePath="..\..\..\..\test\os_win32_registry\test_os_win32_registry.cpp"
 				>
 			</File>
 		</Filter>
@@ -186,7 +186,7 @@
 			Name="include"
 			>
 			<File
-				RelativePath="..\..\..\..\test\io_win32_registry\test_suite.hpp"
+				RelativePath="..\..\..\..\test\os_win32_registry\test_suite.hpp"
 				>
 			</File>
 		</Filter>
