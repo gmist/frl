@@ -528,10 +528,6 @@
 				RelativePath="..\..\..\include\frl_types.h"
 				>
 			</File>
-			<File
-				RelativePath="..\..\..\include\frl_unit_test.h"
-				>
-			</File>
 			<Filter
 				Name="stream_std"
 				>
@@ -557,22 +553,6 @@
 				</File>
 				<File
 					RelativePath="..\..\..\include\stream_std\frl_streambuf.h"
-					>
-				</File>
-			</Filter>
-			<Filter
-				Name="unit_test"
-				>
-				<File
-					RelativePath="..\..\..\include\unit_test\frl_console_out_policy.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\unit_test\frl_unit_test.h"
-					>
-				</File>
-				<File
-					RelativePath="..\..\..\include\unit_test\frl_unit_test_statistics.h"
 					>
 				</File>
 			</Filter>
