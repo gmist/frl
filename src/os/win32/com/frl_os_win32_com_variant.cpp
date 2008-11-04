@@ -165,13 +165,11 @@ HRESULT Variant::variantCopy( VARIANT *dst, const VARIANT *src )
 {
 	if( dst == NULL || src == NULL )
 		return E_FAIL;
-	::VariantClear( dst );
 	return ::VariantCopy( dst, (VARIANT*)src );
 }
 
 HRESULT Variant::variantCopy( VARIANT &dst, const VARIANT &src )
 {
-	::VariantClear( &dst );
 	return ::VariantCopy( &dst, (VARIANT*)&src );
 }
 
