@@ -147,7 +147,7 @@ STDMETHODIMP GroupStateMgt::CloneGroup( /* [string][in] */ LPCWSTR szName, /* [i
 	String new_name;
 	if( szName == NULL || wcslen( szName ) == 0 )
 	{
-		name = util::getUniqueName();
+		new_name = util::getUniqueName();
 	}
 	else
 	{
