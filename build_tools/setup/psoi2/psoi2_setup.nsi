@@ -13,7 +13,7 @@ Name "OPC server for PSOI2 device"
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER Psoi2OPC
 !define MUI_FINISHPAGE_RUN $INSTDIR\server\opc_psoi2.exe
-!define MUI_FINISHPAGE_RUN_PARAMETERS -r
+!define MUI_FINISHPAGE_RUN_PARAMETERS
 !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\help\readme.odt
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\box-uninstall.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
@@ -54,7 +54,7 @@ Section "-OPC server" SEC0000
     SetOverwrite on
     File ..\..\..\output\projects\opc\psoi2\opc_psoi2.exe
     File ..\..\..\output\projects\opc\psoi2\config.xml
-	Exec "$INSTDIR\server\opc_psoi2.exe -r"
+	Exec "$INSTDIR\server\opc_psoi2.exe -r_silent"
     WriteRegStr HKLM "${REGKEY}\Components" "OPC server" 1
 SectionEnd
 
@@ -146,7 +146,7 @@ Section /o -un.ReadMe UNSEC0001
 SectionEnd
 
 Section /o "-un.OPC server" UNSEC0000
-	ExecWait "$INSTDIR\server\opc_psoi2.exe -u"
+	ExecWait "$INSTDIR\server\opc_psoi2.exe -u_silent"
     Delete /REBOOTOK $INSTDIR\server\config.xml
     Delete /REBOOTOK $INSTDIR\server\opc_psoi2.exe
 	Delete /REBOOTOK $INSTDIR\server\*.log
