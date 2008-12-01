@@ -20,6 +20,60 @@ void unregServer()
 	tmp.unregisterServer();
 }
 
+void regServerHelper( bool silent = false )
+{
+	try
+	{
+		regServer();
+		if( ! silent )
+			MessageBox( NULL, FRL_STR("Registration success!"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONINFORMATION );
+	}
+	catch( frl::Exception &ex )
+	{
+		if( ! silent )
+		{
+			frl::String msg = FRL_STR("Registration fail!\n");
+			msg += ex.getFullDescription();
+			MessageBox( NULL, msg.c_str(), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONSTOP );
+		}
+	}
+	catch( ... )
+	{
+		if( ! silent )
+		{
+			MessageBox( NULL, FRL_STR("Registration fail!\nUnknown error"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONSTOP );
+		}
+	}
+}
+
+void unregServerHelper( bool silent = false )
+{
+	try
+	{
+		unregServer();
+		if( ! silent )
+		{
+			MessageBox( NULL, FRL_STR("Removing registration success!"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONINFORMATION );
+		}
+	}
+	catch( frl::Exception &ex )
+	{
+		if( ! silent )
+		{
+			frl::String msg = FRL_STR("Unregistration fail!\n");
+			msg += ex.getFullDescription();
+			MessageBox( NULL, msg.c_str(), FRL_STR("Registration message"), MB_OK | MB_ICONSTOP );
+		}
+	}
+	catch( ... )
+	{
+		if( ! silent )
+		{
+			MessageBox( NULL, FRL_STR("Unregistration fail!\nUnknown error"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONSTOP );
+		}
+	}
+}
+
 void setServerInfo( frl::opc::DAServer &toServer )
 {
 	toServer.setCLSID( FRL_STR("{77841F96-2135-4293-8BEF-A288AAD2DBBC}") );
@@ -35,41 +89,25 @@ bool lineHelper( const frl::String &line )
 	{
 		if( frl::String( FRL_STR("-r") ) == line )
 		{
-			try
-			{
-				regServer();
-				MessageBox( NULL, FRL_STR("Registration success!"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONINFORMATION );
-			}
-			catch( frl::Exception &ex )
-			{
-				frl::String msg = FRL_STR("Registration fail!\n");
-				msg += ex.getFullDescription();
-				MessageBox( NULL, msg.c_str(), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONSTOP );
-			}
-			catch( ... )
-			{
-				MessageBox( NULL, FRL_STR("Registration fail!\nUnknown error"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONSTOP );
-			}
+			regServerHelper();
+			return true;
+		}
+
+		if( frl::String( FRL_STR("-r_silent")) == line )
+		{
+			regServerHelper( true );
 			return true;
 		}
 
 		if( frl::String( FRL_STR("-u") ) == line )
 		{
-			try
-			{
-				unregServer();
-				MessageBox( NULL, FRL_STR("Removing registration success!"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONINFORMATION );
-			}
-			catch( frl::Exception &ex )
-			{
-				frl::String msg = FRL_STR("Unregistration fail!\n");
-				msg += ex.getFullDescription();
-				MessageBox( NULL, msg.c_str(), FRL_STR("Registration message"), MB_OK | MB_ICONSTOP );
-			}
-			catch( ... )
-			{
-				MessageBox( NULL, FRL_STR("Unregistration fail!\nUnknown error"), FRL_STR("PSOI2 OPC server: Registration message"), MB_OK | MB_ICONSTOP );
-			}
+			unregServerHelper();
+			return true;
+		}
+
+		if( frl::String( FRL_STR("-u_silent") ) == line )
+		{
+			unregServerHelper( true );
 			return true;
 		}
 
