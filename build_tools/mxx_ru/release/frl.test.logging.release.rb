@@ -1,8 +1,11 @@
 require 'mxx_ru/cpp'
+require '../template/frl.test.template'
 
 MxxRu::Cpp::exe_target("frl.test.logging.release.rb")\
 {
 	required_prj( "frl.lib.release.rb" )
+	test_setup()
+
 	target("test_logging")
 	include_path("../../../test/logging")
 	runtime_mode( MxxRu::Cpp::RUNTIME_RELEASE )

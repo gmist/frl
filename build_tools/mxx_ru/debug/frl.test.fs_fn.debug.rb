@@ -1,8 +1,11 @@
 require 'mxx_ru/cpp'
+require '../template/frl.test.template'
 
 MxxRu::Cpp::exe_target("frl.test.fs_fn.debug.rb")\
 {
 	required_prj( "frl.lib.debug.rb" )
+	test_setup()
+
 	target("test_fs_fn_d")
 	include_path("../../../test/fs_fn")
 	runtime_mode( MxxRu::Cpp::RUNTIME_DEBUG )

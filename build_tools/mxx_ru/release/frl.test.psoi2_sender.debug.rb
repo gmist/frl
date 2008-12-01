@@ -1,9 +1,12 @@
 require 'mxx_ru/cpp'
 require 'ftools'
+require '../template/frl.test.template'
 
 MxxRu::Cpp::exe_target("frl.test.psoi2_sender.release.rb")\
 {
 	required_prj( "frl.lib.release.rb" )
+	test_setup()
+
 	target("test_psoi2_sender")
 	include_path("../../../test/psoi2_sender")
 	runtime_mode( MxxRu::Cpp::RUNTIME_RELEASE )

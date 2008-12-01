@@ -1,8 +1,11 @@
 require 'mxx_ru/cpp'
+require '../template/frl.test.template'
 
 MxxRu::Cpp::exe_target("frl.test.opc_address_space.debug.rb")\
 {
 	required_prj( "frl.lib.debug.rb" )
+	test_setup()
+
 	target("test_opc_address_space_d")
 	include_path("../../../test/opc_address_space")
 	runtime_mode( MxxRu::Cpp::RUNTIME_DEBUG )

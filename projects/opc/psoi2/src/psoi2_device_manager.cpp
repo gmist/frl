@@ -3,6 +3,7 @@
 #include "psoi2_device.h"
 #include "frl_lexical_cast.h"
 #include "logging/frl_logging.h"
+#include "util.h"
 
 DeviceManager::DeviceManager()
 {
@@ -85,32 +86,22 @@ void DeviceManager::initializeAddressSpace()
 void DeviceManager::initializeDAServer()
 {
 	server = new frl::opc::DAServer( frl::opc::ServerTypes::localSever32 );
-	psoi2util::setServerInfo( *server );
+	util::setServerInfo( *server );
 	server->init();
 }
 
-namespace psoi2util
+const std::vector< Psoi2Device* >& DeviceManager::getDevices()
 {
-	void regServer()
-	{
-		opc::DAServer tmp( frl::opc::ServerTypes::localSever32 );
-		setServerInfo( tmp );
-		tmp.registrerServer3();
-	}
-	
-	void unregServer()
-	{
-		opc::DAServer tmp( frl::opc::ServerTypes::localSever32 );
-		setServerInfo( tmp );
-		tmp.unregisterServer();
-	}
-	
-	void setServerInfo( opc::DAServer &toServer )
-	{
-		toServer.setCLSID( FRL_STR("{77841F96-2135-4293-8BEF-A288AAD2DBBC}") );
-		toServer.setVendor( FRL_STR("Serg Baburin") );
-		toServer.setDriverName( FRL_STR("PSOI2 device") );
-		toServer.setDescription( FRL_STR("OPC server for PSOI2 device from Serg Baburin"));
-		toServer.setVersion( 0.1 );
-	}		
+	return devices;
 }
+
+const Psoi2Device* DeviceManager::getDevice( frl::UInt port_number )
+{
+	for( std::vector< Psoi2Device* >::iterator it = devices.begin(); it != devices.end(); ++it )
+	{
+		if( (*it)->getPortNumber() == port_number )
+			return (*it);
+	}
+	return NULL;
+}
+

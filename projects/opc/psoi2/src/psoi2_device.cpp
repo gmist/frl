@@ -174,8 +174,8 @@ void Psoi2Device::setUpThresholdExceeding( const frl::String &low, const frl::St
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("thresholdExceeding") );
 		channels[i].thresholdExceeding->isWritable( False );
-		channels[i].thresholdExceeding->setCanonicalDataType( VT_UI4 );
-		channels[i].thresholdExceeding->write( 0 );
+		channels[i].thresholdExceeding->setCanonicalDataType( VT_BOOL );
+		channels[i].thresholdExceeding->write( false );
 	}
 }
 
@@ -195,8 +195,8 @@ void Psoi2Device::setUpTypePPC( const frl::String &low, const frl::String &hight
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("type") );
 		channels[i].typePPC->isWritable( False );
-		channels[i].typePPC->setCanonicalDataType( VT_UI4 );
-		channels[i].typePPC->write( 0 );
+		channels[i].typePPC->setCanonicalDataType( VT_BOOL );
+		channels[i].typePPC->write( false );
 	}
 }
 
@@ -216,8 +216,8 @@ void Psoi2Device::setUpMGC( const frl::String &low, const frl::String &hight )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("goodMGC") );
 		channels[i].goodMGC->isWritable( False );
-		channels[i].goodMGC->setCanonicalDataType( VT_UI4 );
-		channels[i].goodMGC->write( 0 );
+		channels[i].goodMGC->setCanonicalDataType( VT_BOOL );
+		channels[i].goodMGC->write( false );
 	}
 }
 
@@ -237,8 +237,8 @@ void Psoi2Device::setUpPPC( const frl::String &low, const frl::String &hight )
 			+ opcAddressSpace::getInstance().getDelimiter()
 			+ FRL_STR("goodPPC") );
 		channels[i].goodPPC->isWritable( False );
-		channels[i].goodPPC->setCanonicalDataType( VT_UI4 );
-		channels[i].goodPPC->write( 0 );
+		channels[i].goodPPC->setCanonicalDataType( VT_BOOL );
+		channels[i].goodPPC->write( false );
 	}
 }
 
@@ -436,12 +436,12 @@ void Psoi2Device::fillValues( const std::vector< std::bitset<8> > &pure_array )
 	}
 }
 
-frl::UInt Psoi2Device::getChannelsNumber()
+frl::UInt Psoi2Device::getChannelsNumber() const
 {
 	return channelsNumber;
 }
 
-frl::UInt Psoi2Device::getBytesNumber()
+frl::UInt Psoi2Device::getBytesNumber() const
 {
 	return bytesNumber;
 }
@@ -477,4 +477,40 @@ void Psoi2Device::stopProcess() // WARNING - hack!
 	boost::thread thrKill( killer );
 	thrKill.join();
 }
+
+frl::UInt Psoi2Device::getPortNumber() const
+{
+	return portNumber;	
+}
+
+frl::Bool Psoi2Device::isSimulation() const
+{
+	return simulation;
+}
+
+float Psoi2Device::getValue( frl::UInt number ) const
+{
+	return channels[ number ].value->read();
+}
+
+frl::Bool Psoi2Device::getTypePPC( frl::UInt number ) const
+{
+	return channels[ number ].typePPC->read();
+}
+
+frl::Bool Psoi2Device::getGoodPPC( frl::UInt number ) const
+{
+	return channels[ number ].goodPPC->read();
+}
+
+frl::Bool Psoi2Device::getGoodMGC( frl::UInt number ) const
+{
+	return channels[ number ].goodMGC->read();
+}
+
+frl::Bool Psoi2Device::getThresholdExceeding( frl::UInt number ) const
+{
+	return channels[ number ].thresholdExceeding->read();
+}
+
 #endif // FRL_PLATFORM_WIN32

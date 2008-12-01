@@ -28,7 +28,6 @@ MxxRu::Cpp::lib_target("frl.lib.debug.rb")\
 		lib("libboost_thread-mgw34-mt-sd")
 		lib("libboost_filesystem-mgw34-mt-sd")
 		lib("libboost_system-mgw34-mt-sd")
-		lib("libboost_unit_test_framework-mgw34-mt-sd")
 	else
 		# Visual C++ compiler supports auto-linking
 	end

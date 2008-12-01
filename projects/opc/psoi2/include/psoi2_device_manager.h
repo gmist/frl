@@ -8,13 +8,6 @@
 using namespace frl;
 class Psoi2Device;
 
-namespace psoi2util
-{
-	void setServerInfo( opc::DAServer &toServer );
-	void regServer();
-	void unregServer();
-}
-
 class DeviceManager : private boost::noncopyable
 {
 private:
@@ -26,6 +19,8 @@ private:
 public:
 	DeviceManager();
 	~DeviceManager();
+	const std::vector< Psoi2Device* >& getDevices();
+	const Psoi2Device* getDevice( frl::UInt port_number );
 };
 
 #endif // psoi2_device_manager_h_

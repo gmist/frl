@@ -1,9 +1,12 @@
 require 'mxx_ru/cpp'
 require 'ftools'
+require '../template/frl.test.template'
 
 MxxRu::Cpp::exe_target("frl.test.poor_xml.release.rb")\
 {
 	required_prj( "frl.lib.release.rb" )
+	test_setup()
+
 	target("test_poor_xml")
 	include_path("../../../test/poor_xml")
 	runtime_mode( MxxRu::Cpp::RUNTIME_RELEASE )

@@ -1,8 +1,11 @@
 require 'mxx_ru/cpp'
+require '../template/frl.test.template'
 
 MxxRu::Cpp::exe_target("frl.test.lexical_cast.debug.rb")\
 {
 	required_prj( "frl.lib.debug.rb" )
+	test_setup()
+
 	target("test_lexical_cast_d")
 	include_path("../../../test/lexical_cast")
 	runtime_mode( MxxRu::Cpp::RUNTIME_DEBUG )

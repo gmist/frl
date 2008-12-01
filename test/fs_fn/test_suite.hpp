@@ -1,6 +1,7 @@
 #ifndef fs_fn_test_suite_h_
 #define fs_fn_test_suite_h_
 #include <boost/test/unit_test.hpp>
+#include <vector>
 #include "frl_io.h"
 
 BOOST_AUTO_TEST_SUITE( fs_fn )
@@ -55,19 +56,23 @@ BOOST_AUTO_TEST_CASE( read_operation )
 
 	frl::Char data[] = FRL_STR( "qwertyuiop" );
 	FileRWCount count = 0;
-	BOOST_CHECK_NO_THROW( count = write( file, data, sizeof( data ) ) );
+	BOOST_CHECK_NO_THROW( count = write( file, data, sizeof( data ) - sizeof( frl::Char ) ) );
 	BOOST_CHECK_NO_THROW( close( file ) );
-	BOOST_CHECK_EQUAL( count, sizeof( data ) );
+	BOOST_CHECK_EQUAL( count, sizeof( data ) - sizeof( frl::Char ) );
 
 	BOOST_CHECK_NO_THROW( open( file, fileName, openReadOnly ) );
-	frl::Char *buffer = new frl::Char[  ( sizeof( data ) ) / 2];
-	BOOST_CHECK_NO_THROW( count = read( file, buffer,  sizeof( data ) ) );
+	std::vector< frl::Char > buffer( ( sizeof( data ) - 1 ) / sizeof( frl::Char ) );
+	BOOST_CHECK_NO_THROW( count = read( file, &buffer[0],  sizeof( data ) - sizeof( frl::Char ) ) );
 	BOOST_CHECK_NO_THROW( close( file ) );
 	BOOST_CHECK_NO_THROW( removal( fileName ) );
+	BOOST_CHECK_EQUAL( count, sizeof( data ) - sizeof( frl::Char ) );
 
-	BOOST_CHECK_EQUAL( count, sizeof( data ) );
-	BOOST_CHECK( frl::String( data ) == frl::String( buffer ) );
-	delete [] buffer;
+	frl::String tmp;
+	tmp.resize( buffer.size() );
+	frl::String tmp2( data );
+	std::copy( buffer.begin(), buffer.end(), tmp.begin() );
+
+	BOOST_CHECK( frl::String( data ) == tmp );
 }
 
 BOOST_AUTO_TEST_CASE( test_length )
@@ -109,17 +114,22 @@ BOOST_AUTO_TEST_CASE( test_seek )
 
 	frl::Char data[] = FRL_STR( "qwertyuiop" );
 	FileRWCount count = 100;
-	BOOST_CHECK_NO_THROW( count = write( file, data, sizeof( data ) ) );
-	BOOST_CHECK_EQUAL( count, sizeof( data ) );
+	BOOST_CHECK_NO_THROW( count = write( file, data, sizeof( data ) - sizeof( frl::Char ) ) );
+	BOOST_CHECK_EQUAL( count, sizeof( data ) - sizeof( frl::Char ) );
+
 	FileOffset startPos = 0;
 	BOOST_CHECK_NO_THROW( startPos = seek( file, 0, seekFromStart ) );
-	frl::Char *buffer = new frl::Char[ sizeof( data ) / 2 ];
-	BOOST_CHECK_NO_THROW( count = read( file, buffer, sizeof( data ) ) );
+
+	std::vector< frl::Char > buffer( ( sizeof( data ) - 1 ) / sizeof( frl::Char )  );
+	BOOST_CHECK_NO_THROW( count = read( file, &buffer[0], sizeof( data ) - sizeof( frl::Char ) ) );
 	BOOST_CHECK_NO_THROW( close( file ) );
 	BOOST_CHECK_NO_THROW( removal( fileName ) );
-	BOOST_CHECK_EQUAL( count, sizeof( data ) );
-	frl::String bufferStr = buffer;
-	delete [] buffer;
+	BOOST_CHECK_EQUAL( count, sizeof( data ) - sizeof( frl::Char ) );
+	
+	frl::String bufferStr;
+	bufferStr.resize( buffer.size() );
+	std::copy( buffer.begin(), buffer.end(), bufferStr.begin() );
+
 	BOOST_CHECK( frl::String( data ) == bufferStr );
 	BOOST_CHECK( startPos == 0 );
 }

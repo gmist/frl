@@ -17,7 +17,7 @@ struct Psoi2Channel
 	frl::opc::address_space::Tag *thresholdExceeding; //	0 - concentration of chlorine to be normal,
 																				//	1 - concentration chlorine threshold exceeding
 	frl::opc::address_space::Tag *goodPPC; // 0 - bad PPC, 1 - is good PPC
-	frl::opc::address_space::Tag *goodMGC; // 0 - bag MGC (micro generator of chlorine), 1 - is good MGC
+	frl::opc::address_space::Tag *goodMGC; // 0 - bad MGC (micro generator of chlorine), 1 - is good MGC
 };
 
 class Psoi2Device
@@ -53,11 +53,21 @@ public:
 						frl::Bool simulation_,
 						frl::logging::Level logLevel,
 						const frl::String &logFileNamePrefix );
-	void startProcess();
-	frl::UInt getChannelsNumber();
-	frl::UInt getBytesNumber();
-	void stopProcess();
 	~Psoi2Device();
+	void startProcess();
+	void stopProcess();
+
+	frl::UInt getChannelsNumber() const;
+	frl::UInt getBytesNumber() const;
+	frl::UInt getPortNumber() const;
+	frl::Bool isSimulation() const;
+
+	float getValue( frl::UInt number ) const;
+	frl::Bool getTypePPC( frl::UInt number ) const;
+	frl::Bool getGoodPPC( frl::UInt number ) const;
+	frl::Bool getGoodMGC( frl::UInt number ) const;
+	frl::Bool getThresholdExceeding( frl::UInt number ) const;
+
 }; // class Psoi2Device
 
 
