@@ -60,9 +60,20 @@ FileWriter::FileWriter( const FileWriter &other )
 
 void FileWriter::openFile()
 {
-	String dir = io::fs::getCurrentDirectory();
-	io::fs::addSlashToEndPath( dir );
-	fileName = dir + fileName;
+	frl::Bool is_specified_dir = frl::False;
+	if( fileName.size() >= 2 )
+	{
+		if( fileName[0] == FRL_STR('\\') || fileName[1] == FRL_STR(':') )
+			is_specified_dir = frl::True;
+	}
+
+	if( ! is_specified_dir )
+	{
+		String dir = io::fs::getCurrentDirectory();
+		io::fs::addSlashToEndPath( dir );
+		fileName = dir + fileName;
+	}
+
 	try
 	{
 		if( ! io::fs::isExist( fileName) )

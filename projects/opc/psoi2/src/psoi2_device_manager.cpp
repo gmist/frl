@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <boost/filesystem.hpp>
 #include "psoi2_device_manager.h"
 #include "psoi2_device.h"
 #include "frl_lexical_cast.h"
@@ -29,7 +30,46 @@ DeviceManager::DeviceManager()
 		if( logLevelStr == FRL_STR("none" ) )
 			logLevel = frl::logging::LEVEL_NONE;
 
-		frl::String logFileNamePrefix = ( *log.begin() )->getProprtyVal( FRL_STR("LogFileNamePrefix") );
+		frl::Bool write_to_app_data = frl::lexicalCast< frl::String, frl::Bool>( ( *log.begin() )->getProprtyVal( FRL_STR("WriteToAppData") ) );
+		frl::String logFileNamePrefix;
+		if( write_to_app_data )
+		{
+			#if( FRL_COMPILER == FRL_COMPILER_MSVC )
+				size_t requiredSize;
+				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+					_wgetenv_s( &requiredSize, NULL, 0, FRL_STR("APPDATA") );
+				#else
+					getenv_s( &requiredSize, NULL, 0, "APPDATA");
+				#endif
+
+				std::vector< frl::Char > all_user_profile( requiredSize );
+				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+					_wgetenv_s( &requiredSize, &all_user_profile[0], requiredSize, FRL_STR("APPDATA") );
+				#else
+					getenv_s( &requiredSize, &all_user_profile[0], requiredSize, "APPDATA" );
+				#endif
+
+				logFileNamePrefix.resize( requiredSize - 1 );
+				std::copy( all_user_profile.begin(), all_user_profile.end() - 1, logFileNamePrefix.begin() );
+				logFileNamePrefix += FRL_STR("\\Psoi2OPC\\");
+			#else // if ! FRL_COMPILER_MSVC
+				frl::Char* tmp;
+				#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+					tmp = _wgetenv( FRL_STR("APPDATA") )
+				#else
+					tmp = getenv( "APPDATA" );
+				#endif
+				if( tmp != NULL )
+				{
+					logFileNamePrefix = tmp;
+					logFileNamePrefix += FRL_STR("\\Psoi2OPC\\");
+				}
+			#endif // FRL_COMPILER
+
+			if( ! boost::filesystem::exists( logFileNamePrefix.c_str() ) )
+				boost::filesystem::create_directory( logFileNamePrefix.c_str() );
+		}
+		logFileNamePrefix += ( *log.begin() )->getProprtyVal( FRL_STR("LogFileNamePrefix") );
 		frl::poor_xml::NodesList settings = config.getRoot()->getSubNodes( FRL_STR("Psoi2") );
 		for( frl::poor_xml::NodesList::iterator it = settings.begin(); it != settings.end(); ++it )
 		{
