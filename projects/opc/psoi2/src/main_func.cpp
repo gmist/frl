@@ -1,17 +1,19 @@
 #include <Windows.h>
 #include <commctrl.h>
+#include <boost/thread.hpp>
 #include "main_func.h"
 #include "global_var.h"
 #include "resource.h"
 #include "psoi2_device.h"
 #include "prop_func.h"
+#include "splash_func.h"
 
 #define MSG_NOTIFYICON (WM_APP) + 100
 
 void systrayIcon( HINSTANCE hinstance, HWND hwnd, bool add )
 {
 	NOTIFYICONDATA nid;
-	ZeroMemory( &nid,sizeof(nid) );
+	::ZeroMemory( &nid,sizeof(nid) );
 	nid.cbSize = sizeof(NOTIFYICONDATA);
 	nid.hWnd = hwnd;
 	nid.uID = 0;
@@ -21,9 +23,9 @@ void systrayIcon( HINSTANCE hinstance, HWND hwnd, bool add )
 	lstrcpy( nid.szTip,TEXT("Double-click to maxmize!") );
 
 	if( add )
-		Shell_NotifyIcon( NIM_ADD, &nid );
+		::Shell_NotifyIcon( NIM_ADD, &nid );
 	else
-		Shell_NotifyIcon( NIM_DELETE, &nid );
+		::Shell_NotifyIcon( NIM_DELETE, &nid );
 }
 
 
@@ -37,8 +39,8 @@ BOOL regClass( HINSTANCE hInstance )
 	wc.hInstance = hInstance;
 	wc.lpszClassName = global_var::main_wnd::class_name;
 	wc.lpszMenuName = NULL;
-	wc.hIcon = LoadIcon( hInstance, (LPCTSTR)IDI_ICON_MAIN );
-	wc.hCursor = LoadCursor( NULL, IDC_ARROW );
+	wc.hIcon = ::LoadIcon( hInstance, (LPCTSTR)IDI_ICON_MAIN );
+	wc.hCursor = ::LoadCursor( NULL, IDC_ARROW );
 	return RegisterClass( &wc );
 }
 
@@ -96,7 +98,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 			if( w_param == SIZE_MINIMIZED )
 			{
 				systrayIcon( global_var::main_wnd::h_instance, hwnd, true );
-				ShowWindow( hwnd, SW_HIDE );
+				::ShowWindow( hwnd, SW_HIDE );
 			}
 		}
 		break;
@@ -106,14 +108,18 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 			if( l_param ==  WM_LBUTTONDBLCLK )
 			{
 				systrayIcon( global_var::main_wnd::h_instance, hwnd, false );
-				ShowWindow( hwnd, SW_RESTORE );
-				SetForegroundWindow( hwnd );
+				::ShowWindow( hwnd, SW_RESTORE );
+				::SetForegroundWindow( hwnd );
 			}
 		}
 		break;
 
 		case WM_CREATE:
 		{
+			// show splash screen
+			boost::function < void ( HWND ) > splash_func = boost::bind( &showSplashScreen, _1 );
+			boost::thread processThread = boost::thread( boost::bind( splash_func, hwnd ) );
+
 			InitCommonControls();
 
 			global_var::main_wnd::tree_handle = CreateWindowEx( 
@@ -128,11 +134,11 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 				(HMENU)ID_MAIN_TREE,
 				global_var::main_wnd::h_instance, NULL); // Создание tree view
 
-			HIMAGELIST hImageList=ImageList_Create( 16,16,ILC_COLOR24,3, 10 );
-			HBITMAP hBitMap=LoadBitmap( global_var::main_wnd::h_instance, MAKEINTRESOURCE(IDB_TREE_LIST) );
-			ImageList_Add(hImageList,hBitMap,NULL);
-			DeleteObject(hBitMap);
-			SendDlgItemMessage( hwnd,ID_MAIN_TREE,TVM_SETIMAGELIST,0,(LPARAM)hImageList);
+			HIMAGELIST image_list_handle = ::ImageList_Create( 16,16,ILC_COLOR24,3, 10 );
+			HBITMAP bit_map_handle = ::LoadBitmap( global_var::main_wnd::h_instance, MAKEINTRESOURCE(IDB_TREE_LIST) );
+			::ImageList_Add(image_list_handle,bit_map_handle,NULL);
+			::DeleteObject( bit_map_handle );
+			::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_SETIMAGELIST, 0, (LPARAM)image_list_handle );
 
 			std::vector< Psoi2Device* >::const_iterator end = global_var::devManager::getInstance().getDevices().end();
 			std::vector< Psoi2Device* >::const_iterator it = global_var::devManager::getInstance().getDevices().begin();
@@ -172,7 +178,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 					tv_struct.item.pszText=(frl::Char*)ch_tmp.c_str();
 					tv_struct.item.iImage=2;
 					tv_struct.item.iSelectedImage=1;
-					item_handle = (HTREEITEM)SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_INSERTITEM,0,(LPARAM)&tv_struct);
+					item_handle = (HTREEITEM) ::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_INSERTITEM,0,(LPARAM)&tv_struct);
 					global_var::channels_map.insert( std::make_pair( item_handle, ChannelDescr( (*it)->getPortNumber(), i ) ) );
 				}
 			}
@@ -183,7 +189,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 		case WM_CLOSE:
 		{
-			int ret_val = MessageBox( hwnd, FRL_STR("Do you really want to exit?"), FRL_STR("PSOI2 OPC server: Confirmation message"), MB_ICONQUESTION | MB_YESNO );
+			int ret_val = ::MessageBox( hwnd, FRL_STR("Do you really want to exit?"), FRL_STR("PSOI2 OPC server: Confirmation message"), MB_ICONQUESTION | MB_YESNO );
 			if( ret_val == IDNO )
 			{
 				return 0;
@@ -193,8 +199,8 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 		case WM_DESTROY:
 		{
-			PostQuitMessage( 0 );
-			return 0;		
+			::PostQuitMessage( 0 );
+			return 0;
 		}
 		break;
 
@@ -206,7 +212,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 				{
 					using namespace global_var;
 					HTREEITEM Selected = NULL;
-					Selected=(HTREEITEM)SendDlgItemMessage(hwnd,ID_MAIN_TREE,TVM_GETNEXTITEM,TVGN_CARET,(LPARAM)Selected);
+					Selected=(HTREEITEM) ::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_GETNEXTITEM, TVGN_CARET, (LPARAM)Selected );
 					DialogBoxParam( global_var::main_wnd::h_instance, MAKEINTRESOURCE( IDD_CHANNEL_PROP ), hwnd, (DLGPROC)propFunc, (LPARAM)Selected );
 					return 0;
 				}
@@ -221,5 +227,5 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 		}
 		break;
 	}
-	return DefWindowProc( hwnd, msg, w_param, l_param );
+	return ::DefWindowProc( hwnd, msg, w_param, l_param );
 }

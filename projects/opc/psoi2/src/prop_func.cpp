@@ -7,7 +7,7 @@
 BOOL CALLBACK propFunc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 {
 	switch( message )
-	{ 	 
+	{
 		case WM_INITDIALOG: 
 		{
 			HTREEITEM Selected = (HTREEITEM)lParam;

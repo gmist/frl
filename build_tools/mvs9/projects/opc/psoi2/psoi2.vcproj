@@ -210,6 +210,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\src\splash_func.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\src\util.cpp"
 				>
 			</File>
@@ -248,6 +252,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\include\splash_func.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\include\util.h"
 				>
 			</File>
@@ -263,6 +271,10 @@
 			</File>
 			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\resource.rc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\splash.bmp"
 				>
 			</File>
 			<File

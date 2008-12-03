@@ -480,7 +480,7 @@ void Psoi2Device::stopProcess() // WARNING - hack!
 
 frl::UInt Psoi2Device::getPortNumber() const
 {
-	return portNumber;	
+	return portNumber;
 }
 
 frl::Bool Psoi2Device::isSimulation() const
