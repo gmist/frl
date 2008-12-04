@@ -101,6 +101,7 @@ IDI_ICON_MAIN           ICON                    "icons\\102.ico"
 
 IDB_TREE_LIST           BITMAP                  "bitmaps\\tree_img_list.bmp"
 IDB_SPLASH              BITMAP                  "bitmaps\\splash.bmp"
+IDB_FRL_LOGO            BITMAP                  "bitmaps\\logo_text.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -112,6 +113,19 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_SYSMENU
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     CONTROL         "",IDC_SPLASH_IMAGE,"Static",SS_BITMAP | SS_CENTERIMAGE,5,5,140,65
+END
+
+IDD_ABOUT_DIALOG DIALOGEX 0, 0, 178, 180
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_CAPTION
+CAPTION "About"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "Close",ID_ABOUT_CLOSE,7,159,164,14
+    GROUPBOX        "FatRat Library",IDC_GROUP_FOR_FRL_LOGO,7,71,164,79
+    GROUPBOX        "PSOI2 OPC",IDC_GROUP_FOR_PSOI2_LOGO,7,7,164,58
+    CONTROL         104,IDC_PSOI2_ABOUT_LOGO,"Static",SS_BITMAP,45,18,87,40
+    CONTROL         107,IDC_ABOUT_FRL_LOGO,"Static",SS_BITMAP | SS_REALSIZEIMAGE,15,84,147,60
+    PUSHBUTTON      "Webpage",IDC_BUTTON_TO_WEB,88,128,73,16,0,WS_EX_CLIENTEDGE
 END
 
 
@@ -129,6 +143,14 @@ BEGIN
         RIGHTMARGIN, 145
         TOPMARGIN, 5
         BOTTOMMARGIN, 70
+    END
+
+    IDD_ABOUT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 171
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 173
     END
 END
 #endif    // APSTUDIO_INVOKED

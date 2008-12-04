@@ -182,6 +182,10 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\src\about_func.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\src\channel_desc.cpp"
 				>
 			</File>
@@ -223,6 +227,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\include\about_func.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\include\channel_desc.h"
 				>
@@ -267,6 +275,34 @@
 			>
 			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\icons\102.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\bitmap1.bmp"
+				>
+			</File>
+			<File
+				RelativePath=".\bitmaps\logo_text.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\logo_text.bmp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\icons\logo_text.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\icons\logo_text.ico"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\logo_text.png"
+				>
+			</File>
+			<File
+				RelativePath=".\bitmaps\logo_text.png"
 				>
 			</File>
 			<File

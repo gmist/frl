@@ -16,6 +16,7 @@ def psoi2_init()
 
 	mswin_rc_file("resource/resource.rc",
 						[ "../../../projects/opc/psoi2/resource/bitmaps/tree_img_list.bmp",
+						"../../../projects/opc/psoi2/resource/bitmaps/logo_text.bmp",
 						"../../../projects/opc/psoi2/resource/bitmaps/splash.bmp",
 						"../../../projects/opc/psoi2/resource/icons/102.ico" ] )
 	lib( "comctl32" )

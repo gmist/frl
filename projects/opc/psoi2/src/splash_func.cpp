@@ -34,5 +34,5 @@ BOOL CALLBACK splashFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 void showSplashScreen( HWND hwnd )
 {
-	DialogBoxParam( global_var::main_wnd::h_instance, MAKEINTRESOURCE( IDD_SPLASH_DIALOG ), hwnd, (DLGPROC)splashFunc, (LPARAM)NULL );
+	DialogBoxParam( global_var::main_wnd::h_instance, MAKEINTRESOURCE( IDD_SPLASH_DIALOG ), hwnd, (DLGPROC)splashFunc, 0 );
 }

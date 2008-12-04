@@ -7,6 +7,7 @@
 #include "psoi2_device.h"
 #include "prop_func.h"
 #include "splash_func.h"
+#include "about_func.h"
 
 #define MSG_NOTIFYICON (WM_APP) + 100
 #define WM_MENU_ABOUT (WM_APP) + 201
@@ -47,6 +48,71 @@ void systrayIconHelper( HINSTANCE hinstance, HWND hwnd, bool add )
 		::Shell_NotifyIcon( NIM_ADD, &nid );
 	else
 		::Shell_NotifyIcon( NIM_DELETE, &nid );
+}
+
+// Helper for create tree view with channels list
+void createTreeView( HWND hwnd )
+{
+	global_var::main_wnd::tree_handle = CreateWindowEx( 
+		WS_EX_WINDOWEDGE,
+		WC_TREEVIEW,
+		NULL,
+		WS_CHILD+WS_VISIBLE+TVS_HASLINES+TVS_HASBUTTONS+TVS_LINESATROOT,
+		5, 5,
+		210,
+		410, 
+		hwnd,
+		(HMENU)ID_MAIN_TREE,
+		global_var::main_wnd::h_instance, NULL);
+
+	HIMAGELIST image_list_handle = ::ImageList_Create( 16,16,ILC_COLOR24,3, 10 );
+	HBITMAP bit_map_handle = ::LoadBitmap( global_var::main_wnd::h_instance, MAKEINTRESOURCE(IDB_TREE_LIST) );
+	::ImageList_Add(image_list_handle,bit_map_handle,NULL);
+	::DeleteObject( bit_map_handle );
+	::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_SETIMAGELIST, 0, (LPARAM)image_list_handle );
+
+	std::vector< Psoi2Device* >::const_iterator end = global_var::devManager::getInstance().getDevices().end();
+	std::vector< Psoi2Device* >::const_iterator it = global_var::devManager::getInstance().getDevices().begin();
+
+	// temporary variables
+	TV_INSERTSTRUCT tv_struct;
+	HTREEITEM parent = 0;
+	HTREEITEM item_handle = 0;
+	frl::String ch_tmp;
+
+	for( ; it != end; ++it )
+	{
+		frl::String tpm = FRL_STR("COM_");
+		tpm += frl::lexicalCast< frl::UInt, frl::String >( (*it)->getPortNumber() );
+		tpm += FRL_STR(": ");
+
+		tpm += frl::lexicalCast< frl::UInt, frl::String >( (*it)->getChannelsNumber() );
+		tpm += FRL_STR(" channels");
+
+		if( (*it)->isSimulation() )
+			tpm += FRL_STR(" (simulation!)");
+
+		tv_struct.hParent=NULL;
+		tv_struct.hInsertAfter=TVI_ROOT;
+		tv_struct.item.mask=TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
+		tv_struct.item.pszText= (frl::Char*)tpm.c_str();
+		tv_struct.item.iImage=0;
+		tv_struct.item.iSelectedImage = 0;
+		parent = (HTREEITEM)SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_INSERTITEM, 0, (LPARAM)&tv_struct );
+
+		for( frl::UInt i = 0; i < (*it)->getChannelsNumber(); ++i )
+		{
+			tv_struct.hParent=parent;
+			tv_struct.hInsertAfter=TVI_LAST;
+			ch_tmp = FRL_STR( "Cannel_" );
+			ch_tmp += frl::lexicalCast< frl::Int, frl::String >( i );
+			tv_struct.item.pszText=(frl::Char*)ch_tmp.c_str();
+			tv_struct.item.iImage=2;
+			tv_struct.item.iSelectedImage=1;
+			item_handle = (HTREEITEM) ::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_INSERTITEM,0,(LPARAM)&tv_struct);
+			global_var::channels_map.insert( std::make_pair( item_handle, ChannelDescr( (*it)->getPortNumber(), i ) ) );
+		}
+	}
 }
 
 BOOL regClassHelper( HINSTANCE hInstance )
@@ -122,7 +188,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 				::ShowWindow( hwnd, SW_HIDE );
 			}
 		}
-		break;
+		break; // WM_SIZE
 
 		case MSG_NOTIFYICON:
 		{
@@ -133,7 +199,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 				::SetForegroundWindow( hwnd );
 			}
 		}
-		break;
+		break; // MSG_NOTIFYICON
 
 		case WM_CREATE:
 		{
@@ -144,67 +210,8 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 			InitCommonControls();
 
 			// Create tree view
-			global_var::main_wnd::tree_handle = CreateWindowEx( 
-				WS_EX_WINDOWEDGE,
-				WC_TREEVIEW,
-				NULL,
-				WS_CHILD+WS_VISIBLE+TVS_HASLINES+TVS_HASBUTTONS+TVS_LINESATROOT,
-				5, 5,
-				210,
-				410, 
-				hwnd,
-				(HMENU)ID_MAIN_TREE,
-				global_var::main_wnd::h_instance, NULL);
+			createTreeView(hwnd);
 
-			HIMAGELIST image_list_handle = ::ImageList_Create( 16,16,ILC_COLOR24,3, 10 );
-			HBITMAP bit_map_handle = ::LoadBitmap( global_var::main_wnd::h_instance, MAKEINTRESOURCE(IDB_TREE_LIST) );
-			::ImageList_Add(image_list_handle,bit_map_handle,NULL);
-			::DeleteObject( bit_map_handle );
-			::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_SETIMAGELIST, 0, (LPARAM)image_list_handle );
-
-			std::vector< Psoi2Device* >::const_iterator end = global_var::devManager::getInstance().getDevices().end();
-			std::vector< Psoi2Device* >::const_iterator it = global_var::devManager::getInstance().getDevices().begin();
-
-			// temporary variables
-			TV_INSERTSTRUCT tv_struct;
-			HTREEITEM parent = 0;
-			HTREEITEM item_handle = 0;
-			frl::String ch_tmp;
-
-			for( ; it != end; ++it )
-			{
-				frl::String tpm = FRL_STR("COM_");
-				tpm += frl::lexicalCast< frl::UInt, frl::String >( (*it)->getPortNumber() );
-				tpm += FRL_STR(": ");
-
-				tpm += frl::lexicalCast< frl::UInt, frl::String >( (*it)->getChannelsNumber() );
-				tpm += FRL_STR(" channels");
-
-				if( (*it)->isSimulation() )
-					tpm += FRL_STR(" (simulation!)");
-
-				tv_struct.hParent=NULL;
-				tv_struct.hInsertAfter=TVI_ROOT;
-				tv_struct.item.mask=TVIF_TEXT|TVIF_IMAGE|TVIF_SELECTEDIMAGE;
-				tv_struct.item.pszText= (frl::Char*)tpm.c_str();
-				tv_struct.item.iImage=0;
-				tv_struct.item.iSelectedImage = 0;
-				parent = (HTREEITEM)SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_INSERTITEM, 0, (LPARAM)&tv_struct );
-				
-				for( frl::UInt i = 0; i < (*it)->getChannelsNumber(); ++i )
-				{
-					tv_struct.hParent=parent;
-					tv_struct.hInsertAfter=TVI_LAST;
-					ch_tmp = FRL_STR( "Cannel_" );
-					ch_tmp += frl::lexicalCast< frl::Int, frl::String >( i );
-					tv_struct.item.pszText=(frl::Char*)ch_tmp.c_str();
-					tv_struct.item.iImage=2;
-					tv_struct.item.iSelectedImage=1;
-					item_handle = (HTREEITEM) ::SendDlgItemMessage( hwnd, ID_MAIN_TREE, TVM_INSERTITEM,0,(LPARAM)&tv_struct);
-					global_var::channels_map.insert( std::make_pair( item_handle, ChannelDescr( (*it)->getPortNumber(), i ) ) );
-				}
-			}
-			
 			// Create main window menu
 			HMENU menu_handle = ::CreateMenu();
 			HMENU menu_server_handle = ::CreatePopupMenu();
@@ -223,7 +230,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 			return 0;
 		}
-		break;
+		break; // WM_CREATE
 
 		case WM_CLOSE:
 		{
@@ -233,14 +240,14 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 				return 0;
 			}
 		}
-		break;
+		break; // WM_CLOSE
 
 		case WM_DESTROY:
 		{
 			::PostQuitMessage( 0 );
 			return 0;
 		}
-		break;
+		break; // WM_DESTROY
 
 		case WM_NOTIFY:
 		{
@@ -257,7 +264,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 			}
 			return 0;
 		}
-		break;
+		break; // WM_NOTIFY
 
 		case WM_COMMAND:
 		{
@@ -265,19 +272,21 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 			{
 				case WM_MENU_ABOUT:
 				{
-					// TODO add about dialog
+					DialogBoxParam( global_var::main_wnd::h_instance, MAKEINTRESOURCE( IDD_ABOUT_DIALOG ), hwnd, (DLGPROC)aboutFunc, 0 );
+					return 0;
 				}
-				break;
+				break; // WM_MENU_ABOUT
 
 				case WM_MENU_EXIT:
 				{
 					::SendMessage( hwnd, WM_CLOSE, 0, 0 );
+					return 0;
 				}
-				break;
+				break; // WM_MENU_EXIT
 			}
 			return 0;
 		}
-		break;
+		break; // WM_COMMAND
 	}
 	return ::DefWindowProc( hwnd, msg, w_param, l_param );
 }
