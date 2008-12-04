@@ -5,8 +5,8 @@
 // Saves instance handle and creates main window
 BOOL initInstance(HINSTANCE hInstance, int nCmdShow);
 
-// Registers the window class
-BOOL regClass( HINSTANCE hInstance );
+// Helper for registration main window class
+BOOL regClassHelper( HINSTANCE hInstance );
 
 // Processes messages for the main window
 LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param );

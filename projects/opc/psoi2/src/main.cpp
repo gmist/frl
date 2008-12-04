@@ -17,7 +17,7 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 	if( util::isAlreadyRunning() )
 		return 0;
 
-	if( ! regClass( hInstance ) )
+	if( ! regClassHelper( hInstance ) )
 	{
 		frl::String msg_string = frl::sys::util::getLastErrorDescription();
 		MessageBox( NULL, msg_string.c_str(), FRL_STR("PSOI2 OPC server: Main window registration error"), MB_OK | MB_ICONSTOP );

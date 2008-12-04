@@ -9,8 +9,29 @@
 #include "splash_func.h"
 
 #define MSG_NOTIFYICON (WM_APP) + 100
+#define WM_MENU_ABOUT (WM_APP) + 201
+#define WM_MENU_EXIT (WM_APP) + 202
 
-void systrayIcon( HINSTANCE hinstance, HWND hwnd, bool add )
+// Helper for adding items to menu
+BOOL createMenuHelper( HMENU menu_handle, frl::Char *data, UINT pos, UINT id, HMENU sub_menu, UINT type )
+{
+	MENUITEMINFO mii;
+	mii.fMask = MIIM_STATE | MIIM_TYPE | MIIM_SUBMENU | MIIM_ID;
+	if( type != MFT_SEPARATOR )
+	{
+		mii.dwTypeData = data;
+		mii.cch = sizeof( data );
+	}
+	mii.fType = type;
+	mii.cbSize = sizeof( MENUITEMINFO );
+	mii.fState = MFS_ENABLED;
+	mii.wID = id;
+	mii.hSubMenu = sub_menu;
+	return ::InsertMenuItem( menu_handle, pos, FALSE, &mii );
+}
+
+// Helper for show/hide icon in system tray
+void systrayIconHelper( HINSTANCE hinstance, HWND hwnd, bool add )
 {
 	NOTIFYICONDATA nid;
 	::ZeroMemory( &nid,sizeof(nid) );
@@ -28,8 +49,7 @@ void systrayIcon( HINSTANCE hinstance, HWND hwnd, bool add )
 		::Shell_NotifyIcon( NIM_DELETE, &nid );
 }
 
-
-BOOL regClass( HINSTANCE hInstance )
+BOOL regClassHelper( HINSTANCE hInstance )
 {
 	WNDCLASS wc;
 	wc.hbrBackground	= (HBRUSH)( COLOR_WINDOW );
@@ -44,6 +64,7 @@ BOOL regClass( HINSTANCE hInstance )
 	return RegisterClass( &wc );
 }
 
+// Function for create main window
 BOOL createWindow()
 {
 	int x_screen = ::GetSystemMetrics( SM_CXSCREEN );
@@ -56,7 +77,7 @@ BOOL createWindow()
 	global_var::main_wnd::handle = CreateWindow( 
 		global_var::main_wnd::class_name, 
 		global_var::main_wnd::title,
-		WS_VISIBLE | WS_MINIMIZEBOX | WS_SYSMENU | WS_CAPTION,
+		WS_VISIBLE | WS_OVERLAPPEDWINDOW,
 		x_screen,
 		y_screen,
 		global_var::main_wnd::width,
@@ -82,7 +103,7 @@ BOOL initInstance( HINSTANCE hInstance, int nCmdShow )
 	::ShowWindow( global_var::main_wnd::handle, nCmdShow );
 
 	if( nCmdShow == SW_HIDE )
-		systrayIcon( global_var::main_wnd::h_instance, global_var::main_wnd::handle, true );
+		systrayIconHelper( global_var::main_wnd::h_instance, global_var::main_wnd::handle, true );
 	else
 		::UpdateWindow( global_var::main_wnd::handle );
 
@@ -97,7 +118,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 		{
 			if( w_param == SIZE_MINIMIZED )
 			{
-				systrayIcon( global_var::main_wnd::h_instance, hwnd, true );
+				systrayIconHelper( global_var::main_wnd::h_instance, hwnd, true );
 				::ShowWindow( hwnd, SW_HIDE );
 			}
 		}
@@ -107,7 +128,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 		{
 			if( l_param ==  WM_LBUTTONDBLCLK )
 			{
-				systrayIcon( global_var::main_wnd::h_instance, hwnd, false );
+				systrayIconHelper( global_var::main_wnd::h_instance, hwnd, false );
 				::ShowWindow( hwnd, SW_RESTORE );
 				::SetForegroundWindow( hwnd );
 			}
@@ -122,6 +143,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 			InitCommonControls();
 
+			// Create tree view
 			global_var::main_wnd::tree_handle = CreateWindowEx( 
 				WS_EX_WINDOWEDGE,
 				WC_TREEVIEW,
@@ -132,7 +154,7 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 				410, 
 				hwnd,
 				(HMENU)ID_MAIN_TREE,
-				global_var::main_wnd::h_instance, NULL); // Создание tree view
+				global_var::main_wnd::h_instance, NULL);
 
 			HIMAGELIST image_list_handle = ::ImageList_Create( 16,16,ILC_COLOR24,3, 10 );
 			HBITMAP bit_map_handle = ::LoadBitmap( global_var::main_wnd::h_instance, MAKEINTRESOURCE(IDB_TREE_LIST) );
@@ -182,6 +204,22 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 					global_var::channels_map.insert( std::make_pair( item_handle, ChannelDescr( (*it)->getPortNumber(), i ) ) );
 				}
 			}
+			
+			// Create main window menu
+			HMENU menu_handle = ::CreateMenu();
+			HMENU menu_server_handle = ::CreatePopupMenu();
+
+			// Insert menu "Server" items
+			createMenuHelper( menu_server_handle, FRL_STR("&About"), 0, WM_MENU_ABOUT, NULL, MFT_STRING );
+			createMenuHelper( menu_server_handle, NULL, 1, 0, NULL, MFT_SEPARATOR );
+			createMenuHelper( menu_server_handle, FRL_STR("&Exit"), 2, WM_MENU_EXIT, NULL, MFT_STRING );
+
+			// Add menu "Server" to main menu
+			createMenuHelper( menu_handle, FRL_STR("&Server"), 0, 0, menu_server_handle, MFT_STRING );
+
+			// And show main menu
+			::SetMenu( hwnd, menu_handle );
+			::DrawMenuBar( hwnd );
 
 			return 0;
 		}
@@ -221,8 +259,22 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 		}
 		break;
 
-		case TVN_ITEMEXPANDED:
+		case WM_COMMAND:
 		{
+			switch( LOWORD( w_param ) )
+			{
+				case WM_MENU_ABOUT:
+				{
+					// TODO add about dialog
+				}
+				break;
+
+				case WM_MENU_EXIT:
+				{
+					::SendMessage( hwnd, WM_CLOSE, 0, 0 );
+				}
+				break;
+			}
 			return 0;
 		}
 		break;
