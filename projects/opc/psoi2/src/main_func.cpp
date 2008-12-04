@@ -12,6 +12,7 @@
 #define MSG_NOTIFYICON (WM_APP) + 100
 #define WM_MENU_ABOUT (WM_APP) + 201
 #define WM_MENU_EXIT (WM_APP) + 202
+#define TM_CHECK_CN (WM_APP) + 401
 
 // Helper for adding items to menu
 BOOL createMenuHelper( HMENU menu_handle, frl::Char *data, UINT pos, UINT id, HMENU sub_menu, UINT type )
@@ -180,6 +181,26 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 {
 	switch( msg )
 	{
+		case WM_TIMER:
+		{
+			// checking connection of clients
+			if( w_param == TM_CHECK_CN )
+			{
+				static bool is_first_run = true;
+
+				if( is_first_run ) // after wait first connection
+				{
+					::KillTimer( hwnd, TM_CHECK_CN ); // clean up long checking timer
+					is_first_run = false;
+					::SetTimer( hwnd, TM_CHECK_CN, 2000, (TIMERPROC)NULL ); // and set short checking time
+				}
+
+				if( ! frl::opc::factory.isServerInUse() )
+					SendMessage( hwnd, WM_DESTROY, 0, 0 );
+			}
+		}
+		break; // WM_TIMER
+
 		case WM_SIZE:
 		{
 			if( w_param == SIZE_MINIMIZED )
@@ -244,6 +265,9 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 		case WM_DESTROY:
 		{
+			if( global_var::exit_if_all_client_disconnected ) // if checked client connections
+				::KillTimer( hwnd, TM_CHECK_CN ); // clean up timer
+
 			::PostQuitMessage( 0 );
 			return 0;
 		}
@@ -289,4 +313,11 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 		break; // WM_COMMAND
 	}
 	return ::DefWindowProc( hwnd, msg, w_param, l_param );
+}
+
+void createCheckConnectionTimer()
+{
+	HWND hwnd = ::FindWindow( global_var::main_wnd::class_name, global_var::main_wnd::title );
+	if( hwnd )
+		::SetTimer( hwnd, TM_CHECK_CN, 20000, (TIMERPROC)NULL );	
 }

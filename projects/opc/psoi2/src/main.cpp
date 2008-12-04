@@ -24,7 +24,6 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 		return FALSE;
 	}
 
-	Bool exitOnAllClientDisconnected = True;
 	{
 		frl::poor_xml::Document config;
 		try
@@ -40,23 +39,17 @@ int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLin
 				initInstance( hInstance, nShowCmd );
 			}
 			frl::String isExit = config.getRoot()->getProprtyVal( FRL_STR("ExitOnAllClientDisconnected") );
-			exitOnAllClientDisconnected = frl::lexicalCast< String, Bool >( isExit );
+			global_var::exit_if_all_client_disconnected = frl::lexicalCast< String, Bool >( isExit );
 		}
 		catch( frl::Exception& ){}
 	}
 
+	if( global_var::exit_if_all_client_disconnected )
+		createCheckConnectionTimer();
+
 	MSG msg;
-	if( exitOnAllClientDisconnected )
-	{
-		Sleep( 20000 ); // wait for first client
-		while( GetMessage( &msg, 0, 0, 0 ) && frl::opc::factory.isServerInUse() )
-			DispatchMessage( &msg );
-	}
-	else
-	{
-		while( GetMessage( &msg, 0, 0, 0 ) )
-			DispatchMessage( &msg );
-	}
+	while( GetMessage( &msg, 0, 0, 0 ) )
+		DispatchMessage( &msg );
 
 	return msg.wParam;
 }

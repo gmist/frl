@@ -11,4 +11,7 @@ BOOL regClassHelper( HINSTANCE hInstance );
 // Processes messages for the main window
 LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param );
 
+// Function of creating a timer to checking connection of clients
+void createCheckConnectionTimer();
+
 #endif // main_func_h_

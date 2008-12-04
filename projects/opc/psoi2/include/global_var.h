@@ -21,6 +21,8 @@ namespace global_var
 		extern const int width;
 	}
 	
+	extern Bool exit_if_all_client_disconnected;
+
 	extern std::map< HTREEITEM, ChannelDescr > channels_map;
 	typedef frl::SingletonMeyers< DeviceManager > devManager;
 }
