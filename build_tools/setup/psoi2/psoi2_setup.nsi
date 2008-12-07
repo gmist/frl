@@ -1,4 +1,4 @@
-Name "OPC server for PSOI2 device"
+Name "$(^TranslatedName)"
 
 # Defines
 !define REGKEY "SOFTWARE\$(^Name)"
@@ -7,6 +7,9 @@ Name "OPC server for PSOI2 device"
 
 # MUI defines
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\box-install.ico"
+!define MUI_HEADERIMAGE
+!define MUI_HEADERIMAGE_BITMAP "..\..\..\projects\opc\psoi2\resource\bitmaps\logo_text.bmp"
+!define MUI_PAGE_DIRECTORY
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
@@ -14,7 +17,7 @@ Name "OPC server for PSOI2 device"
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER Psoi2OPC
 !define MUI_FINISHPAGE_RUN $INSTDIR\server\opc_psoi2.exe
 !define MUI_FINISHPAGE_RUN_PARAMETERS
-!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\help\readme.odt
+!define MUI_FINISHPAGE_SHOWREADME $INSTDIR\server\readme.rtf
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\box-uninstall.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 
@@ -54,18 +57,12 @@ Section "-OPC server" SEC0000
     SetOverwrite on
     File ..\..\..\output\projects\opc\psoi2\opc_psoi2.exe
     File ..\..\..\output\projects\opc\psoi2\config.xml
+	File ..\..\..\doc\projects\opc\psoi2\readme.rtf
 	Exec "$INSTDIR\server\opc_psoi2.exe -r_silent"
     WriteRegStr HKLM "${REGKEY}\Components" "OPC server" 1
 SectionEnd
 
-Section /o ReadMe SEC0001
-    SetOutPath $INSTDIR\help
-    SetOverwrite on
-    File ..\..\..\doc\projects\opc\psoi2\readme.odt
-    WriteRegStr HKLM "${REGKEY}\Components" ReadMe 1
-SectionEnd
-
-Section /o "Psoi2 simulator" SEC0002
+Section /o "$(^SimulatorName)" SEC0001
     SetOutPath $INSTDIR\simulator
     SetOverwrite on
     File ..\..\..\output\test\psoi2_sender\test_psoi2_sender.exe
@@ -73,7 +70,7 @@ Section /o "Psoi2 simulator" SEC0002
     WriteRegStr HKLM "${REGKEY}\Components" "Psoi2 simulator" 1
 SectionEnd
 
-Section /o Sources SEC0003
+Section /o "$(^SourcesName)" SEC0002
     SetOutPath $INSTDIR\src\build_tools
     SetOverwrite on
     File /r ..\..\*
@@ -92,13 +89,15 @@ Section /o Sources SEC0003
     WriteRegStr HKLM "${REGKEY}\Components" Sources 1
 SectionEnd
 
-Section -post SEC0004
+Section -post SEC0003
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
     !insertmacro MUI_STARTMENU_WRITE_BEGIN Application
     SetOutPath $SMPROGRAMS\$StartMenuGroup
     CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk" $INSTDIR\uninstall.exe
+	CreateShortcut "$SMPROGRAMS\$StartMenuGroup\ReadMe.lnk" $INSTDIR\server\readme.rtf
+	CreateShortcut "$SMPROGRAMS\$StartMenuGroup\$(^ShortTranslatedName).lnk" $INSTDIR\server\opc_psoi2.exe
     !insertmacro MUI_STARTMENU_WRITE_END
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" DisplayName "$(^Name)"
     WriteRegStr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)" Publisher "${COMPANY}"
@@ -123,7 +122,7 @@ done${UNSECTION_ID}:
 !macroend
 
 # Uninstaller sections
-Section /o -un.Sources UNSEC0003
+Section /o "-un.$(^SourcesName)" UNSEC0002
     RmDir /r /REBOOTOK $INSTDIR\src\test
     RmDir /r /REBOOTOK $INSTDIR\src\src
     RmDir /r /REBOOTOK $INSTDIR\src\projects
@@ -131,38 +130,45 @@ Section /o -un.Sources UNSEC0003
     RmDir /r /REBOOTOK $INSTDIR\src\doc
     RmDir /r /REBOOTOK $INSTDIR\src\dependency
     RmDir /r /REBOOTOK $INSTDIR\src\build_tools
-    DeleteRegValue HKLM "${REGKEY}\Components" Sources
+    DeleteRegValue HKLM "${REGKEY}\Components" "$(^SourcesName)"
 SectionEnd
 
-Section /o "-un.Psoi2 simulator" UNSEC0002
+Section /o "-un.$(^SimulatorName)" UNSEC0001
     Delete /REBOOTOK $INSTDIR\simulator\config.xml
     Delete /REBOOTOK $INSTDIR\simulator\test_psoi2_sender.exe
-    DeleteRegValue HKLM "${REGKEY}\Components" "Psoi2 simulator"
-SectionEnd
-
-Section /o -un.ReadMe UNSEC0001
-    Delete /REBOOTOK $INSTDIR\help\readme.odt
-    DeleteRegValue HKLM "${REGKEY}\Components" ReadMe
+	RmDir /r /REBOOTOK $INSTDIR\simulator
+    DeleteRegValue HKLM "${REGKEY}\Components" "$(^SimulatorName)"
 SectionEnd
 
 Section /o "-un.OPC server" UNSEC0000
 	ExecWait "$INSTDIR\server\opc_psoi2.exe -u_silent"
     Delete /REBOOTOK $INSTDIR\server\config.xml
     Delete /REBOOTOK $INSTDIR\server\opc_psoi2.exe
+	Delete /REBOOTOK $INSTDIR\server\readme.rtf
+
 	Delete /REBOOTOK $INSTDIR\server\*.log
+	Delete /REBOOTOK $APPDATA\Psoi2OPC\*.log
+
     DeleteRegValue HKLM "${REGKEY}\Components" "OPC server"
 SectionEnd
 
-Section -un.post UNSEC0004
+Section -un.post UNSEC0003
     DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
+	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\ReadMe.lnk"
+	Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^ShortTranslatedName).lnk"
+
     Delete /REBOOTOK $INSTDIR\uninstall.exe
+
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
-    RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /REBOOTOK $INSTDIR
+
+    RmDir /r /REBOOTOK $SMPROGRAMS\$StartMenuGroup
+    RmDir /r /REBOOTOK $INSTDIR
+	RmDir /r /REBOOTOK $APPDATA\Psoi2OPC
     Push $R0
     StrCpy $R0 $StartMenuGroup 1
     StrCmp $R0 ">" no_smgroup
@@ -180,13 +186,24 @@ Function un.onInit
     ReadRegStr $INSTDIR HKLM "${REGKEY}" Path
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
     !insertmacro SELECT_UNSECTION "OPC server" ${UNSEC0000}
-    !insertmacro SELECT_UNSECTION ReadMe ${UNSEC0001}
-    !insertmacro SELECT_UNSECTION "Psoi2 simulator" ${UNSEC0002}
-    !insertmacro SELECT_UNSECTION Sources ${UNSEC0003}
+    !insertmacro SELECT_UNSECTION "$(^SimulatorName)" ${UNSEC0001}
+    !insertmacro SELECT_UNSECTION "$(^SourcesName)" ${UNSEC0002}
 FunctionEnd
 
 # Installer Language Strings
 # TODO Update the Language Strings with the appropriate translations.
 
-LangString ^UninstallLink ${LANG_RUSSIAN} "Uninstall $(^Name)"
+LangString ^TranslatedName ${LANG_RUSSIAN} "OPC сервер для ПСОИ-02"
+LangString ^TranslatedName ${LANG_ENGLISH} "OPC server for PSOI-02 device"
+
+LangString ^ShortTranslatedName ${LANG_RUSSIAN} "OPC сервер"
+LangString ^ShortTranslatedName ${LANG_ENGLISH} "OPC server"
+
+LangString ^UninstallLink ${LANG_RUSSIAN} "Деисталировать $(^Name)"
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
+
+LangString ^SimulatorName ${LANG_RUSSIAN} "Имитатор ПСОИ-02"
+LangString ^SimulatorName ${LANG_ENGLISH} "PSOI2 simulator"
+
+LangString ^SourcesName ${LANG_RUSSIAN} "Исходные тексты (Toolkit)"
+LangString ^SourcesName ${LANG_ENGLISH} "Sources (Toolkit)"
