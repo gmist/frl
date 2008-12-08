@@ -274,39 +274,15 @@
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
 			<File
-				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\icons\102.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\bitmap1.bmp"
-				>
-			</File>
-			<File
-				RelativePath=".\bitmaps\logo_text.bmp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\logo_text.bmp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\icons\logo_text.ico"
-				>
-			</File>
-			<File
-				RelativePath=".\icons\logo_text.ico"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\bitmaps\logo_text.png"
-				>
-			</File>
-			<File
-				RelativePath=".\bitmaps\logo_text.png"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\resource.rc"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\..\..\projects\opc\psoi2\resource\icons\server_icon.ico"
 				>
 			</File>
 			<File

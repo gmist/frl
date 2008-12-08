@@ -18,7 +18,7 @@ def psoi2_init()
 						[ "../../../projects/opc/psoi2/resource/bitmaps/tree_img_list.bmp",
 						"../../../projects/opc/psoi2/resource/bitmaps/logo_text.bmp",
 						"../../../projects/opc/psoi2/resource/bitmaps/splash.bmp",
-						"../../../projects/opc/psoi2/resource/icons/102.ico" ] )
+						"../../../projects/opc/psoi2/resource/icons/server_icon.ico" ] )
 	lib( "comctl32" )
 	lib( "Gdi32" ) 
 end
