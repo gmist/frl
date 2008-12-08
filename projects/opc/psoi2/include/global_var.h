@@ -19,6 +19,8 @@ namespace global_var
 
 		extern const int height;
 		extern const int width;
+
+		extern bool is_minimized;
 	}
 	
 	extern Bool exit_if_all_client_disconnected;

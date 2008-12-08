@@ -13,6 +13,7 @@
 #define WM_MENU_ABOUT (WM_APP) + 201
 #define WM_MENU_EXIT (WM_APP) + 202
 #define TM_CHECK_CN (WM_APP) + 401
+#define TM_CHECK_CN_LONG (WM_APP) + 402
 
 // Helper for adding items to menu
 BOOL createMenuHelper( HMENU menu_handle, frl::Char *data, UINT pos, UINT id, HMENU sub_menu, UINT type )
@@ -45,10 +46,17 @@ void systrayIconHelper( HINSTANCE hinstance, HWND hwnd, bool add )
 	nid.hIcon = LoadIcon( hinstance, MAKEINTRESOURCE(IDI_ICON_MAIN) );
 	lstrcpy( nid.szTip,TEXT("Double-click to maxmize!") );
 
-	if( add )
+	if( add && ! global_var::main_wnd::is_minimized )
+	{
+		global_var::main_wnd::is_minimized = true;
 		::Shell_NotifyIcon( NIM_ADD, &nid );
-	else
+	}
+	
+	if( ! add && global_var::main_wnd::is_minimized )
+	{
+		global_var::main_wnd::is_minimized = false;
 		::Shell_NotifyIcon( NIM_DELETE, &nid );
+	}
 }
 
 // Helper for create tree view with channels list
@@ -179,24 +187,35 @@ BOOL initInstance( HINSTANCE hInstance, int nCmdShow )
 
 LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 {
+	static bool is_client_connected = false;
+
 	switch( msg )
 	{
 		case WM_TIMER:
 		{
+			// if clients no connected
+			if( w_param == TM_CHECK_CN_LONG )
+			{
+				::KillTimer( hwnd, TM_CHECK_CN_LONG );
+				::SendMessage( hwnd, WM_DESTROY, 0, 0 );
+			}
+
 			// checking connection of clients
 			if( w_param == TM_CHECK_CN )
 			{
-				static bool is_first_run = true;
-
-				if( is_first_run ) // after wait first connection
+				if( ! is_client_connected )
 				{
-					::KillTimer( hwnd, TM_CHECK_CN ); // clean up long checking timer
-					is_first_run = false;
-					::SetTimer( hwnd, TM_CHECK_CN, 2000, (TIMERPROC)NULL ); // and set short checking time
+					if( frl::opc::factory.isServerInUse() )
+					{
+						is_client_connected = true;
+						::KillTimer( hwnd, TM_CHECK_CN_LONG );
+					}
 				}
-
-				if( ! frl::opc::factory.isServerInUse() )
-					SendMessage( hwnd, WM_DESTROY, 0, 0 );
+				else
+				{
+					if( ! frl::opc::factory.isServerInUse() )
+						::SendMessage( hwnd, WM_DESTROY, 0, 0 );
+				}
 			}
 		}
 		break; // WM_TIMER
@@ -205,8 +224,8 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 		{
 			if( w_param == SIZE_MINIMIZED )
 			{
-				systrayIconHelper( global_var::main_wnd::h_instance, hwnd, true );
 				::ShowWindow( hwnd, SW_HIDE );
+				systrayIconHelper( global_var::main_wnd::h_instance, hwnd, true );
 			}
 		}
 		break; // WM_SIZE
@@ -265,8 +284,15 @@ LRESULT CALLBACK mainFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 		case WM_DESTROY:
 		{
-			if( global_var::exit_if_all_client_disconnected ) // if checked client connections
-				::KillTimer( hwnd, TM_CHECK_CN ); // clean up timer
+			if( global_var::exit_if_all_client_disconnected )
+			{
+				::KillTimer( hwnd, TM_CHECK_CN );
+				if( ! is_client_connected )
+					::KillTimer( hwnd, TM_CHECK_CN_LONG );
+			}
+
+			// remove icon from system tray
+			systrayIconHelper( global_var::main_wnd::h_instance, hwnd, false );
 
 			::PostQuitMessage( 0 );
 			return 0;
@@ -319,5 +345,8 @@ void createCheckConnectionTimer()
 {
 	HWND hwnd = ::FindWindow( global_var::main_wnd::class_name, global_var::main_wnd::title );
 	if( hwnd )
-		::SetTimer( hwnd, TM_CHECK_CN, 20000, (TIMERPROC)NULL );	
+	{
+		::SetTimer( hwnd, TM_CHECK_CN, 2000, (TIMERPROC)NULL ); // check connection status every 2 sec
+		::SetTimer( hwnd, TM_CHECK_CN_LONG, 20000, (TIMERPROC)NULL ); // wait 20 sec for first connection
+	}
 }

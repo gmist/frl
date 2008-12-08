@@ -14,6 +14,8 @@ namespace global_var
 
 		const int height = 425;
 		const int width = 225;
+
+		bool is_minimized = false;
 	}
 	Bool exit_if_all_client_disconnected = False;
 	std::map< HTREEITEM, ChannelDescr > channels_map;

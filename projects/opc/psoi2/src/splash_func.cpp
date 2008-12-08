@@ -22,9 +22,6 @@ BOOL CALLBACK splashFunc( HWND hwnd, UINT msg, WPARAM w_param, LPARAM l_param )
 
 		case WM_INITDIALOG: 
 		{
-			bit_map_handle = ::LoadBitmap( global_var::main_wnd::h_instance, MAKEINTRESOURCE( IDB_SPLASH ) );
-			HWND img_static_hwnd = ::GetDlgItem( hwnd, IDC_SPLASH_IMAGE );
-			::SendMessage( img_static_hwnd, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bit_map_handle );
 			::SetTimer( hwnd, ID_SPLASH_TIMER, 2000, (TIMERPROC)NULL );
 		}
 		break;
