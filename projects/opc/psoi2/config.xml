@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<Config ShowWindow="1" ExitOnAllClientDisconnected="0">
-	<Log Level="trace" LogFileNamePrefix="psoi2_" WriteToAppData="0"/>
+<Config ShowWindow="0" ExitOnAllClientDisconnected="0">
+	<Log Level="trace" LogFileNamePrefix="psoi2_" WriteToAppData="1"/>
 	<Psoi2 ComPort="1" Channels="20" Simulation="1" />
 	<Psoi2 ComPort="2" Channels="20" Simulation="1" />
 </Config>
