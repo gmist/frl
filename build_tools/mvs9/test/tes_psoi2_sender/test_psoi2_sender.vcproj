@@ -91,7 +91,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\test\psoi2_sender\config.xml $(OutDir)"
+				CommandLine="copy &quot;$(SolutionDir)..\..\test\psoi2_sender\config.xml&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -167,6 +167,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
+				CommandLine="copy &quot;$(SolutionDir)..\..\test\psoi2_sender\config.xml&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 	</Configurations>

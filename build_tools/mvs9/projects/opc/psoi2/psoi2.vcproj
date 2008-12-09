@@ -92,7 +92,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\projects\opc\psoi2\config.xml $(SolutionDir)..\..\output\projects\opc\psoi2"
+				CommandLine="copy &quot;$(SolutionDir)..\..\projects\opc\psoi2\config.xml&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -169,7 +169,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy $(SolutionDir)..\..\projects\opc\psoi2\config.xml $(SolutionDir)..\..\output\projects\opc\psoi2"
+				CommandLine="copy &quot;$(SolutionDir)..\..\projects\opc\psoi2\config.xml&quot; &quot;$(OutDir)&quot;"
 			/>
 		</Configuration>
 	</Configurations>
