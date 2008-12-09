@@ -1,7 +1,7 @@
 Name "$(^TranslatedName)"
 
 # Defines
-!define REGKEY "SOFTWARE\$(^Name)"
+!define REGKEY "SOFTWARE\Psoi2OPC"
 !define COMPANY "Serg Baburin (serg.baburin@gmail.com)"
 !define URL "frl.googlecode.com"
 
@@ -20,6 +20,7 @@ Name "$(^TranslatedName)"
 !define MUI_FINISHPAGE_SHOWREADME $INSTDIR\server\readme.rtf
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\box-uninstall.ico"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
+!define MUI_LANGDLL_ALWAYSSHOW
 
 # Included files
 !include Sections.nsh
@@ -39,8 +40,8 @@ Var StartMenuGroup
 !insertmacro MUI_UNPAGE_INSTFILES
 
 # Installer languages
-!insertmacro MUI_LANGUAGE Russian
 !insertmacro MUI_LANGUAGE English
+!insertmacro MUI_LANGUAGE Russian
 
 # Installer attributes
 OutFile psoi2_setup.exe
@@ -67,7 +68,7 @@ Section /o "$(^SimulatorName)" SEC0001
     SetOverwrite on
     File ..\..\..\output\test\psoi2_sender\test_psoi2_sender.exe
     File ..\..\..\output\test\psoi2_sender\config.xml
-    WriteRegStr HKLM "${REGKEY}\Components" "Psoi2 simulator" 1
+    WriteRegStr HKLM "${REGKEY}\Components" "$(^SimulatorName)" 1
 SectionEnd
 
 Section /o "$(^SourcesName)" SEC0002
@@ -86,7 +87,7 @@ Section /o "$(^SourcesName)" SEC0002
     File /r ..\..\..\src\*
     SetOutPath $INSTDIR\src\test
     File /r ..\..\..\test\*
-    WriteRegStr HKLM "${REGKEY}\Components" Sources 1
+    WriteRegStr HKLM "${REGKEY}\Components" "$(^SourcesName)" 1
 SectionEnd
 
 Section -post SEC0003
@@ -179,10 +180,12 @@ SectionEnd
 # Installer functions
 Function .onInit
     InitPluginsDir
+	!insertmacro MUI_LANGDLL_DISPLAY
 FunctionEnd
 
 # Uninstaller functions
 Function un.onInit
+	!insertmacro MUI_LANGDLL_DISPLAY
     ReadRegStr $INSTDIR HKLM "${REGKEY}" Path
     !insertmacro MUI_STARTMENU_GETFOLDER Application $StartMenuGroup
     !insertmacro SELECT_UNSECTION "OPC server" ${UNSEC0000}
@@ -193,8 +196,8 @@ FunctionEnd
 # Installer Language Strings
 # TODO Update the Language Strings with the appropriate translations.
 
-LangString ^TranslatedName ${LANG_RUSSIAN} "OPC сервер для ПСОИ-02"
-LangString ^TranslatedName ${LANG_ENGLISH} "OPC server for PSOI-02 device"
+LangString ^TranslatedName ${LANG_RUSSIAN} "OPC сервер для газоанализатора ПСОИ-02"
+LangString ^TranslatedName ${LANG_ENGLISH} "OPC server for PSOI-02 gas analyzer"
 
 LangString ^ShortTranslatedName ${LANG_RUSSIAN} "OPC сервер"
 LangString ^ShortTranslatedName ${LANG_ENGLISH} "OPC server"
@@ -203,7 +206,7 @@ LangString ^UninstallLink ${LANG_RUSSIAN} "Деисталировать $(^Name)"
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
 
 LangString ^SimulatorName ${LANG_RUSSIAN} "Имитатор ПСОИ-02"
-LangString ^SimulatorName ${LANG_ENGLISH} "PSOI2 simulator"
+LangString ^SimulatorName ${LANG_ENGLISH} "PSOI-02 simulator"
 
 LangString ^SourcesName ${LANG_RUSSIAN} "Исходные тексты (Toolkit)"
 LangString ^SourcesName ${LANG_ENGLISH} "Sources (Toolkit)"
