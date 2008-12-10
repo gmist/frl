@@ -8,7 +8,7 @@ Name "$(^TranslatedName)"
 # MUI defines
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\box-install.ico"
 !define MUI_HEADERIMAGE
-!define MUI_HEADERIMAGE_BITMAP "..\..\..\projects\opc\psoi2\resource\bitmaps\logo_text.bmp"
+!define MUI_HEADERIMAGE_BITMAP "..\..\..\doc\frl_logos\logo_text.bmp"
 !define MUI_PAGE_DIRECTORY
 !define MUI_FINISHPAGE_NOAUTOCLOSE
 !define MUI_STARTMENUPAGE_REGISTRY_ROOT HKLM
