@@ -1,6 +1,13 @@
-Name "$(^TranslatedName)"
+SetCompressor /SOLID lzma
+
+# Included files
+!include Sections.nsh
+!include MUI.nsh
+!include "..\template\frl_macro.nsh"
 
 # Defines
+Name "$(^TranslatedName)"
+!define out_directory "..\..\..\output\setup"
 !define REGKEY "SOFTWARE\Psoi2OPC"
 !define COMPANY "Serg Baburin (serg.baburin@gmail.com)"
 !define URL "frl.googlecode.com"
@@ -22,10 +29,6 @@ Name "$(^TranslatedName)"
 !define MUI_UNFINISHPAGE_NOAUTOCLOSE
 !define MUI_LANGDLL_ALWAYSSHOW
 
-# Included files
-!include Sections.nsh
-!include MUI.nsh
-
 # Variables
 Var StartMenuGroup
 
@@ -44,7 +47,9 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE Russian
 
 # Installer attributes
-OutFile psoi2_setup.exe
+!insertmacro CREATE_OUT_DIR "${out_directory}"
+!insertmacro BUILDING_SVN_OUT_NAME ${out_directory} "psoi2_opc_w_src" "../../../"
+
 InstallDir $PROGRAMFILES\Psoi2OPC
 CRCCheck on
 XPStyle on
@@ -73,20 +78,9 @@ SectionEnd
 
 Section /o "$(^SourcesName)" SEC0002
     SetOutPath $INSTDIR\src\build_tools
-    SetOverwrite on
-    File /r ..\..\*
-    SetOutPath $INSTDIR\src\dependency
-    File /r ..\..\..\dependency\*
-    SetOutPath $INSTDIR\src\doc
-    File /r ..\..\..\doc\*
-    SetOutPath $INSTDIR\src\include
-    File /r ..\..\..\include\*
-    SetOutPath $INSTDIR\src\projects
-    File /r ..\..\..\projects\*
-    SetOutPath $INSTDIR\src\src
-    File /r ..\..\..\src\*
-    SetOutPath $INSTDIR\src\test
-    File /r ..\..\..\test\*
+    !system "ruby ../template/get_files_wo_svn.rb -g"
+	!include "files.lst"
+	!system "ruby ../template/get_files_wo_svn.rb -d"
     WriteRegStr HKLM "${REGKEY}\Components" "$(^SourcesName)" 1
 SectionEnd
 

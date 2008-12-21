@@ -1,10 +1,13 @@
+SetCompressor /SOLID lzma
+
 # Include files
 !include "MUI.nsh"
 !include "Sections.nsh"
+!include "..\template\frl_macro.nsh"
  
  
  # Defines package name
- !define out_file_name "frl.exe"
+ !define out_directory "..\..\..\output\setup"
  !define Name "FatRat Library"
  
 # Other defines
@@ -40,7 +43,9 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile ${out_file_name}
+!insertmacro CREATE_OUT_DIR "${out_directory}"
+!insertmacro BUILDING_SVN_OUT_NAME ${out_directory} "frl" "../../../"
+
 InstallDir "$PROGRAMFILES\FatRat Library"
 CRCCheck on
 XPStyle on
@@ -50,9 +55,10 @@ ShowUninstDetails show
 
 # Installer sections
 Section "-FRL" SEC0000
-    SetOutPath $INSTDIR\src
     SetOverwrite on
-    File /r "..\..\..\*"
+	!system "ruby ../template/get_files_wo_svn.rb -g"
+	!include "files.lst"
+	!system "ruby ../template/get_files_wo_svn.rb -d"
     WriteRegStr HKLM "${REGKEY}\Components" "FRL" 1
 SectionEnd
 
