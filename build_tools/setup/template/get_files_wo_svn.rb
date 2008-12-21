@@ -9,22 +9,25 @@ if ARGV.include?('-g')
 	s += "\n"
 
 	Dir['../../../**/*'].each do |f|
+
 		if f.include?("../../../output")
 			next
 		end
-		
+
 		if File.file?( f )
-			s += 'File "'
-			s += File.expand_path( f )
-			s += '"'
-			s+="\n"
-		else
-			String tmp = f[9, s.length-1]
+			String tmp = f[9, f.length-1]
+			tmp = tmp[0, tmp.rindex('/')]
 			s.concat( out_path )
 			s += "\\"
 			s.concat( tmp )
 			s += "\n"
+
+			s += 'File "'
+			s += File.expand_path( f )
+			s += '"'
+			s+="\n"
 		end
+
 	end
 
 
