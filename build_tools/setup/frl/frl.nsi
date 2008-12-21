@@ -56,9 +56,9 @@ ShowUninstDetails show
 # Installer sections
 Section "-FRL" SEC0000
     SetOverwrite on
-	!system "ruby ../template/get_files_wo_svn.rb -g"
+	!system "ruby ../template/get_frl_files_wo_svn.rb -g"
 	!include "files.lst"
-	!system "ruby ../template/get_files_wo_svn.rb -d"
+	!system "ruby ../template/get_frl_files_wo_svn.rb -d"
     WriteRegStr HKLM "${REGKEY}\Components" "FRL" 1
 SectionEnd
 

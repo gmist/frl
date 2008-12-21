@@ -78,9 +78,9 @@ SectionEnd
 
 Section /o "$(^SourcesName)" SEC0002
     SetOutPath $INSTDIR\src\build_tools
-    !system "ruby ../template/get_files_wo_svn.rb -g"
+    !system "ruby ../template/get_frl_files_wo_svn.rb -g"
 	!include "files.lst"
-	!system "ruby ../template/get_files_wo_svn.rb -d"
+	!system "ruby ../template/get_frl_files_wo_svn.rb -d"
     WriteRegStr HKLM "${REGKEY}\Components" "$(^SourcesName)" 1
 SectionEnd
 
