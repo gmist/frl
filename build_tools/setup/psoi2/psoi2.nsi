@@ -1,3 +1,4 @@
+RequestExecutionLevel admin
 SetCompressor /SOLID lzma
 
 # Included files
