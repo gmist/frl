@@ -157,6 +157,7 @@ void GroupBase::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListE
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_INVALIDHANDLE;
+			++i;
 			continue;
 		}
 
@@ -174,6 +175,7 @@ void GroupBase::doAsyncRead( IOPCDataCallback* callBack, const AsyncRequestListE
 		if( FAILED( pErrors[i] ) )
 		{
 			masterError = S_FALSE;
+			++i;
 			continue;
 		}
 
@@ -289,6 +291,7 @@ void GroupBase::doAsyncRefresh( const AsyncRequestListElem &request )
 		if( iter == groupIterEnd )
 		{
 			pErrors[i] = OPC_E_INVALIDHANDLE;
+			++i;
 			continue;
 		}
 		pHandles[i] = iter->second->getClientHandle();
@@ -305,7 +308,10 @@ void GroupBase::doAsyncRefresh( const AsyncRequestListElem &request )
 		}
 
 		if( FAILED( pErrors[i] ) )
+		{
+			++i;
 			continue;
+		}
 
 		pQuality[i] = iter->second->getQuality();
 		pTimeStamp[i] = iter->second->getTimeStamp();
@@ -362,6 +368,7 @@ void GroupBase::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestList
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_INVALIDHANDLE;
+			++i;
 			continue;
 		}
 		pHandles[i] = iter->second->getClientHandle();
@@ -370,6 +377,7 @@ void GroupBase::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestList
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADRIGHTS;
+			++i;
 			continue;
 		}
 
@@ -377,6 +385,7 @@ void GroupBase::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestList
 		{
 			masterError = S_FALSE;
 			pErrors[i] = OPC_E_BADTYPE;
+			++i;
 			continue;
 		}
 
@@ -385,6 +394,7 @@ void GroupBase::doAsyncWrite( IOPCDataCallback* callBack, const AsyncRequestList
 		if( FAILED( pErrors[i] ) )
 		{
 			masterError = S_FALSE;
+			++i;
 			continue;
 		}
 
