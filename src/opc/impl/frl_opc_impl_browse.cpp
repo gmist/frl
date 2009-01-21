@@ -33,7 +33,6 @@ STDMETHODIMP BrowseImpl::GetProperties(
 
 	HRESULT ret = S_OK;
 	address_space::Tag *item = NULL;
-	String itemID;
 	for( DWORD i = 0; i < dwItemCount; ++i )
 	{
 		if( pszItemIDs[i] == NULL || wcslen( pszItemIDs[i] ) == 0 )
@@ -44,9 +43,9 @@ STDMETHODIMP BrowseImpl::GetProperties(
 		}
 
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
-			itemID = pszItemIDs[i];
+			String itemID = pszItemIDs[i];
 		#else
-			itemID = wstring2string( pszItemIDs[i] );
+			String itemID = wstring2string( pszItemIDs[i] );
 		#endif
 
 		try
@@ -196,17 +195,18 @@ STDMETHODIMP BrowseImpl::Browse(
 	if( ! cp.empty() )
 	{
 		Bool flag = False;
+
+		// find continuation point
 		std::vector< address_space::TagBrowseInfo > tmp;
 		BOOST_FOREACH( address_space::TagBrowseInfo& el, itemsList )
 		{
-			if( el.fullID == cp )
-			{
+			if( ! flag && el.fullID == cp ) // if found
 				flag = True;
-				tmp.push_back( el );
-			}
+			if( flag )
+				tmp.push_back( el ); // add all follow items
 		}
 		if( ! flag )
-			return OPC_E_INVALIDCONTINUATIONPOINT;
+			return OPC_E_INVALIDCONTINUATIONPOINT; // continuation point not found
 		itemsList.swap( tmp );
 	}
 
