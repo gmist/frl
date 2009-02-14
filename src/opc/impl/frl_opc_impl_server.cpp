@@ -184,7 +184,11 @@ STDMETHODIMP OPCServer::AddGroup(
 	}
 	else
 	{
-		name = similarCompatibility( szName );
+		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
+			name = szName;
+		#else
+			name = wstring2string( szName );
+		#endif
 	}
 
 	try

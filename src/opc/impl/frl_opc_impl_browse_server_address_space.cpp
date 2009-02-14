@@ -264,7 +264,7 @@ STDMETHODIMP BrowseServerAddressSpace::BrowseOPCItemIDs(
 
 	// filtration by name
 	if( szFilterCriteria != NULL && wcslen( szFilterCriteria ) != 0 )
-	{			
+	{
 		#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 			String filter = szFilterCriteria;
 		#else
@@ -394,7 +394,7 @@ STDMETHODIMP BrowseServerAddressSpace::GetItemID(
 			return E_INVALIDARG;
 		tag = opcAddressSpace::getInstance().getTag( itemDataID );
 	}
-
+	
 	#if( FRL_CHARACTER == FRL_CHARACTER_UNICODE )
 		*szItemID = util::duplicateString( tag->getID() );
 	#else

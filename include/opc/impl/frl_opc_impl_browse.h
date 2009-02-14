@@ -7,14 +7,11 @@
 
 namespace frl { namespace opc { namespace impl {
 
-<<<<<<< .working
-=======
 /*!
 	\class BrowseImpl
 	\brief IOPCBrowse implementation.
 	\details IOPCBrowse interface provides improved methods for browsing the server address space and for obtaining the item properties.
 */
->>>>>>> .merge-right.r218
 class BrowseImpl
 	:	public IOPCBrowse,
 		virtual public opc::OPCServerBase
@@ -22,7 +19,6 @@ class BrowseImpl
 public:
 	virtual ~BrowseImpl();
 
-	// IOPCBrowse implementation
 	STDMETHODIMP GetProperties( 
 		/* [in] */ DWORD dwItemCount,
 		/* [size_is][string][in] */ LPWSTR *pszItemIDs,
