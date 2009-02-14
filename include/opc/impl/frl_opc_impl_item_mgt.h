@@ -7,12 +7,17 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\brief IOPCItemMgt implementation.
+	\details IOPCItemMgt allows a client to add, remove and control the behavior of items is a group.
+*/
 class ItemMgt
 	:	public IOPCItemMgt,
 		virtual public opc::GroupBase
 {
 public:
 	virtual ~ItemMgt();
+
 	STDMETHODIMP AddItems( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ OPCITEMDEF *pItemArray,

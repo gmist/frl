@@ -7,6 +7,28 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\brief
+		IOPCSyncIO and IOPCSyncIO2 implementation.
+	\details
+		IOPCSyncIO allows a client to perform synchronous 
+		read and write operations to a server. 
+		The operations will run to completion. 
+		Refer to the Data Acquisition and Active State Behavior 
+		table for an overview of the server data acquisition 
+		behavior and it's affect on functionality within this interface.
+
+		This IOPCSyncIO2 interface was added to enhance the existing IOPCSyncIO interface. 
+		IOPCSyncIO2 inherits from IOPCSyncIO and therefore all IOPCSyncIO methods 
+		defined in IOPCSyncIO are also part of this interface and will not be documented here. 
+		Please refer to the IOPCSyncIO interface methods for further details. 
+		It is expected that Data Access 3.0 only servers, 
+		will implement this interface as opposed to IOPCSyncIO. 
+		The purpose of this interface is to provide a group level method for writing 
+		timestamp and quality information into servers that support this functionality. 
+		In addition, the ability to Read from a group based on a “MaxAge” is provided. 
+		This interface differs from the IOPCItemIO interface in that it is group based as opposed to server based.
+*/
 class SyncIO
 	:	public IOPCSyncIO2,
 		virtual public GroupBase

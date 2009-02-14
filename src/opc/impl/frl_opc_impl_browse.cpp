@@ -10,6 +10,27 @@ BrowseImpl::~BrowseImpl()
 {
 }
 
+/*!
+	Returns an array of OPCITEMPROPERTIES, one for each ItemID.
+
+	\param
+		dwItemCount The size of the pszItemIDs and ppItemProperties arrays.
+
+	\param
+		pszItemIDs The array of item IDs for which the caller wants properties.
+
+	\param
+		bReturnPropertyValues Server must return the property values in addition to the property names.
+
+	\param dwPropertyCount
+		The size of the pdwPropertyIDs array. 0 if NULL is passed in for pdwPropertyIDs
+
+	\param pdwPropertyIDs
+		Array of Property IDs to return data for. If NULL, then all available Properties will be returned.
+
+	\param ppItemProperties
+			Array of OPCITEMPROPERTIES returned by the Server.
+*/
 STDMETHODIMP BrowseImpl::GetProperties(
 	/* [in] */ DWORD dwItemCount,
 	/* [size_is][string][in] */ LPWSTR *pszItemIDs,
@@ -80,7 +101,7 @@ STDMETHODIMP BrowseImpl::GetProperties(
 				{
 					item->getPropertyValue( propArray[j], (*ppItemProperties)[i].pItemProperties[j].vValue );
 				}
-			}				
+			}
 		} // if
 		else
 		{
@@ -114,6 +135,76 @@ STDMETHODIMP BrowseImpl::GetProperties(
 	return ret;
 }
 
+/*!
+	Browses a single branch of the address space and returns zero or more OPCBROWSEELEMENT structures. 
+	It is assumed that the underlying server address space is either flat or hierarchical.
+	A flat space will always be presented to the client as not having children.
+	A hierarchical space can be presented to the client as either not having children or having children.
+	A hierarchical presentation of the server address space would behave much like a file system,
+	where the directories are the branches or paths, and the files represent the leaves or items.
+	For example, a server could present a control system by showing all the control networks,
+	then all of the devices on a selected network, and then all of the classes of data within a device,
+	then all of the data items of that class. A further breakdown into vendor specific 'Units' and 'Lines' might be appropriate for a BATCH system.
+	The browse position is initially set to the 'root' of the address space. On subsequent calls,
+	the client may choose to browse from the continuation point. This browse can also be filtered by a vendor specific filter string.
+
+	\param szItemID
+		The name of the branch in the hierarchy to browse. If the root branch is to be browsed then a NUL string is passed.
+
+	\param pszContinuationPoint
+		If this is a secondary call to Browse,
+		the previous call might have returned a Continuation Point where the Browse can restart from.
+		Clients must pass a NUL string in the initial call to Browse. This is an opaque value, which the server creates.
+		A Continuation Point will be returned if a Server does support Continuation Point,
+		and the reply is larger than dwMaxElementsReturned.
+		The Continuation Point will allow the Client to resume the Browse from the previous completion point..
+
+	\param dwMaxElementsReturned
+		Server must not return any more elements than this value. If the server supports Continuation Points,
+		then the Server may return a Continuation Point at a value less than dwMaxElementsReturned.
+		If the server does not support Continuation Points, and more than dwMaxElementsReturned are available,
+		then the Server shall return the first dwMaxElementsReturned elements and set the pbMoreElements parameter to TRUE.
+		If dwMaxElementsReturned is 0 then there is no client side restriction on the number of returned elements.
+
+	\param dwBrowseFilter
+		An enumeration {All, Branch, Item} specifying which subset of browse elements to return.
+		See the table in the comments section below to determine which combination of bits
+		in OPCBROWSEELEMENT::dwFlagValue are returned for each value in dwBrowseFilter.
+
+	\param szElementNameFilter
+		A wildcard string that conforms to the Visual Basic LIKE operator, 
+		which will be used to filter Element names.
+		A NUL String implies no filter.
+
+	\param szVendorFilter
+		A server specific filter string. This is entirely free format and may be entered by the user via an EDIT field.
+		A pointer to a NUL string indicates no filtering.
+
+	\param bReturnAllProperties
+		Server must return all properties which are available for each of the returned elements.
+		If true, pdwPropertyIDs is ignored.
+
+	\param bReturnPropertyValues
+		Server must return the property values in addition to the property names.
+
+	\param dwPropertyCount
+		The size of the pdwPropertyIDs array.
+
+	\param pdwPropertyIDs
+		An array of Property IDs to be returned with each element.
+		If bReturnAllProperties is true, pdwPropertyIDs is ignored and all properties are returned.
+
+	\param pbMoreElements
+		If the Server does not support a Continuation Point then the server will set pbMoreElements to True 
+		if there are more elements than dwMaxElementsReturned.
+		Servers must always set pbMoreElements to false if they support Continuation Point.
+
+	\param pdwCount
+		The size of the returned ppBrowseElements array.
+
+	\param ppBrowseElements
+		Array of OPCBROWSEELEMENT returned by the Server.
+*/
 STDMETHODIMP BrowseImpl::Browse(
 	/* [string][in] */ LPWSTR szItemID,
 	/* [string][out][in] */ LPWSTR *pszContinuationPoint,
@@ -129,7 +220,7 @@ STDMETHODIMP BrowseImpl::Browse(
 	/* [out] */ DWORD *pdwCount,
 	/* [size_is][size_is][out] */ OPCBROWSEELEMENT **ppBrowseElements )
 {
-	if( pbMoreElements   == NULL || pdwCount == NULL || ppBrowseElements == NULL )
+	if( pbMoreElements == NULL || pdwCount == NULL || ppBrowseElements == NULL )
 		return E_INVALIDARG;
 
 	if( dwBrowseFilter < OPC_BROWSE_FILTER_ALL || dwBrowseFilter > OPC_BROWSE_FILTER_ITEMS )

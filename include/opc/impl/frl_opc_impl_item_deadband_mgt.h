@@ -7,6 +7,16 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\brief
+		IOPCItemDeadbandMgt implementation.
+	\details
+		IOPCItemDeadbandMgt interface allows the PercentDeadband to be set for individual items within a group. 
+		Once the item PercentDeadband is set, it overrides the PercentDeadband set for the entire group. 
+		This provides a mechanism to set the PercentDeadband on a "noisy" item, 
+		which may reside in a group that doesn't have the group PercentDeadband set. 
+		It also allows individual items to be fine tuned with respect to notifications based on an expected range of change.
+*/
 class ItemDeadBandMgt
 	:	public IOPCItemDeadbandMgt,
 		virtual public opc::GroupBase

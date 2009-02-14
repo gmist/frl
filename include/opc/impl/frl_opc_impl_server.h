@@ -8,21 +8,30 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\brief
+		IOPCServer implementation.
+
+	\details
+		IOPCServer is the main interface to an OPC server. 
+		The OPC server is registered with the operating system as specified in the Installation and Registration Chapter of this specification. 
+		This interface must be provided, and all  functions implemented as specified.
+*/
 class OPCServer
 	:	public IOPCServer,
 		virtual public opc::OPCServerBase
 {
 protected:
-	OPCSERVERSTATUS serverStatus;
+	OPCSERVERSTATUS serverStatus; //!< Current state
 
 public:
+	/*! Subsidiary exception class. */
 	FRL_EXCEPTION_CLASS( InvalidServerState );
 
 	virtual ~OPCServer();
 	void setServerState( OPCSERVERSTATE newState );
 	OPCSERVERSTATE getServerState();
 
-	// IOPCServer implementation
 	STDMETHODIMP AddGroup( 
 		/* [string][in] */ LPCWSTR szName,
 		/* [in] */ BOOL bActive,

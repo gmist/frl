@@ -7,6 +7,28 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\brief IOPCGroupStateMgt and IOPCGroupStateMgt2 implementation.
+	\details
+	\arg
+		IOPCGroupStateMgt allows the client to manage the overall state of the group. 
+		Primarily this allows changes to the update rate and active state of the group.
+	\arg
+		This IOPCGroupStateMgt2 interface was added to enhance the existing IOPCGroupStateMgt interface. 
+		IOPCGroupStateMgt2 inherits from IOPCGroupStateMgt and therefore all IOPCGroupStateMgt 
+		methods defined in IOPCGroupStateMgt are also part of this interface and will 
+		not be documented here.  Please refer to the IOPCGroupStateMgt interface methods 
+		for further details. It is expected that Data Access 3.0 only servers, 
+		will implement this interface as opposed to IOPCGroupStateMgt. 
+		The purpose of this interface is to set/get the keep-alive time for a subscription. 
+		When a subscription has a non-zero keep-alive time, the server will insure 
+		that the client receives a callback on the subscription minimally at the rate 
+		indicated by the keep-alive time, even when there are no new events to report. 
+		By providing callbacks at a minimum known frequency, 
+		the client can be assured of the health of the server 
+		and subscription without resorting to pinging the server with calls to GetStatus().
+*/
+
 class GroupStateMgt
 	:	public IOPCGroupStateMgt2,
 		virtual public opc::GroupBase

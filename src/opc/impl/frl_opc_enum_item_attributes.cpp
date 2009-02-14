@@ -66,14 +66,30 @@ void EnumOPCItemAttributes::addItem( const std::pair< OPCHANDLE, GroupItemElem >
 	itemList.push_back( attrib );
 }
 
-STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** rgelt, ULONG* pceltFetched )
+/*!
+	Fetch the next "celt" items from the group.
+
+	\param[in] celt
+		number of items to be fetched.
+
+	\param[out] ppItemArray
+		Array of OPCITEMATTRIBUTES. Returned by the server.
+
+	\param[out] pceltFetched
+		Number of items actually returned.
+
+	\section EnumOPCItemAttributes_Next_Comments Comments
+		The client must free the returned OPCITEMATTRIBUTES 
+		structure including the contained items; szItemID, szAccessPath, pBlob, vEUInfo.
+*/
+STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched )
 {
 	if( pceltFetched )
 	{
 		*pceltFetched = 0;
 	}
 
-	if( rgelt == NULL || ( celt != 1 && pceltFetched == NULL) )
+	if( ppItemArray == NULL || ( celt != 1 && pceltFetched == NULL) )
 	{
 		return E_POINTER;
 	}
@@ -81,12 +97,12 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** rgelt,
 	if( curIndex >= itemList.size() )
 		return S_FALSE;
 
-	*rgelt = os::win32::com::allocMemory< OPCITEMATTRIBUTES >( celt );
+	*ppItemArray = os::win32::com::allocMemory< OPCITEMATTRIBUTES >( celt );
 	size_t i = curIndex;
 	size_t j = 0;
 	for( ; i < itemList.size() && j < celt; ++i, ++j )
 	{
-		itemList[i].copyTo( (*rgelt)[j] );
+		itemList[i].copyTo( (*ppItemArray)[j] );
 		if( pceltFetched )
 			++(*pceltFetched);
 	}
@@ -101,6 +117,15 @@ STDMETHODIMP EnumOPCItemAttributes::Next( ULONG celt, OPCITEMATTRIBUTES** rgelt,
 	return S_OK;
 }
 
+/*!
+	Skip over the next "celt" attributes.
+
+	\param[in] celt
+		Number of items to skip
+
+	\section EnumOPCItemAttributes_Skip_Comments Comments
+		Skip is probably not useful in the context of OPC.
+*/
 STDMETHODIMP EnumOPCItemAttributes::Skip( ULONG celt )
 {
 	if (curIndex + celt > itemList.size())
@@ -112,25 +137,38 @@ STDMETHODIMP EnumOPCItemAttributes::Skip( ULONG celt )
 	return S_OK;
 }
 
+/*!
+	Reset the enumerator back to the first item.
+*/
 STDMETHODIMP EnumOPCItemAttributes::Reset( void )
 {
 	curIndex = 0;
 	return S_OK;
 }
 
-STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes** ppEnum )
+/*!
+	Create a 2nd copy of the enumerator. 
+	The new enumerator will initially be in the same "state" as the current enumerator.
+
+	\param[out] ppEnumItemAttributes
+		Place to return the new interface
+
+	\section EnumOPCItemAttributes_Clone_Comments Comments
+		The client must release the returned interface pointer when it is done with it.
+*/
+STDMETHODIMP EnumOPCItemAttributes::Clone( IEnumOPCItemAttributes** ppEnumItemAttributes )
 {
-	if (ppEnum == NULL)
+	if (ppEnumItemAttributes == NULL)
 		return E_INVALIDARG;
 
 	EnumOPCItemAttributes* pEnum = new EnumOPCItemAttributes( *this );
 	if( pEnum == NULL )
 	{
-		*ppEnum = NULL;
+		*ppEnumItemAttributes = NULL;
 		return E_OUTOFMEMORY;
 	}
 
-	HRESULT res = pEnum->QueryInterface( IID_IEnumOPCItemAttributes, (void**)ppEnum );
+	HRESULT res = pEnum->QueryInterface( IID_IEnumOPCItemAttributes, (void**)ppEnumItemAttributes );
 	if( FAILED( res ) )
 		delete pEnum;
 	return res;

@@ -9,6 +9,19 @@
 
 namespace frl{ namespace opc{ namespace impl{
 
+/*!
+	\brief
+		IEnumOPCItemAttributes implementation.
+	\details
+		IEnumOPCItemAttributes allows a client to find out the contents (items) of a group and the attributes of those items.\n
+		NOTE: most of the returned information was either supplied by or returned to the client at the time it called AddItem.\n
+		The optional EU information (see the OPCITEMATTRIBUTES discussion) may be very useful to some clients. 
+		This interface is also useful for debugging or for enumerating the contents of a public group.\n
+		This interface is returned only by IOPCItemMgt::CreateEnumerator. It is not available through query interface.\n
+		Since enumeration is a standard interface this is described only briefly.\n
+		See the OLE Programmer's reference for Enumerators for a list and discussion of error codes. 
+		\todo Add OLE Programmer's reference
+*/
 class EnumOPCItemAttributes
 	:	public IEnumOPCItemAttributes,
 		public os::win32::com::Allocator
@@ -30,16 +43,16 @@ public:
 	virtual ~EnumOPCItemAttributes();
 	void addItem( const std::pair< OPCHANDLE, GroupItemElem >& newItem );
 
-	// the IUnknown functions
+	// the IUnknown methods
 	STDMETHODIMP QueryInterface( REFIID iid, LPVOID* ppInterface );
 	STDMETHODIMP_(ULONG) AddRef( void);
 	STDMETHODIMP_(ULONG) Release( void);
 
-	// the IEnum functions
-	STDMETHODIMP Next( ULONG celt, OPCITEMATTRIBUTES** rgelt, ULONG* pceltFetched );
+	// the IEnum methods
+	STDMETHODIMP Next( ULONG celt, OPCITEMATTRIBUTES** ppItemArray, ULONG* pceltFetched );
 	STDMETHODIMP Skip ( ULONG celt );
 	STDMETHODIMP Reset( void );
-	STDMETHODIMP Clone( IEnumOPCItemAttributes** ppEnum );
+	STDMETHODIMP Clone( IEnumOPCItemAttributes** ppEnumItemAttributes );
 }; // class EnumOPCItemAttributes
 
 } // namespace impl

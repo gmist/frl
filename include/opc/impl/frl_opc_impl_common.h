@@ -7,6 +7,16 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\class OPCCommon
+	\brief IOPCCommon implementation.
+	\details IOPCCommon interface is used by all OPC Server types (DataAccess, Alarm&Event, Historical Data).
+	It provides the ability to set  and query a LocaleID which would be in effect for the particular client/server session.
+	That is, the actions of one client do not affect any other clients.
+	As with other interfaces such as IUnknown, the instance of this interface for each server is unique.
+	That is, an OPC Data Access server object and and OPC Alarms and Events server object might both provide an implementation of IOPCCommon.
+	A client which is maintaining connections to both servers would, as with any other interface, use the interfaces on these two objects independently.
+*/
 class OPCCommon
 	:	public IOPCCommon
 {
@@ -19,7 +29,6 @@ public:
 	OPCCommon();
 	virtual ~OPCCommon();
 
-	// IOPCCommon implementation
 	STDMETHODIMP SetLocaleID( 
 		/* [in] */ LCID dwLcid);
 

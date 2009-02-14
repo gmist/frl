@@ -7,6 +7,17 @@
 
 namespace frl { namespace opc { namespace impl {
 
+/*!
+	\brief IOPCItemIO implementation
+	\details
+	The purpose of IOPCItemIO interface is to provide an extremely easy way for simple applications to obtain OPC data. 
+	Programmers should be aware that in most servers, 
+	the design of the Group based OPC interfaces will provide much better performance than this interface. 
+	In terms of performance, the user of this interface should assume that it will behave as if he were to create a group, 
+	add the items, perform a single read or write and then delete the group.
+	A second purpose of this interface is to provide a method for writing timestamp and 
+	quality information into servers that support this functionality.
+*/
 class OPCItemIO
 	:	public IOPCItemIO,
 		virtual public OPCServerBase
@@ -14,7 +25,6 @@ class OPCItemIO
 public:
 	virtual ~OPCItemIO();
 
-	// IOPCItemIO implementation
 	STDMETHODIMP Read( 
 		/* [in] */ DWORD dwCount,
 		/* [size_is][in] */ LPCWSTR *pszItemIDs,
