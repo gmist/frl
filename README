@@ -1,0 +1,27 @@
+Purpose
+    FatRat Library is a free and open source OPC DA (Data Access) Server Toolkit.
+    FatRat Library makes it possible to speed up development OPC DA servers.
+ 
+OPC compliance / FatRat Library supports:
+    * IOPCCommon
+    * IOPCServer
+    * IConnectionPointContainer
+    * IOPCItemProperties
+    * IOPCBrowseServerAddressSpace
+    * IOPCGroupStateMgt
+    * IOPCSyncIO
+    * IOPCAsyncIO2
+    * IOPCItemMgt
+    * IEnumOPCItemAttributes
+    * IOPCBrowse
+    * IOPCItemDeadbandMgt
+    * IOPCItemSamplingMgt
+    * IOPCItemIO
+    * IOPCSyncIO2
+    * IOPCAsyncIO3
+    * IOPCGroupStateMgt2
+ 
+System requirements
+    FatRat Library is fully compatible with Windows NT4/2000/XP/2003/Vista.
+    Library can be used with any development environment supporting C++ language.
+    You can use it with Microsoft Visual Studio 2005/2008 (including Express Edition) or MinGW. 
